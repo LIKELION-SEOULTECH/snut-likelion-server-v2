@@ -34,5 +34,6 @@ public class UpdateMemberRequest {
         this.part = part;
         this.role = role;
         this.department = department;
+
     }
 }
