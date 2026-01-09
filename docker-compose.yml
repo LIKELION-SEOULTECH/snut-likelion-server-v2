@@ -10,12 +10,12 @@ services:
       TZ: Asia/Seoul
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
       - snut_likelion_db_data:/var/lib/mysql
 
   app:
-    image: maruhan/snut-likelion:latest
+    image: kimgt0128/snut-likelion:latest
     container_name: snut-likelion-app
     ports:
       - "8080:8080"
