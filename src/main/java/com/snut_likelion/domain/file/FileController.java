@@ -1,6 +1,8 @@
 package com.snut_likelion.domain.file;
 
 import com.snut_likelion.global.provider.FileProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import java.io.IOException;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 
+@Tag(name = "File", description = "파일 다운로드 API")
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/files")
@@ -28,6 +31,7 @@ public class FileController {
     private final FileProvider fileProvider;
 
     // 파일 다운로드
+    @Operation(summary = "파일 다운로드", description = "서버에 저장된 파일을 다운로드합니다.")
     @GetMapping(value = "/download")
 //    @PreAuthorize("hasRole('ROLE_MANAGER')")
     public ResponseEntity<Resource> downloadFile(

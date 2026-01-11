@@ -40,3 +40,6 @@ application*.yml
 **/resources/*.yml
 
 /src/main/resources/files/*
+
+# Environment variablis
+.env

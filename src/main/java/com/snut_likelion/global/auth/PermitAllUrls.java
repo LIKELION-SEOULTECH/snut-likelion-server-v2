@@ -37,6 +37,11 @@ public enum PermitAllUrls {
     GET_BLOG_DETAIL("/api/v1/blogs/{blogId}", GET),
     GET_NOTICES("/api/v1/notices", GET),
     GET_NOTICE_DETAIL("/api/v1/notices/{noticeId}", GET),
+
+    /* Swagger UI 관련 */
+    SWAGGER_V3_DOCS("/v3/api-docs/**", GET),
+    SWAGGER_UI("/swagger-ui/**", GET),
+    SWAGGER_HTML("/swagger-ui.html", GET)
     ;
 
     private final String url;
