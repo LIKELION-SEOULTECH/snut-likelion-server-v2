@@ -1,28 +1,15 @@
 services:
-  db:
-    image: mysql:8.0
-    container_name: snut-likelion-db
-    environment:
-      MYSQL_ROOT_PASSWORD: 1234
-      MYSQL_DATABASE: snut-likelion
-      MYSQL_CHARSET: utf8mb4
-      MYSQL_COLLATION: utf8mb4_unicode_ci
-      TZ: Asia/Seoul
-    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    ports:
-      - "3306:3306"
-    volumes:
-      - snut_likelion_db_data:/var/lib/mysql
-
   app:
     image: kimgt0128/snut-likelion:latest
     container_name: snut-likelion-app
     ports:
       - "8080:8080"
+    env_file:
+      - .env
     environment:
       TZ: Asia/Seoul
-    depends_on:
-      - db
+    restart: always
+
 
 volumes:
   snut_likelion_db_data:

@@ -43,3 +43,5 @@ application*.yml
 
 # Environment variablis
 .env
+
+docker-compose-dev.yml
