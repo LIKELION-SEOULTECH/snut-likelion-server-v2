@@ -1,0 +1,44 @@
+spring.application.name: snut-likelion
+snut.likelion.current-generation: 13
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+spring:
+  config:
+    import:
+      - db.yml
+      - mail.yml
+      - file.yml
+      - jwt.yml
+      - aws.yml
+  profiles:
+    active: prod
+
+---
+
+spring.config.activate.on-profile: dev
+
+client.url: http://localhost:5173
+server.url: http://localhost:8080
+ai-server.url: http://localhost:8081
+
+spring:
+  h2:
+    console:
+      enabled: true
+
+---
+
+spring.config.activate.on-profile: prod
+
+client.url: https://snut-likelion-client.vercel.app
+server.url: http://seoultech-likelion:8080
+ai-server.url: http://ai.seoultech-likelion:8081
+
+spring:
+  h2:
+    console:
+      enabled: false

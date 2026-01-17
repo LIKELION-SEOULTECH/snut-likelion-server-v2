@@ -36,10 +36,12 @@ out/
 ### VS Code ###
 .vscode/
 
-application*.yml
-**/resources/*.yml
+#application*.yml
+#**/resources/*.yml
 
 /src/main/resources/files/*
 
 # Environment variablis
 .env
+
+docker-compose-dev.yml
