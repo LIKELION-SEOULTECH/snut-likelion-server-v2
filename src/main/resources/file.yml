@@ -1,0 +1,7 @@
+file.upload-dir: src/main/resources/files
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB

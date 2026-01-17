@@ -1,6 +1,6 @@
 services:
   app:
-    image: kimgt0128/snut-likelion:latest
+    image: kimgt2828/likelion-app:latest
     container_name: snut-likelion-app
     ports:
       - "8080:8080"
