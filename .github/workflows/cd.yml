@@ -2,7 +2,7 @@ name: CD (Continuous Deployment)
 
 on:
   push:
-    branches: [ "main" ] # 배포를 원하는 브랜치로 설정하세요
+    branches: [ "main" ]
 
 jobs:
   deploy:
