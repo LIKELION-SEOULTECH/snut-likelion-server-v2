@@ -12,6 +12,8 @@ server:
     whitelabel:
       enabled: false
 
+  forward-headers-strategy: native
+
 spring:
   config:
     import:

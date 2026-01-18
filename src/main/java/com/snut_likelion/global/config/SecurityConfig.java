@@ -100,7 +100,11 @@ public class SecurityConfig {
     @Bean
     protected CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "https://snut-likelion-client.vercel.app"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173",
+                "https://snut-likelion-client.vercel.app",
+                "https://www.seoultech-likelion.com",
+                "https://seoultech-likelion.com"
+                ));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
