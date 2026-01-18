@@ -1,5 +1,11 @@
 spring.application.name: snut-likelion
-snut.likelion.current-generation: 13
+
+admin:
+  init:
+    email: ${ADMIN_INIT_EMAIL:admin@seoultech-likelion.com}
+    password: ${ADMIN_INIT_PASSWORD}
+
+snut.likelion.current-generation: 14
 
 server:
   error:
