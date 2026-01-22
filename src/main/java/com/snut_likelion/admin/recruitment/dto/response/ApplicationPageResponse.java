@@ -21,23 +21,31 @@ public class ApplicationPageResponse {
     private long totalElements;
     private int totalPages;
     private List<ApplicationListResponse> content;
+    private long paperPassCount;
+    private long finalPassCount;
 
     @Builder
-    public ApplicationPageResponse(int page, int size, long totalElements, int totalPages, List<ApplicationListResponse> content) {
+    public ApplicationPageResponse(int page, int size, long totalElements, int totalPages,
+            List<ApplicationListResponse> content, long paperPassCount, long finalPassCount) {
         this.page = page;
         this.size = size;
         this.totalElements = totalElements;
         this.totalPages = totalPages;
         this.content = content;
+        this.paperPassCount = paperPassCount;
+        this.finalPassCount = finalPassCount;
     }
 
-    public static ApplicationPageResponse from(Page<ApplicationPageResponse.ApplicationListResponse> page) {
+    public static ApplicationPageResponse of(Page<ApplicationPageResponse.ApplicationListResponse> page,
+            long paperPassCount, long finalPassCount) {
         return ApplicationPageResponse.builder()
                 .page(page.getNumber())
                 .size(page.getSize())
                 .totalElements(page.getTotalElements())
                 .totalPages(page.getTotalPages())
                 .content(page.getContent())
+                .paperPassCount(paperPassCount)
+                .finalPassCount(finalPassCount)
                 .build();
     }
 

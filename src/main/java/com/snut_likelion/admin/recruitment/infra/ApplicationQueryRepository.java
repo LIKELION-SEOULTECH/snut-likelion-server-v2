@@ -73,4 +73,16 @@ public class ApplicationQueryRepository {
         return application.status.eq(applicationStatus);
     }
 
+    public long countByRecruitmentIdAndStatus(Long recId, ApplicationStatus status) {
+        Long count = query
+                .select(application.count())
+                .from(application)
+                .where(
+                        application.recruitment.id.eq(recId),
+                        application.status.eq(status)
+                )
+                .fetchOne();
+        return count != null ? count : 0L;
+    }
+
 }
