@@ -18,16 +18,18 @@ public class ApplicationAnswerResponse {
     private String questionText;
     private String answer;
     private int order;
+    private String questionTarget;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> buttonList;
 
     @Builder
-    public ApplicationAnswerResponse(Long questionId, String questionText, String answer, int order, List<String> buttonList) {
+    public ApplicationAnswerResponse(Long questionId, String questionText, String answer, int order, String questionTarget, List<String> buttonList) {
         this.questionId = questionId;
         this.questionText = questionText;
         this.answer = answer;
         this.order = order;
+        this.questionTarget = questionTarget;
         this.buttonList = buttonList;
     }
 
@@ -39,6 +41,7 @@ public class ApplicationAnswerResponse {
                 .questionText(question.getText())
                 .answer(answer.getText())
                 .order(question.getOrderNum())
+                .questionTarget(question.getQuestionTarget().name())
                 .buttonList(question.getButtonList().isEmpty() ? null : question.getButtonList())
                 .build();
     }

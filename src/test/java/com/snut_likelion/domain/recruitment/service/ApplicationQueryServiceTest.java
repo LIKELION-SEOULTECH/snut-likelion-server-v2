@@ -81,18 +81,23 @@ class ApplicationQueryServiceTest {
                 () -> assertThat(myApp.getStudentId()).isEqualTo(String.valueOf(20000000 + app1.getId())),
                 () -> assertThat(myApp.getGrade()).isEqualTo(app1.getGrade()),
                 () -> assertThat(myApp.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(myApp.getPortfolioName()).isEqualTo(app1.getPortfolioName()),
+                () -> assertThat(myApp.getPortfolio()).isEqualTo(app1.getPortfolio()),
                 () -> assertThat(myApp.getPart()).isEqualTo(app1.getPart().name()),
                 () -> assertThat(myApp.getSubmittedAt()).isEqualTo(submittedAt),
                 () -> assertThat(myApp.getDepartmentType()).isNull(),
                 () -> assertThat(myApp.getStatus()).isEqualTo(app1.getStatus().name()),
                 () -> assertThat(myApp.getAnswers()).hasSize(4)
-                        .extracting(ApplicationAnswerResponse::getQuestionId, ApplicationAnswerResponse::getQuestionText, ApplicationAnswerResponse::getAnswer)
+                        .extracting(
+                                ApplicationAnswerResponse::getQuestionId,
+                                ApplicationAnswerResponse::getQuestionText,
+                                ApplicationAnswerResponse::getAnswer,
+                                ApplicationAnswerResponse::getQuestionTarget
+                        )
                         .containsExactly(
-                                tuple(1L, "q1", "ans1"),
-                                tuple(2L, "q2", "ans2"),
-                                tuple(3L, "q3", "ans3"),
-                                tuple(4L, "q4", "ans4")
+                                tuple(1L, "q1", "ans1", "COMMON"),
+                                tuple(2L, "q2", "ans2", "COMMON"),
+                                tuple(3L, "q3", "ans3", "PART"),
+                                tuple(4L, "q4", "ans4", "PART")
                         )
         );
     }
@@ -125,7 +130,7 @@ class ApplicationQueryServiceTest {
                 .studentId(String.valueOf(20000000 + id))
                 .grade(3)
                 .isPersonalInfoConsent(true)
-                .portfolioName("portfolio.pdf")
+                .portfolio("https://example.com/portfolio.pdf")
                 .part(part)
                 .submittedAt(submittedAt)
                 .build();

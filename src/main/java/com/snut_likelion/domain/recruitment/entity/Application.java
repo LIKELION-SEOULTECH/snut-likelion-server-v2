@@ -38,7 +38,7 @@ public class Application extends BaseEntity {
     @Column(nullable = false)
     private Boolean isPersonalInfoConsent;
 
-    private String portfolioName; // 포트폴리오 URL
+    private String portfolio; // 포트폴리오 URL
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -65,22 +65,22 @@ public class Application extends BaseEntity {
     private List<Answer> answers = new ArrayList<>();
 
     @Builder
-    public Application(Long id, String major, Boolean inSchool, String studentId, int grade, Boolean isPersonalInfoConsent, String portfolioName, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
+    public Application(Long id, String major, Boolean inSchool, String studentId, int grade, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
         this.id = id;
         this.major = major;
         this.inSchool = inSchool;
         this.studentId = studentId;
         this.grade = grade;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
-        this.portfolioName = portfolioName;
+        this.portfolio = portfolio;
         this.part = part;
         this.departmentType = departmentType;
         this.status = status == null ? ApplicationStatus.DRAFT : status;
         this.submittedAt = submittedAt != null ? submittedAt : LocalDateTime.now();
     }
 
-    public void setPortfolioName(String portfolioName) {
-        this.portfolioName = portfolioName;
+    public void setPortfolio(String portfolio) {
+        this.portfolio = portfolio;
     }
 
     public void setStatus(ApplicationStatus status) {
@@ -109,12 +109,13 @@ public class Application extends BaseEntity {
         this.recruitment = recruitment;
     }
 
-    public void update(String major, String studentId, int grade, Boolean inSchool, Boolean isPersonalInfoConsent, Part part, DepartmentType departmentType) {
+    public void update(String major, String studentId, int grade, Boolean inSchool, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
         this.major = major;
         this.studentId = studentId;
         this.grade = grade;
         this.inSchool = inSchool;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
+        this.portfolio = portfolio;
         this.part = part;
         this.departmentType = departmentType;
     }

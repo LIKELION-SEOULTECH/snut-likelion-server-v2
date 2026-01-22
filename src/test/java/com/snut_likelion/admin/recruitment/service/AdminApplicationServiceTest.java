@@ -1,9 +1,14 @@
 package com.snut_likelion.admin.recruitment.service;
 
+import com.snut_likelion.admin.recruitment.dto.request.ApplicationListStatus;
 import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusParameter;
 import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusRequest;
+import com.snut_likelion.admin.recruitment.dto.response.ApplicationPageResponse;
+import com.snut_likelion.admin.recruitment.infra.ApplicationQueryRepository;
 import com.snut_likelion.domain.recruitment.entity.*;
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;
@@ -22,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -30,6 +36,9 @@ class AdminApplicationServiceTest {
 
     @Mock
     ApplicationRepository applicationRepository;
+
+    @Mock
+    ApplicationQueryRepository applicationQueryRepository;
 
     @Mock
     NotificationService notificationService;
@@ -135,6 +144,42 @@ class AdminApplicationServiceTest {
                 () -> verify(notificationService).sendNotification(user, ApplicationStatus.FINAL_PASS, app),
                 () -> assertThat(app2.getStatus()).isEqualTo(ApplicationStatus.FAILED),
                 () -> verify(notificationService).sendNotification(user2, ApplicationStatus.FAILED, app2)
+        );
+    }
+
+    @Test
+    void getApplicationsByRecruitmentId_returnsPassCounts() {
+        // given
+        ApplicationPageResponse.ApplicationListResponse appResponse =
+                ApplicationPageResponse.ApplicationListResponse.builder()
+                        .id(1L)
+                        .username("tester")
+                        .part(Part.BACKEND)
+                        .departmentType(null)
+                        .status(ApplicationStatus.SUBMITTED)
+                        .submittedAt(LocalDateTime.now())
+                        .build();
+
+        PageImpl<ApplicationPageResponse.ApplicationListResponse> pageResult =
+                new PageImpl<>(List.of(appResponse), PageRequest.of(0, 8), 1);
+
+        when(applicationQueryRepository.getApplicationList(eq(recId), any(), any(), any()))
+                .thenReturn(pageResult);
+        when(applicationQueryRepository.countByRecruitmentIdAndStatus(recId, ApplicationStatus.PAPER_PASS))
+                .thenReturn(15L);
+        when(applicationQueryRepository.countByRecruitmentIdAndStatus(recId, ApplicationStatus.FINAL_PASS))
+                .thenReturn(10L);
+
+        // when
+        ApplicationPageResponse response = service.getApplicationsByRecruitmentId(
+                recId, null, 0, ApplicationListStatus.SUBMITTED);
+
+        // then
+        assertAll(
+                () -> assertThat(response.getPaperPassCount()).isEqualTo(15L),
+                () -> assertThat(response.getFinalPassCount()).isEqualTo(10L),
+                () -> assertThat(response.getContent()).hasSize(1),
+                () -> assertThat(response.getTotalElements()).isEqualTo(1)
         );
     }
 }

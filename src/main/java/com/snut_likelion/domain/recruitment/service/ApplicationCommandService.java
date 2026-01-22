@@ -18,13 +18,10 @@ import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Set;
@@ -35,7 +32,6 @@ import java.util.stream.Collectors;
 public class ApplicationCommandService {
 
     private final ApplicationRepository applicationRepository;
-    private final FileProvider fileProvider;
     private final RecruitmentRepository recruitmentRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
@@ -51,7 +47,6 @@ public class ApplicationCommandService {
 
         this.mappingAnswers(req.getAnswers(), application);
         this.mappingUser(userId, application);
-        this.mappingPortfolio(req.getPortfolio(), application);
 
         if (submit) {
             this.validateAnswerSet(
@@ -79,12 +74,6 @@ public class ApplicationCommandService {
         if (!providedQids.equals(requiredQids)) {
             throw new BadRequestException(ApplicationErrorCode.INVALID_ANSWER_SET);
         }
-    }
-
-    private void mappingPortfolio(MultipartFile portfolioFile, Application application) {
-        String storedName = fileProvider.storeFile(portfolioFile);
-        fileProvider.setTransactionSynchronizationForImage(storedName);
-        application.setPortfolioName(storedName);
     }
 
     private void mappingUser(Long userId, Application application) {
@@ -127,16 +116,12 @@ public class ApplicationCommandService {
                 req.getGrade(),
                 req.getInSchool(),
                 req.getIsPersonalInfoConsent(),
+                req.getPortfolio(),
                 req.getPart(),
                 req.getDepartmentType()
         );
 
         this.mappingUser(loginUser.getId(), application);
-
-        if (req.getPortfolio() != null) {
-            this.removePortfolioFile(application);
-            this.mappingPortfolio(req.getPortfolio(), application);
-        }
 
         // 제출 상태 업데이트
         if (submit) {
@@ -157,13 +142,7 @@ public class ApplicationCommandService {
     public void deleteApplication(Long appId, UserInfo loginUser) {
         Application application = applicationRepository.findById(appId)
                 .orElseThrow(() -> new NotFoundException(ApplicationErrorCode.NOT_FOUND_APPLICATION));
-        this.removePortfolioFile(application);
         applicationRepository.delete(application);
-    }
-
-    private void removePortfolioFile(Application application) {
-        String storedName = fileProvider.extractImageName(application.getPortfolioName());
-        fileProvider.deleteFile(storedName);
     }
 
 }

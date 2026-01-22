@@ -26,7 +26,7 @@ public class ApplicationDetailsResponse {
     private String phoneNumber;
     private int grade;
     private Boolean isPersonalInfoConsent;
-    private String portfolioName;
+    private String portfolio;
     private String part; // 지원 파트
     private String departmentType; // 부서 (운영진 지원일 경우)
     private String status; // 지원 상태 (대기, 합격, 불합격 등)
@@ -34,7 +34,7 @@ public class ApplicationDetailsResponse {
     private LocalDateTime submittedAt; // 지원서 제출 시간
 
     @Builder
-    public ApplicationDetailsResponse(Long id, String username, String major, Boolean inSchool, String studentId, String phoneNumber, int grade, Boolean isPersonalInfoConsent, String portfolioName, Part part, DepartmentType departmentType, ApplicationStatus status, List<Answer> answers, LocalDateTime submittedAt) {
+    public ApplicationDetailsResponse(Long id, String username, String major, Boolean inSchool, String studentId, String phoneNumber, int grade, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType, ApplicationStatus status, List<Answer> answers, LocalDateTime submittedAt) {
         this.id = id;
         this.username = username;
         this.major = major;
@@ -43,7 +43,7 @@ public class ApplicationDetailsResponse {
         this.phoneNumber = phoneNumber;
         this.grade = grade;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
-        this.portfolioName = portfolioName;
+        this.portfolio = portfolio;
         this.part = part.name();
         this.departmentType = departmentType != null ? departmentType.name() : null;
         this.status = status.name();
@@ -61,7 +61,7 @@ public class ApplicationDetailsResponse {
                 .studentId(application.getStudentId())
                 .grade(application.getGrade())
                 .isPersonalInfoConsent(application.getIsPersonalInfoConsent())
-                .portfolioName(application.getPortfolioName())
+                .portfolio(application.getPortfolio())
                 .part(application.getPart())
                 .departmentType(application.getDepartmentType())
                 .status(application.getStatus())
