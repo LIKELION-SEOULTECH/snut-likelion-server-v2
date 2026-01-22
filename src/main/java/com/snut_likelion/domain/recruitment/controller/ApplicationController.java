@@ -45,7 +45,7 @@ public class ApplicationController {
             @Parameter(description = "모집 공고 ID(recId)") @PathVariable("recId") Long recId,
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @Parameter(description = "true: 최종제출, false: 임시저장") @RequestParam(value = "submit", required = true) boolean submit,
-            @ModelAttribute("createApplicationRequest") @Valid CreateApplicationRequest req
+            @RequestBody @Valid CreateApplicationRequest req
     ) {
         applicationCommandService.createApplication(recId, loginUser.getId(), submit, req);
         return ApiResponse.success("지원서 작성 성공");
@@ -58,7 +58,7 @@ public class ApplicationController {
             @Parameter(description = "지원서 ID(appId)") @PathVariable("appId") Long appId,
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @Parameter(description = "true: 최종제출, false: 임시저장") @RequestParam(value = "submit", required = true) boolean submit,
-            @ModelAttribute("updateApplicationRequest") @Valid UpdateApplicationRequest req
+            @RequestBody @Valid UpdateApplicationRequest req
     ) {
         applicationCommandService.updateApplication(appId, loginUser.getUserInfo(), submit, req);
     }

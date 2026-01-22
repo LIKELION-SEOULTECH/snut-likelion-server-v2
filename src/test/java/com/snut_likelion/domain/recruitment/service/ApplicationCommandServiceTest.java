@@ -17,7 +17,6 @@ import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +24,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,9 +41,6 @@ class ApplicationCommandServiceTest {
 
     @Mock
     ApplicationRepository applicationRepository;
-
-    @Mock
-    FileProvider fileProvider;
 
     @Mock
     RecruitmentRepository recruitmentRepository;
@@ -116,13 +111,12 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3, ar4))
                 .build();
 
         when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(fileProvider.storeFile(any())).thenReturn("stored.pdf");
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(questionRepository.findById(q2.getId())).thenReturn(Optional.of(q2));
         when(questionRepository.findById(q3.getId())).thenReturn(Optional.of(q3));
@@ -143,7 +137,7 @@ class ApplicationCommandServiceTest {
                 () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
                 () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(saved.getPortfolioName()).isEqualTo("stored.pdf"),
+                () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.BACKEND),
                 () -> assertThat(saved.getDepartmentType()).isNull(),
                 () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.DRAFT),
@@ -170,13 +164,12 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3, ar4))
                 .build();
 
         when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(fileProvider.storeFile(any())).thenReturn("stored.pdf");
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(questionRepository.findById(q2.getId())).thenReturn(Optional.of(q2));
         when(questionRepository.findById(q3.getId())).thenReturn(Optional.of(q3));
@@ -197,7 +190,7 @@ class ApplicationCommandServiceTest {
                 () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
                 () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(saved.getPortfolioName()).isEqualTo("stored.pdf"),
+                () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.BACKEND),
                 () -> assertThat(saved.getDepartmentType()).isNull(),
                 () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED),
@@ -233,13 +226,12 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.FRONTEND)
                 .departmentType(DepartmentType.OPERATION)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3, ar4, ar5, ar6))
                 .build();
 
         when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(fileProvider.storeFile(any())).thenReturn("stored.pdf");
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(questionRepository.findById(q2.getId())).thenReturn(Optional.of(q2));
         when(questionRepository.findById(q3.getId())).thenReturn(Optional.of(q3));
@@ -262,7 +254,7 @@ class ApplicationCommandServiceTest {
                 () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
                 () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(saved.getPortfolioName()).isEqualTo("stored.pdf"),
+                () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.FRONTEND),
                 () -> assertThat(saved.getDepartmentType()).isEqualTo(DepartmentType.OPERATION),
                 () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED),
@@ -295,7 +287,7 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3))
                 .build();
 
@@ -325,7 +317,7 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.AI)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("f", "f", "txt", new byte[0]))
+                .portfolio(null)
                 .answers(List.of())
                 .build();
 
@@ -350,7 +342,7 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.AI)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("f", "f", "txt", new byte[0]))
+                .portfolio(null)
                 .answers(List.of(ar1))
                 .build();
 
@@ -380,13 +372,12 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3, ar4))
                 .build();
 
         when(applicationRepository.findById(appId)).thenReturn(Optional.of(application));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(fileProvider.storeFile(any())).thenReturn("stored.pdf");
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(questionRepository.findById(q2.getId())).thenReturn(Optional.of(q2));
         when(questionRepository.findById(q3.getId())).thenReturn(Optional.of(q3));
@@ -405,7 +396,7 @@ class ApplicationCommandServiceTest {
                 () -> assertThat(application.getStudentId()).isEqualTo("20201234"),
                 () -> assertThat(application.getGrade()).isEqualTo(3),
                 () -> assertThat(application.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(application.getPortfolioName()).isEqualTo("stored.pdf"),
+                () -> assertThat(application.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(application.getPart()).isEqualTo(Part.BACKEND),
                 () -> assertThat(application.getDepartmentType()).isNull(),
                 () -> assertThat(application.getStatus()).isEqualTo(ApplicationStatus.DRAFT),
@@ -437,13 +428,12 @@ class ApplicationCommandServiceTest {
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
-                .portfolio(new MockMultipartFile("file", "test.pdf", "application/pdf", new byte[]{1, 2, 3}))
+                .portfolio("https://example.com/portfolio.pdf")
                 .answers(List.of(ar1, ar2, ar3, ar4))
                 .build();
 
         when(applicationRepository.findById(appId)).thenReturn(Optional.of(application));
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(fileProvider.storeFile(any())).thenReturn("stored.pdf");
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(questionRepository.findById(q2.getId())).thenReturn(Optional.of(q2));
         when(questionRepository.findById(q3.getId())).thenReturn(Optional.of(q3));
@@ -463,7 +453,7 @@ class ApplicationCommandServiceTest {
                 () -> assertThat(application.getStudentId()).isEqualTo("20201234"),
                 () -> assertThat(application.getGrade()).isEqualTo(3),
                 () -> assertThat(application.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(application.getPortfolioName()).isEqualTo("stored.pdf"),
+                () -> assertThat(application.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(application.getPart()).isEqualTo(Part.BACKEND),
                 () -> assertThat(application.getDepartmentType()).isNull(),
                 () -> assertThat(application.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED),
@@ -480,15 +470,13 @@ class ApplicationCommandServiceTest {
         int currentGeneration = 13;
         UserInfo userInfo = UserInfo.from(user, currentGeneration);
 
-        Application app = Application.builder().portfolioName("some.pdf").build();
+        Application app = Application.builder().portfolio("https://example.com/portfolio.pdf").build();
         when(applicationRepository.findById(appId)).thenReturn(Optional.of(app));
-        when(fileProvider.extractImageName("some.pdf")).thenReturn("stored.pdf");
 
         // when
         service.deleteApplication(appId, userInfo);
 
         // then
-        verify(fileProvider).deleteFile("stored.pdf");
         verify(applicationRepository).delete(app);
     }
 

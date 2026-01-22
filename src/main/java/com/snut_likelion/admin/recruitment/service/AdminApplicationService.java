@@ -42,7 +42,11 @@ public class AdminApplicationService {
         PageRequest pageRequest = PageRequest.of(page, PAGE_SIZE);
         Page<ApplicationPageResponse.ApplicationListResponse> result =
                 applicationQueryRepository.getApplicationList(recId, part, status, pageRequest);
-        return ApplicationPageResponse.from(result);
+
+        long paperPassCount = applicationQueryRepository.countByRecruitmentIdAndStatus(recId, PAPER_PASS);
+        long finalPassCount = applicationQueryRepository.countByRecruitmentIdAndStatus(recId, FINAL_PASS);
+
+        return ApplicationPageResponse.of(result, paperPassCount, finalPassCount);
     }
 
     @Transactional(readOnly = true)
