@@ -87,12 +87,17 @@ class ApplicationQueryServiceTest {
                 () -> assertThat(myApp.getDepartmentType()).isNull(),
                 () -> assertThat(myApp.getStatus()).isEqualTo(app1.getStatus().name()),
                 () -> assertThat(myApp.getAnswers()).hasSize(4)
-                        .extracting(ApplicationAnswerResponse::getQuestionId, ApplicationAnswerResponse::getQuestionText, ApplicationAnswerResponse::getAnswer)
+                        .extracting(
+                                ApplicationAnswerResponse::getQuestionId,
+                                ApplicationAnswerResponse::getQuestionText,
+                                ApplicationAnswerResponse::getAnswer,
+                                ApplicationAnswerResponse::getQuestionTarget
+                        )
                         .containsExactly(
-                                tuple(1L, "q1", "ans1"),
-                                tuple(2L, "q2", "ans2"),
-                                tuple(3L, "q3", "ans3"),
-                                tuple(4L, "q4", "ans4")
+                                tuple(1L, "q1", "ans1", "COMMON"),
+                                tuple(2L, "q2", "ans2", "COMMON"),
+                                tuple(3L, "q3", "ans3", "PART"),
+                                tuple(4L, "q4", "ans4", "PART")
                         )
         );
     }
