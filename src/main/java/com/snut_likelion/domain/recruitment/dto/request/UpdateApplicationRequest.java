@@ -9,7 +9,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -35,8 +34,7 @@ public class UpdateApplicationRequest {
     @NotNull(message = "개인정보 수집 동의 여부를 입력해주세요.")
     private Boolean isPersonalInfoConsent;
 
-    @NotNull(message = "포트폴리오 파일을 업로드해주세요.")
-    private MultipartFile portfolio;
+    private String portfolio;
 
     @NotNull(message = "지원 파트를 선택해주세요.")
     private Part part;
@@ -44,7 +42,7 @@ public class UpdateApplicationRequest {
     private DepartmentType departmentType;
 
     @Builder
-    public UpdateApplicationRequest(String major, String studentId, int grade, Boolean inSchool, List<ApplicationAnswerRequest> answers, Boolean isPersonalInfoConsent, MultipartFile portfolio, Part part, DepartmentType departmentType) {
+    public UpdateApplicationRequest(String major, String studentId, int grade, Boolean inSchool, List<ApplicationAnswerRequest> answers, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
         this.major = major;
         this.studentId = studentId;
         this.grade = grade;

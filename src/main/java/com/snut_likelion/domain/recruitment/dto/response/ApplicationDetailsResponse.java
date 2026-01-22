@@ -61,7 +61,7 @@ public class ApplicationDetailsResponse {
                 .studentId(application.getStudentId())
                 .grade(application.getGrade())
                 .isPersonalInfoConsent(application.getIsPersonalInfoConsent())
-                .portfolioName(application.getPortfolioName())
+                .portfolioName(application.getPortfolio())
                 .part(application.getPart())
                 .departmentType(application.getDepartmentType())
                 .status(application.getStatus())
