@@ -23,7 +23,7 @@ spring:
       - jwt.yml
       - aws.yml
   profiles:
-    active: prod
+    active: dev
 
 ---
 

@@ -109,12 +109,13 @@ public class Application extends BaseEntity {
         this.recruitment = recruitment;
     }
 
-    public void update(String major, String studentId, int grade, Boolean inSchool, Boolean isPersonalInfoConsent, Part part, DepartmentType departmentType) {
+    public void update(String major, String studentId, int grade, Boolean inSchool, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
         this.major = major;
         this.studentId = studentId;
         this.grade = grade;
         this.inSchool = inSchool;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
+        this.portfolio = portfolio;
         this.part = part;
         this.departmentType = departmentType;
     }

@@ -116,15 +116,12 @@ public class ApplicationCommandService {
                 req.getGrade(),
                 req.getInSchool(),
                 req.getIsPersonalInfoConsent(),
+                req.getPortfolio(),
                 req.getPart(),
                 req.getDepartmentType()
         );
 
         this.mappingUser(loginUser.getId(), application);
-
-        if (req.getPortfolio() != null) {
-            application.setPortfolio(req.getPortfolio());
-        }
 
         // 제출 상태 업데이트
         if (submit) {
