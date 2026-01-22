@@ -81,7 +81,7 @@ class ApplicationQueryServiceTest {
                 () -> assertThat(myApp.getStudentId()).isEqualTo(String.valueOf(20000000 + app1.getId())),
                 () -> assertThat(myApp.getGrade()).isEqualTo(app1.getGrade()),
                 () -> assertThat(myApp.getIsPersonalInfoConsent()).isTrue(),
-                () -> assertThat(myApp.getPortfolioName()).isEqualTo(app1.getPortfolio()),
+                () -> assertThat(myApp.getPortfolio()).isEqualTo(app1.getPortfolio()),
                 () -> assertThat(myApp.getPart()).isEqualTo(app1.getPart().name()),
                 () -> assertThat(myApp.getSubmittedAt()).isEqualTo(submittedAt),
                 () -> assertThat(myApp.getDepartmentType()).isNull(),
