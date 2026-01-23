@@ -7,16 +7,12 @@ import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.PortfolioLinkRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
-import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +30,6 @@ public class MemberCommandServiceTest {
 
     @Mock
     private LionInfoRepository lionInfoRepository;
-
-    @Mock
-    private FileProvider fileProvider;
 
     @Mock
     private PortfolioLinkRepository portfolioLinkRepository;
@@ -59,13 +52,12 @@ public class MemberCommandServiceTest {
                 .thenReturn(Optional.of(user));
 
         // Prepare request
-        MultipartFile image = mock(MultipartFile.class);
-        when(image.getContentType()).thenReturn("image/png");
+        String imageUrl = "http://cdn/new.png";
         UpdateProfileRequest.PortfolioLinkDto pl1 = new UpdateProfileRequest.PortfolioLinkDto("GITHUB", "https://github.com/example");
         UpdateProfileRequest.PortfolioLinkDto pl2 = new UpdateProfileRequest.PortfolioLinkDto("NOTION", "https://notion.com/example");
 
         UpdateProfileRequest req = UpdateProfileRequest.builder()
-                .profileImage(image)
+                .profileImage(imageUrl)
                 .intro("새로운 소개")
                 .description("새로운 설명")
                 .major("컴퓨터공학")
@@ -74,25 +66,14 @@ public class MemberCommandServiceTest {
                 .portfolioLinks(List.of(pl1, pl2))
                 .build();
 
-        // FileProvider behavior
-        when(fileProvider.extractImageName(anyString())).thenReturn("old.png");
-        when(fileProvider.storeFile(image)).thenReturn("new.png");
-        when(fileProvider.buildImageUrl("new.png")).thenReturn("http://cdn/new.png");
-
         // When
-        TransactionSynchronizationManager.initSynchronization();
         memberCommandService.updateProfile(loginUser, memberId, req);
-        TransactionSynchronizationManager.clearSynchronization();
 
         // Then
         assertAll(
-                () -> verify(fileProvider).extractImageName("http://cdn/old.png"),
-                () -> verify(fileProvider).storeFile(image),
-                () -> verify(fileProvider).buildImageUrl("new.png"),
                 () -> verify(user).changeProfileImage("http://cdn/new.png"),
                 () -> verify(portfolioLinkRepository).saveAll(anyList()),
                 () -> verify(user).setPortfolioLinkList(anyList()),
-                () -> verify(portfolioLinkRepository).saveAll(anyList()),
                 () -> verify(user).updateProfile("새로운 소개", "새로운 설명", "컴퓨터공학", "명언", List.of("JAVA", "SPRING"))
         );
     }
@@ -116,7 +97,6 @@ public class MemberCommandServiceTest {
         memberCommandService.updateProfile(loginUser, memberId, req);
 
         assertAll(
-                () -> verify(fileProvider, never()).storeFile(any()),
                 () -> verify(portfolioLinkRepository, never()).saveAll(any()),
                 () -> assertThat(user.getIntro()).isEqualTo("새로운 소개"),
                 () -> assertThat(user.getDescription()).isEqualTo("새로운 설명"),
@@ -127,29 +107,27 @@ public class MemberCommandServiceTest {
     }
 
     @Test
-    void updateProfile_invalidImageFormat_throwsBadRequest() {
+    void updateProfile_withBlankImage_doesNotUpdateImage() {
         Long memberId = 1L;
-        User user = spy(User.builder().id(memberId).build());
+        User user = spy(User.builder()
+                .id(memberId)
+                .profileImageUrl("http://cdn/old.png")
+                .build());
         when(userRepository.findWithLionUserById(memberId))
                 .thenReturn(Optional.of(user));
 
-        MultipartFile image = mock(MultipartFile.class);
-        when(image.getContentType()).thenReturn("application/pdf");
         UpdateProfileRequest req = UpdateProfileRequest.builder()
-                .profileImage(image)
+                .profileImage("   ") // blank string
                 .intro("새로운 소개")
-                .description("새로운 설명")
-                .major("컴퓨터공학")
-                .portfolioLinks(List.of())
                 .build();
 
-        assertThatThrownBy(() -> memberCommandService.updateProfile(loginUser, memberId, req))
-                .isInstanceOf(BadRequestException.class)
-                .hasMessage(UserErrorCode.INVALID_PROFILE_IMAGE_FORMAT.getMessage());
+        memberCommandService.updateProfile(loginUser, memberId, req);
+
+        verify(user, never()).changeProfileImage(anyString());
     }
 
     @Test
-    void withdrawMember_withImage_shouldDeleteImageAndUser() {
+    void withdrawMember_shouldDeleteUser() {
         // Given
         Long memberId = 1L;
         User user = spy(User.builder()
@@ -159,30 +137,11 @@ public class MemberCommandServiceTest {
 
         when(userRepository.findById(memberId))
                 .thenReturn(Optional.of(user));
-        when(fileProvider.extractImageName("http://cdn/avatar.png"))
-                .thenReturn("avatar.png");
 
         // when
         memberCommandService.withdrawMember(loginUser, memberId);
 
         // then
-        verify(fileProvider).deleteFile("avatar.png");
-        verify(userRepository).delete(user);
-    }
-
-    @Test
-    void withdrawMember_withoutImage_shouldDeleteUserOnly() {
-        // Given
-        Long memberId = 1L;
-        User user = spy(User.builder().id(memberId).build());
-        when(userRepository.findById(memberId))
-                .thenReturn(Optional.of(user));
-
-        // When
-        memberCommandService.withdrawMember(loginUser, memberId);
-
-        // Then
-        verify(fileProvider, never()).deleteFile(anyString());
         verify(userRepository).delete(user);
     }
 

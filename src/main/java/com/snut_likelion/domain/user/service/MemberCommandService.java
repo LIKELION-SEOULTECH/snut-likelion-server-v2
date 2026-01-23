@@ -7,14 +7,11 @@ import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.PortfolioLinkRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
-import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +20,6 @@ import java.util.List;
 public class MemberCommandService {
 
     private final UserRepository userRepository;
-    private final FileProvider fileProvider;
     private final PortfolioLinkRepository portfolioLinkRepository;
 
     @Transactional
@@ -32,12 +28,9 @@ public class MemberCommandService {
         User user = userRepository.findWithLionUserById(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
 
-        if (req.getProfileImage() != null) {
-            this.removePrevProfileImage(user);
-            String storedName = this.storeProfileImage(req.getProfileImage());
-            // 트랜잭션이 롤백되면 방금 저장한 파일을 삭제하도록 등록
-            fileProvider.setTransactionSynchronizationForImage(storedName);
-            user.changeProfileImage(fileProvider.buildImageUrl(storedName)); // TODO: 프로필 이미지 URL 빌드 로직 수정
+        // 프로필 이미지 URL이 있으면 저장 (presigned URL 방식 예정)
+        if (req.getProfileImage() != null && !req.getProfileImage().isBlank()) {
+            user.changeProfileImage(req.getProfileImage());
         }
 
         if (!req.getPortfolioLinks().isEmpty()) {
@@ -56,29 +49,11 @@ public class MemberCommandService {
         portfolioLinkRepository.saveAll(portfolioLinkList); // TODO: N+1 문제 해결
     }
 
-    private String storeProfileImage(MultipartFile profileImage) {
-        String contentType = profileImage.getContentType();
-
-        if (!contentType.startsWith("image/")) {
-            throw new BadRequestException(UserErrorCode.INVALID_PROFILE_IMAGE_FORMAT);
-        }
-
-        return fileProvider.storeFile(profileImage);
-    }
-
     @Transactional
     @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")
     public void withdrawMember(UserInfo loginUser, Long memberId) {
         User user = userRepository.findById(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-        this.removePrevProfileImage(user);
         userRepository.delete(user);
-    }
-
-    private void removePrevProfileImage(User user) {
-        if (user.getProfileImageUrl() != null) {
-            String profileImageName = fileProvider.extractImageName(user.getProfileImageUrl());
-            fileProvider.deleteFile(profileImageName);
-        }
     }
 }

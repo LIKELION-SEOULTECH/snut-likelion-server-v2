@@ -2,29 +2,43 @@ package com.snut_likelion.domain.user.dto.request;
 
 import com.snut_likelion.domain.user.entity.PortFolioLinkType;
 import com.snut_likelion.domain.user.entity.PortfolioLink;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "프로필 수정 요청")
 public class UpdateProfileRequest {
 
-    private MultipartFile profileImage;
+    @Schema(description = "프로필 이미지 URL (presigned URL 방식 예정)", example = "https://example.com/image.jpg", nullable = true)
+    private String profileImage;
+
+    @Schema(description = "한 줄 소개", example = "안녕하세요!", nullable = true)
     private String intro;
+
+    @Schema(description = "자기소개", example = "저는 백엔드 개발자입니다.", nullable = true)
     private String description;
+
+    @Schema(description = "좌우명", example = "열심히 하자", nullable = true)
     private String saying;
+
+    @Schema(description = "전공", example = "컴퓨터공학과", nullable = true)
     private String major;
+
+    @Schema(description = "기술 스택 목록", example = "[\"Java\", \"Spring\", \"React\"]", nullable = true)
     private List<String> stacks;
+
+    @Schema(description = "포트폴리오 링크 목록", nullable = true)
     private List<PortfolioLinkDto> portfolioLinks = new ArrayList<>();
 
     @Builder
-    public UpdateProfileRequest(MultipartFile profileImage, String intro, String description, String saying, String major, List<String> stacks, List<PortfolioLinkDto> portfolioLinks) {
+    public UpdateProfileRequest(String profileImage, String intro, String description, String saying, String major, List<String> stacks, List<PortfolioLinkDto> portfolioLinks) {
         this.profileImage = profileImage;
         this.intro = intro;
         this.description = description;
