@@ -85,14 +85,23 @@ public class MemberController {
         );
     }
 
-    @Operation(summary = "프로필 수정", description = "회원의 프로필 정보를 수정합니다. (본인 권한 필요)")
+    @Operation(
+            summary = "프로필 수정",
+            description = """
+                    회원의 프로필 정보를 수정합니다. (본인 권한 필요)
+
+                    모든 필드는 선택사항입니다. 수정하고 싶은 필드만 포함하여 요청하세요.
+
+                    **portfolioLinks.name 허용 값:** GITHUB, NOTION, BEHANCE, BLOG, INSTAGRAM, OTHER
+                    """
+    )
     @PatchMapping("/{memberId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ROLE_USER')")
     public void updateProfile(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @Parameter(description = "수정할 멤버 ID") @PathVariable("memberId") Long memberId,
-            @ModelAttribute("updateProfileRequest") UpdateProfileRequest req
+            @RequestBody UpdateProfileRequest req
     ) {
         memberCommandService.updateProfile(loginUser.getUserInfo(), memberId, req);
     }

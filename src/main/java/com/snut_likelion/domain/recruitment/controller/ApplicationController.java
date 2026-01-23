@@ -38,7 +38,24 @@ public class ApplicationController {
         );
     }
 
-    @Operation(summary = "지원서 작성", description = "특정 모집 공고에 대한 지원서를 작성합니다. submit 값에 따라 임시저장/최종제출이 결정됩니다.")
+    @Operation(
+            summary = "지원서 작성",
+            description = """
+                    특정 모집 공고에 대한 지원서를 작성합니다.
+
+                    **[중요] answers 필드 작성 방법:**
+                    1. 먼저 GET /recruitments/{recId}/questions?part={part}&department={department} API로 질문 목록을 조회하세요.
+                    2. 조회된 모든 질문에 대해 답변을 작성해야 합니다.
+                       - COMMON 질문: 모든 지원자 필수
+                       - PART 질문: 선택한 파트에 해당하는 질문 필수
+                       - DEPARTMENT 질문: 운영진 모집 시 선택한 부서에 해당하는 질문 필수
+                    3. 질문 하나라도 빠지거나 불필요한 질문이 포함되면 'INVALID_ANSWER_SET' 에러가 발생합니다.
+
+                    **submit 파라미터:**
+                    - true: 최종 제출 (이후 수정 불가)
+                    - false: 임시 저장 (이후 수정 가능)
+                    """
+    )
     @PostMapping("/recruitments/{recId}/applications")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<Object> createApplication(
