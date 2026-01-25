@@ -1,4 +1,4 @@
-package com.snut_likelion.admin.file.dto;
+package com.snut_likelion.admin.file.dto.request;
 
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import io.swagger.v3.oas.annotations.media.Schema;

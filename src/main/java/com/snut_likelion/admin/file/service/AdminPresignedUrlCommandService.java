@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.file.service;
 
-import com.snut_likelion.admin.file.dto.IssuePresignedUrlRequest;
-import com.snut_likelion.admin.file.dto.PresignedUrlResponse;
+import com.snut_likelion.admin.file.dto.request.IssuePresignedUrlRequest;
+import com.snut_likelion.admin.file.dto.response.PresignedUrlResponse;
 import com.snut_likelion.global.provider.FileProvider;
 import com.snut_likelion.global.provider.PresignedUrlProvider;
 import lombok.RequiredArgsConstructor;
