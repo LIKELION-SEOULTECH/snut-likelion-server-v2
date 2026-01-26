@@ -2,6 +2,8 @@ package com.snut_likelion.domain.project.controller;
 
 import com.snut_likelion.domain.project.dto.request.CreateProjectRequest;
 import com.snut_likelion.domain.project.dto.request.UpdateProjectRequest;
+import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.dto.response.ProjectDetailResponse;
 import com.snut_likelion.domain.project.dto.response.ProjectResponse;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
@@ -96,4 +98,28 @@ public class ProjectController {
         projectCommandService.removeImage(projectId, imageUrl);
     }
 
+
+    // =========================
+    // Presigned URL
+    // =========================
+    @PostMapping("/presigned")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ApiResponse<Object> createProjectPresigned(
+            @AuthenticationPrincipal SnutLikeLionUser loginUser,
+            @Valid @RequestBody CreateProjectPresignedRequest request
+    ) {
+        Long id = projectCommandService.createPresigned(loginUser, request);
+        return ApiResponse.success("프로젝트가 등록되었습니다. projectId=" + id);
+    }
+
+    @PatchMapping("/{projectId}/presigned")
+    @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void modifyProjectPresigned(
+            @AuthenticationPrincipal SnutLikeLionUser loginUser,
+            @PathVariable Long projectId,
+            @Valid @RequestBody UpdateProjectPresignedRequest request
+    ) {
+        projectCommandService.modifyPresigned(projectId, request);
+    }
 }

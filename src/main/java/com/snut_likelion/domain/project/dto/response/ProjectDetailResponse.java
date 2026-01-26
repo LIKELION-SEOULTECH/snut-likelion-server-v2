@@ -3,6 +3,7 @@ package com.snut_likelion.domain.project.dto.response;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.user.entity.User;
+import com.snut_likelion.global.provider.FileProvider;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +40,7 @@ public class ProjectDetailResponse {
         this.appstoreUrl = appstoreUrl;
         this.tags = tags;
         this.members = members;
-        this.category = category.getDescription();
+        this.category = (category == null ? null : category.getDescription());
         this.imageUrls = imageUrls;
     }
 
@@ -63,7 +64,38 @@ public class ProjectDetailResponse {
                 )
                 .build();
     }
+    // 새 버전: key -> URL 변환해서 내려줌 (Presigned 전환 대응)
+    public static ProjectDetailResponse from(Project project, FileProvider fileProvider) {
+        List<String> raw = project.getImageUrlList();
+        List<String> imageUrls = (raw == null ? List.<String>of() : raw).stream()
+                .map(v -> resolveToUrl(v, fileProvider))
+                .toList();
 
+        return ProjectDetailResponse.builder()
+                .id(project.getId())
+                .name(project.getName())
+                .intro(project.getIntro())
+                .description(project.getDescription())
+                .generation(project.getGeneration())
+                .websiteUrl(project.getWebsiteUrl())
+                .playstoreUrl(project.getPlaystoreUrl())
+                .appstoreUrl(project.getAppstoreUrl())
+                .category(project.getCategory())
+                .tags(project.getTagList())
+                .imageUrls(imageUrls) // ✅ 항상 URL
+                .members(project.getParticipations().stream()
+                        .map(p -> p.getLionInfo().getUser())
+                        .map(Participant::from)
+                        .toList()
+                )
+                .build();
+    }
+
+    private static String resolveToUrl(String keyOrUrl, FileProvider fileProvider) {
+        if (keyOrUrl == null || keyOrUrl.isBlank()) return null;
+        if (keyOrUrl.startsWith("http://") || keyOrUrl.startsWith("https://")) return keyOrUrl; // 과거 데이터 호환
+        return fileProvider.buildImageUrl(keyOrUrl); // ✅ key -> URL
+    }
     @Getter
     public static class Participant {
         private Long id;

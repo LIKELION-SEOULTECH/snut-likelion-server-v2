@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface UploadedFileRepository extends JpaRepository<UploadedFile, Long> {
     Optional<UploadedFile> findByStoredFileName(String storedFileName);
+    boolean existsByStoredFileName(String storedFileName);
 }
