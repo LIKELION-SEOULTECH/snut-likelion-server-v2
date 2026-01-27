@@ -43,12 +43,18 @@ public class LocalFileProvider implements FileProvider {
     public Resource getFile(String storedFileName) {
         try {
             Path file = rootLocation.resolve(storedFileName).normalize();
+
+            // rootLocation 밖으로 탈출하면 차단
+            if (!file.startsWith(rootLocation)) {
+                throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);
+            }
+
             Resource resource = new UrlResource(file.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return resource;
-            } else {
-                throw new BadRequestException(FileErrorCode.FILE_NOT_FOUND);
             }
+            throw new BadRequestException(FileErrorCode.FILE_NOT_FOUND);
+
         } catch (MalformedURLException ex) {
             throw new BadRequestException(FileErrorCode.BAD_FILE_URL, ex.getMessage());
         }
@@ -58,6 +64,12 @@ public class LocalFileProvider implements FileProvider {
     public void deleteFile(String storedFileName) {
         try {
             Path file = rootLocation.resolve(storedFileName).normalize();
+
+            // rootLocation 밖이면 차단
+            if (!file.startsWith(rootLocation)) {
+                throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);
+            }
+
             Files.deleteIfExists(file);
         } catch (IOException ex) {
             log.warn("파일 삭제 실패: {}", storedFileName, ex);
@@ -104,4 +116,21 @@ public class LocalFileProvider implements FileProvider {
     public String buildImageUrl(String storedFileName) {
         return String.format("%s/api/v1/images?imageName=%s", serverUrl, storedFileName);
     }
+
+    private void validateStoredFileName(String storedFileName) {
+        if (storedFileName == null || storedFileName.isBlank()) {
+            throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);
+        }
+
+        // key 규칙: images/ 로 시작 + '..' 금지
+        if (!storedFileName.startsWith("images/") || storedFileName.contains("..")) {
+            throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);
+        }
+
+        // 윈도우 경로 우회 방지
+        if (storedFileName.contains("\\")) {
+            throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);
+        }
+    }
+
 }

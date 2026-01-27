@@ -93,9 +93,9 @@ public class ProjectController {
     public void deleteProjectImage(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
-            @RequestParam("imageUrl") String imageUrl
+            @RequestParam("imageKey") String imageKey
     ) {
-        projectCommandService.removeImage(projectId, imageUrl);
+        projectCommandService.removeImage(projectId, imageKey);
     }
 
 

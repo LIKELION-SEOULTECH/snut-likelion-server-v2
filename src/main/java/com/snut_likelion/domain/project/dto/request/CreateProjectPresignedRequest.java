@@ -4,6 +4,7 @@ import com.snut_likelion.domain.project.entity.ProjectCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,17 +16,18 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 public class CreateProjectPresignedRequest {
 
-    @NotEmpty(message = "프로젝트 이름을 입력해주세요.")
+    @NotBlank(message = "프로젝트 이름을 입력해주세요.")
     private String name;
 
-    @NotEmpty(message = "프로젝트 한 줄 소개를 입력해주세요.")
+    @NotBlank(message = "프로젝트 한 줄 소개를 입력해주세요.")
     private String intro;
 
-    @NotEmpty(message = "프로젝트 설명을 입력해주세요.")
+    @NotBlank(message = "프로젝트 설명을 입력해주세요.")
     private String description;
 
     @NotNull(message = "프로젝트 기수를 입력해주세요.")
-    private int generation;
+    @Positive(message = "프로젝트 기수는 1 이상이어야 합니다.")
+    private Integer generation;
 
     @NotNull(message = "프로젝트 카테고리를 선택해주세요.")
     private ProjectCategory category;
