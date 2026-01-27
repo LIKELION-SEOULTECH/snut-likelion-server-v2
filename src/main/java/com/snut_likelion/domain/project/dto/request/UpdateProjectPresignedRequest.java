@@ -19,7 +19,7 @@ public class UpdateProjectPresignedRequest {
     private String description;
     private Integer generation;
 
-    private List<@NotBlank(message = "tags는 빈 값일 수 없습니다.") String> tags;
+    private List<@NotBlank(message = "tag는 빈 값일 수 없습니다.") String> tags;
 
     private ProjectCategory category;
     private String websiteUrl;
