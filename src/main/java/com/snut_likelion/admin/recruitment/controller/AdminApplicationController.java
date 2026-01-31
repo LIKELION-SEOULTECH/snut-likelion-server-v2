@@ -35,7 +35,7 @@ public class AdminApplicationController {
             @Parameter(description = "모집 공고 ID(recId)") @PathVariable("recId") Long recId,
             @RequestParam("page") int page,
             @Parameter(description = "지원 파트 필터") @RequestParam(value = "part", required = false) Part part,
-            @Parameter(description = "목록 표시 상태 필터") @RequestParam(value = "status", defaultValue = "SUBMITTED") ApplicationListStatus status
+            @Parameter(description = "목록 표시 상태 필터") @RequestParam(value = "status", required = false) ApplicationListStatus status
     ) {
         return ApiResponse.success(
                 adminApplicationService.getApplicationsByRecruitmentId(recId, part, page, status),
