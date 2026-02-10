@@ -18,8 +18,9 @@ public class QuestionFilter {
         List<Question> allQuestions = recruitment.getQuestions();
         return allQuestions.stream()
                 .filter(q -> {
-                    // 공통 질문은 무조건
-                    if (q.getQuestionTarget() == QuestionTarget.COMMON) {
+                    // 기본 질문, 공통 질문은 무조건
+                    if (q.getQuestionTarget() == QuestionTarget.DEFAULT
+                            || q.getQuestionTarget() == QuestionTarget.COMMON) {
                         return true;
                     }
 

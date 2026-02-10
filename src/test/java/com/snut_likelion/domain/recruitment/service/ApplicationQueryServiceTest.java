@@ -74,19 +74,13 @@ class ApplicationQueryServiceTest {
         assertAll(
                 () -> assertThat(response.size()).isEqualTo(1),
                 () -> assertThat(myApp.getId()).isEqualTo(app1.getId()),
-                () -> assertThat(myApp.getUsername()).isEqualTo(me.getUsername()),
-                () -> assertThat(myApp.getPhoneNumber()).isEqualTo(me.getPhoneNumber()),
-                () -> assertThat(myApp.getMajor()).isEqualTo(app1.getMajor()),
-                () -> assertThat(myApp.getInSchool()).isTrue(),
-                () -> assertThat(myApp.getStudentId()).isEqualTo(String.valueOf(20000000 + app1.getId())),
-                () -> assertThat(myApp.getGrade()).isEqualTo(app1.getGrade()),
                 () -> assertThat(myApp.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(myApp.getPortfolio()).isEqualTo(app1.getPortfolio()),
                 () -> assertThat(myApp.getPart()).isEqualTo(app1.getPart().name()),
                 () -> assertThat(myApp.getSubmittedAt()).isEqualTo(submittedAt),
                 () -> assertThat(myApp.getDepartmentType()).isNull(),
                 () -> assertThat(myApp.getStatus()).isEqualTo(app1.getStatus().name()),
-                () -> assertThat(myApp.getAnswers()).hasSize(4)
+                () -> assertThat(myApp.getAnswers()).hasSize(10)
                         .extracting(
                                 ApplicationAnswerResponse::getQuestionId,
                                 ApplicationAnswerResponse::getQuestionText,
@@ -94,12 +88,65 @@ class ApplicationQueryServiceTest {
                                 ApplicationAnswerResponse::getQuestionTarget
                         )
                         .containsExactly(
+                                tuple(null, "이름", "user1", "DEFAULT"),
+                                tuple(null, "학과", "컴퓨터공학과", "DEFAULT"),
+                                tuple(null, "학번", "20000001", "DEFAULT"),
+                                tuple(null, "핸드폰 번호", "01000000000", "DEFAULT"),
+                                tuple(null, "학년", "3", "DEFAULT"),
+                                tuple(null, "학적 상태", "재학", "DEFAULT"),
                                 tuple(1L, "q1", "ans1", "COMMON"),
                                 tuple(2L, "q2", "ans2", "COMMON"),
                                 tuple(3L, "q3", "ans3", "PART"),
                                 tuple(4L, "q4", "ans4", "PART")
                         )
         );
+    }
+
+    @Test
+    void getMyApplication_inSchoolFalse_returnsHyuhak() {
+        // Given
+        Long userId = 1L;
+        User me = User.builder()
+                .id(userId)
+                .username("user1")
+                .email("test@test.com")
+                .phoneNumber("01000000000")
+                .build();
+
+        Question q1 = this.createQuestion(1L, QuestionTarget.COMMON, null);
+
+        LocalDateTime submittedAt = LocalDateTime.of(2025, 6, 22, 10, 0);
+        Application app1 = Application.builder()
+                .id(1L)
+                .major("컴퓨터공학과")
+                .inSchool(false)
+                .studentId("20000001")
+                .grade(2)
+                .isPersonalInfoConsent(true)
+                .portfolio("https://example.com/portfolio.pdf")
+                .part(Part.PLANNING)
+                .submittedAt(submittedAt)
+                .build();
+        app1.setUser(me);
+        Answer ans1 = this.createAnswer(1L, q1, app1, "ans1");
+        app1.addAnswer(ans1);
+
+        when(applicationRepository.findMyApplication(eq(userId), anyInt()))
+                .thenReturn(List.of(app1));
+
+        // When
+        List<ApplicationDetailsResponse> response = applicationQueryService.getMyApplication(userId);
+
+        // Then
+        ApplicationDetailsResponse myApp = response.get(0);
+        assertThat(myApp.getAnswers())
+                .filteredOn(a -> "DEFAULT".equals(a.getQuestionTarget()))
+                .hasSize(6)
+                .extracting(ApplicationAnswerResponse::getQuestionText, ApplicationAnswerResponse::getAnswer)
+                .contains(
+                        tuple("학적 상태", "휴학"),
+                        tuple("학년", "2")
+                );
     }
 
     private Answer createAnswer(long id, Question q, Application app, String ans) {
