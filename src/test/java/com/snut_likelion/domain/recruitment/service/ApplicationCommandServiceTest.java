@@ -465,6 +465,95 @@ class ApplicationCommandServiceTest {
     }
 
     @Test
+    void createApplication_submit_withDefaultQuestions_allAnswered() {
+        // Given: QuestionFilter가 DEFAULT + COMMON + PART 질문을 반환
+        Question dq1 = createQuestion(10L, QuestionTarget.DEFAULT, null, null);
+        Question dq2 = createQuestion(11L, QuestionTarget.DEFAULT, null, null);
+
+        ApplicationAnswerRequest ar1 = createAnsReq(1L);
+        ApplicationAnswerRequest ar2 = createAnsReq(2L);
+        ApplicationAnswerRequest ar3 = createAnsReq(3L);
+        ApplicationAnswerRequest ar4 = createAnsReq(4L);
+        ApplicationAnswerRequest ar10 = createAnsReq(10L);
+        ApplicationAnswerRequest ar11 = createAnsReq(11L);
+
+        CreateApplicationRequest req = CreateApplicationRequest.builder()
+                .major("공학")
+                .studentId("20201234")
+                .grade(3)
+                .inSchool(true)
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(ar10, ar11, ar1, ar2, ar3, ar4))
+                .build();
+
+        when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
+        when(questionRepository.findById(2L)).thenReturn(Optional.of(q2));
+        when(questionRepository.findById(3L)).thenReturn(Optional.of(q3));
+        when(questionRepository.findById(4L)).thenReturn(Optional.of(q4));
+        when(questionRepository.findById(10L)).thenReturn(Optional.of(dq1));
+        when(questionRepository.findById(11L)).thenReturn(Optional.of(dq2));
+        when(questionFilter.getRequiredQuestions(recruitment, req.getPart(), req.getDepartmentType()))
+                .thenReturn(List.of(dq1, dq2, q1, q2, q3, q4));
+
+        // When
+        service.createApplication(recId, userId, true, req);
+
+        // Then
+        ArgumentCaptor<Application> captor = ArgumentCaptor.forClass(Application.class);
+        verify(applicationRepository).save(captor.capture());
+        Application saved = captor.getValue();
+
+        assertAll(
+                () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED),
+                () -> assertThat(saved.getAnswers()).hasSize(6)
+                        .extracting(Answer::getQuestion)
+                        .containsExactlyInAnyOrder(dq1, dq2, q1, q2, q3, q4)
+        );
+    }
+
+    @Test
+    void createApplication_submit_withDefaultQuestions_missingDefaultAnswers_throws() {
+        // Given: QuestionFilter가 DEFAULT 질문 포함하여 반환하지만, answers에 DEFAULT 답변 누락
+        Question dq1 = createQuestion(10L, QuestionTarget.DEFAULT, null, null);
+
+        ApplicationAnswerRequest ar1 = createAnsReq(1L);
+        ApplicationAnswerRequest ar2 = createAnsReq(2L);
+        ApplicationAnswerRequest ar3 = createAnsReq(3L);
+        ApplicationAnswerRequest ar4 = createAnsReq(4L);
+
+        CreateApplicationRequest req = CreateApplicationRequest.builder()
+                .major("공학")
+                .studentId("20201234")
+                .grade(3)
+                .inSchool(true)
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(ar1, ar2, ar3, ar4))
+                .build();
+
+        when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
+        when(questionRepository.findById(2L)).thenReturn(Optional.of(q2));
+        when(questionRepository.findById(3L)).thenReturn(Optional.of(q3));
+        when(questionRepository.findById(4L)).thenReturn(Optional.of(q4));
+        when(questionFilter.getRequiredQuestions(recruitment, req.getPart(), req.getDepartmentType()))
+                .thenReturn(List.of(dq1, q1, q2, q3, q4));
+
+        // When / Then: DEFAULT 질문 답변이 빠져서 INVALID_ANSWER_SET 발생
+        assertThatThrownBy(() -> service.createApplication(recId, userId, true, req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ApplicationErrorCode.INVALID_ANSWER_SET.getMessage());
+    }
+
+    @Test
     void deleteApplication_success() {
         // given
         int currentGeneration = 13;
