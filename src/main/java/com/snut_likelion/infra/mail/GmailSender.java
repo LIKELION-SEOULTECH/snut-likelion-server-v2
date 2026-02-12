@@ -99,7 +99,7 @@ public class GmailSender implements MailSender {
     }
 
     @Override
-    public void sendRecruitmentStartNotification(String toEmail, int generation, String recruitmentType, LocalDateTime openDate, LocalDateTime closeDate) {
+    public void sendRecruitmentStartNotification(String toEmail, int generation, String recruitmentType, String recruitmentPath, LocalDateTime openDate, LocalDateTime closeDate) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String subject = String.format(
                 "[서울과학기술대학교 멋쟁이사자처럼] %s %d기 모집이 시작되었습니다!",
@@ -110,14 +110,14 @@ public class GmailSender implements MailSender {
                 "안녕하세요, 서울과학기술대학교 멋쟁이사자처럼 대학입니다.\n\n" +
                         "드디어 서울과학기술대학교 멋쟁이사자처럼 %s %d기의 모집이 시작되었습니다!\n" +
                         "📅 모집 기간: %s ~ %s 입니다!\n\n" +
-                        "지금 바로 지원하세요! → %s/recruitments/%d\n\n" +
+                        "지금 바로 지원하세요! → %s/recruitments/%s\n\n" +
                         "많은 참여 부탁드립니다 :)\n",
                 recruitmentType,
                 generation,
                 openDate.format(formatter),
                 closeDate.format(formatter),
                 clientUrl,
-                generation
+                recruitmentPath
         );
 
         mailSender.send(this.generationMessage(toEmail, subject, recStartMsg));
