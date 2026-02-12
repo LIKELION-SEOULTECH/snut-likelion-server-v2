@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,22 +38,9 @@ public class ApplicationDetailsResponse {
     }
 
     public static ApplicationDetailsResponse from(Application application) {
-        List<ApplicationAnswerResponse> defaultAnswers = List.of(
-                ApplicationAnswerResponse.ofDefault(1, "이름", application.getUser().getUsername()),
-                ApplicationAnswerResponse.ofDefault(2, "학과", application.getMajor()),
-                ApplicationAnswerResponse.ofDefault(3, "학번", application.getStudentId()),
-                ApplicationAnswerResponse.ofDefault(4, "핸드폰 번호", application.getUser().getPhoneNumber()),
-                ApplicationAnswerResponse.ofDefault(5, "학년", String.valueOf(application.getGrade())),
-                ApplicationAnswerResponse.ofDefault(6, "학적 상태", application.getInSchool() ? "재학" : "휴학")
-        );
-
-        List<ApplicationAnswerResponse> realAnswers = application.getAnswers().stream()
+        List<ApplicationAnswerResponse> answers = application.getAnswers().stream()
                 .map(ApplicationAnswerResponse::from)
                 .toList();
-
-        List<ApplicationAnswerResponse> allAnswers = new ArrayList<>();
-        allAnswers.addAll(defaultAnswers);
-        allAnswers.addAll(realAnswers);
 
         return ApplicationDetailsResponse.builder()
                 .id(application.getId())
@@ -63,7 +49,7 @@ public class ApplicationDetailsResponse {
                 .part(application.getPart())
                 .departmentType(application.getDepartmentType())
                 .status(application.getStatus())
-                .answers(allAnswers)
+                .answers(answers)
                 .submittedAt(application.getSubmittedAt())
                 .build();
     }

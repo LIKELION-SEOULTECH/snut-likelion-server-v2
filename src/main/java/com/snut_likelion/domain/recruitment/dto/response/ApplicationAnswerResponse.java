@@ -46,15 +46,4 @@ public class ApplicationAnswerResponse {
                 .build();
     }
 
-    public static ApplicationAnswerResponse ofDefault(int order, String questionText, String answer) {
-        return ApplicationAnswerResponse.builder()
-                .questionId(null)
-                .questionText(questionText)
-                .answer(answer)
-                .order(order)
-                .questionTarget("DEFAULT")
-                .buttonList(null)
-                .build();
-    }
-
 }
