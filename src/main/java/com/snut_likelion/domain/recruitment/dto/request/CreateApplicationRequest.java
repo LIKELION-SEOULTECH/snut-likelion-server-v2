@@ -6,8 +6,6 @@ import com.snut_likelion.domain.recruitment.entity.DepartmentType;
 import com.snut_likelion.domain.user.entity.Part;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -20,23 +18,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Schema(description = "지원서 작성 요청")
 public class CreateApplicationRequest {
-
-    @Schema(description = "전공", example = "컴퓨터공학과")
-    @NotEmpty(message = "전공을 입력해주세요.")
-    private String major;
-
-    @Schema(description = "학번", example = "22101156")
-    @NotEmpty(message = "학번을 입력해주세요.")
-    private String studentId;
-
-    @Schema(description = "학년 (올해 기준)", example = "3", minimum = "1")
-    @NotNull(message = "학년을 입력해주세요.")
-    @Min(value = 1, message = "학년은 1 이상이어야 합니다.")
-    private int grade;
-
-    @Schema(description = "재학 여부 (true: 재학 중, false: 휴학 중)", example = "true")
-    @NotNull(message = "재학 여부를 입력해주세요.")
-    private Boolean inSchool;
 
     @ArraySchema(
             schema = @Schema(implementation = ApplicationAnswerRequest.class),
@@ -62,11 +43,7 @@ public class CreateApplicationRequest {
     private DepartmentType departmentType;
 
     @Builder
-    public CreateApplicationRequest(String major, String studentId, int grade, Boolean inSchool, List<ApplicationAnswerRequest> answers, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
-        this.major = major;
-        this.studentId = studentId;
-        this.grade = grade;
-        this.inSchool = inSchool;
+    public CreateApplicationRequest(List<ApplicationAnswerRequest> answers, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
         this.answers = answers;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
         this.portfolio = portfolio;
@@ -76,10 +53,6 @@ public class CreateApplicationRequest {
 
     public Application toEntity() {
         return Application.builder()
-                .major(major)
-                .studentId(studentId)
-                .grade(grade)
-                .inSchool(inSchool)
                 .isPersonalInfoConsent(isPersonalInfoConsent)
                 .portfolio(portfolio)
                 .part(part)

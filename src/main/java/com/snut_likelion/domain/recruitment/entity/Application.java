@@ -23,18 +23,6 @@ public class Application extends BaseEntity {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
-    @Column(length = 100, nullable = false)
-    private String major; // 전공
-
-    @Column(nullable = false)
-    private Boolean inSchool;
-
-    @Column(nullable = false, unique = true)
-    private String studentId;
-
-    @Column(nullable = false)
-    private int grade;
-
     @Column(nullable = false)
     private Boolean isPersonalInfoConsent;
 
@@ -65,12 +53,8 @@ public class Application extends BaseEntity {
     private List<Answer> answers = new ArrayList<>();
 
     @Builder
-    public Application(Long id, String major, Boolean inSchool, String studentId, int grade, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
+    public Application(Long id, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
         this.id = id;
-        this.major = major;
-        this.inSchool = inSchool;
-        this.studentId = studentId;
-        this.grade = grade;
         this.isPersonalInfoConsent = isPersonalInfoConsent;
         this.portfolio = portfolio;
         this.part = part;
@@ -109,11 +93,7 @@ public class Application extends BaseEntity {
         this.recruitment = recruitment;
     }
 
-    public void update(String major, String studentId, int grade, Boolean inSchool, Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
-        this.major = major;
-        this.studentId = studentId;
-        this.grade = grade;
-        this.inSchool = inSchool;
+    public void update(Boolean isPersonalInfoConsent, String portfolio, Part part, DepartmentType departmentType) {
         this.isPersonalInfoConsent = isPersonalInfoConsent;
         this.portfolio = portfolio;
         this.part = part;

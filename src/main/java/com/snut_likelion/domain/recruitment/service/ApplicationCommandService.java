@@ -111,10 +111,6 @@ public class ApplicationCommandService {
 
         // 기본 필드 덮어쓰기
         application.update(
-                req.getMajor(),
-                req.getStudentId(),
-                req.getGrade(),
-                req.getInSchool(),
                 req.getIsPersonalInfoConsent(),
                 req.getPortfolio(),
                 req.getPart(),
