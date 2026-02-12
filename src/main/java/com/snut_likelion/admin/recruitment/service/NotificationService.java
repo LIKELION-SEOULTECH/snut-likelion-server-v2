@@ -47,6 +47,6 @@ public class NotificationService {
         LocalDateTime openDate = rec.getOpenDate();
         LocalDateTime closeDate = rec.getCloseDate();
 
-        mailSender.sendRecruitmentStartNotification(email, generation, recruitmentType.getDescription(), openDate, closeDate);
+        mailSender.sendRecruitmentStartNotification(email, generation, recruitmentType.getDescription(), recruitmentType.name().toLowerCase(), openDate, closeDate);
     }
 }
