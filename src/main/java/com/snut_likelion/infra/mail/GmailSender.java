@@ -126,7 +126,7 @@ public class GmailSender implements MailSender {
 
     private SimpleMailMessage generationMessage(String toEmail, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom(sender);
+        message.setFrom("서울과학기술대학교 멋쟁이사자처럼 <" + sender + ">");
         message.setTo(toEmail);
         message.setSubject(subject);
         message.setText(text);
