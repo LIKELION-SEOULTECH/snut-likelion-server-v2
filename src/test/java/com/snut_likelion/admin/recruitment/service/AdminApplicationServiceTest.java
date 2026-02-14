@@ -13,12 +13,15 @@ import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.entity.User;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -52,6 +55,7 @@ class AdminApplicationServiceTest {
 
     @BeforeEach
     void setup() {
+        TransactionSynchronizationManager.initSynchronization();
         recruitment = Recruitment.builder()
                 .id(recId)
                 .generation(13)
@@ -64,6 +68,11 @@ class AdminApplicationServiceTest {
                 .username("tester")
                 .email("test@example.com")
                 .build();
+    }
+
+    @AfterEach
+    void tearDown() {
+        TransactionSynchronizationManager.clearSynchronization();
     }
 
     @Test
@@ -95,12 +104,24 @@ class AdminApplicationServiceTest {
                 new ChangeApplicationStatusRequest(List.of(1L))
         );
 
+        // simulate transaction commit
+        TransactionSynchronizationManager.getSynchronizations()
+                .forEach(TransactionSynchronization::afterCommit);
+
         // then
         assertAll(
                 () -> assertThat(app1.getStatus()).isEqualTo(ApplicationStatus.PAPER_PASS),
-                () -> verify(notificationService).sendNotification(user, ApplicationStatus.PAPER_PASS, app1),
+                () -> verify(notificationService).sendNotification(
+                        eq("test@example.com"), eq("tester"),
+                        eq(ApplicationStatus.PAPER_PASS),
+                        eq(RecruitmentType.MEMBER.getDescription()),
+                        eq(Part.AI.getDescription())),
                 () -> assertThat(app2.getStatus()).isEqualTo(ApplicationStatus.FAILED),
-                () -> verify(notificationService).sendNotification(user2, ApplicationStatus.FAILED, app2)
+                () -> verify(notificationService).sendNotification(
+                        eq(user2.getEmail()), eq(user2.getUsername()),
+                        eq(ApplicationStatus.FAILED),
+                        eq(RecruitmentType.MEMBER.getDescription()),
+                        eq(Part.BACKEND.getDescription()))
         );
     }
 
@@ -133,6 +154,10 @@ class AdminApplicationServiceTest {
                 new ChangeApplicationStatusRequest(List.of(1L))
         );
 
+        // simulate transaction commit
+        TransactionSynchronizationManager.getSynchronizations()
+                .forEach(TransactionSynchronization::afterCommit);
+
         // then
         LionInfo lionInfo = user.getLionInfos().get(0);
         assertAll(
@@ -141,9 +166,17 @@ class AdminApplicationServiceTest {
                 () -> assertThat(lionInfo.getRole()).isEqualTo(Role.ROLE_MANAGER),
                 () -> assertThat(lionInfo.getPart()).isEqualTo(Part.AI),
                 () -> assertThat(lionInfo.getDepartmentType()).isEqualTo(DepartmentType.OPERATION),
-                () -> verify(notificationService).sendNotification(user, ApplicationStatus.FINAL_PASS, app),
+                () -> verify(notificationService).sendNotification(
+                        eq("test@example.com"), eq("tester"),
+                        eq(ApplicationStatus.FINAL_PASS),
+                        eq(RecruitmentType.MANAGER.getDescription()),
+                        eq(Part.AI.getDescription())),
                 () -> assertThat(app2.getStatus()).isEqualTo(ApplicationStatus.FAILED),
-                () -> verify(notificationService).sendNotification(user2, ApplicationStatus.FAILED, app2)
+                () -> verify(notificationService).sendNotification(
+                        eq(user2.getEmail()), eq(user2.getUsername()),
+                        eq(ApplicationStatus.FAILED),
+                        eq(RecruitmentType.MANAGER.getDescription()),
+                        eq(Part.BACKEND.getDescription()))
         );
     }
 

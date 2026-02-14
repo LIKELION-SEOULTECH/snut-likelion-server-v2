@@ -111,6 +111,13 @@ public class User extends BaseEntity {
     }
 
     public void generateCurrentLionInfo(int currentGeneration, Part part, Role role, DepartmentType departmentType) {
+        for (LionInfo existing : this.lionInfos) {
+            if (existing.getGeneration() == currentGeneration) {
+                existing.updateByAdmin(part, role, departmentType);
+                return;
+            }
+        }
+
         LionInfo lionInfo = LionInfo.builder()
                 .generation(currentGeneration)
                 .part(part)
