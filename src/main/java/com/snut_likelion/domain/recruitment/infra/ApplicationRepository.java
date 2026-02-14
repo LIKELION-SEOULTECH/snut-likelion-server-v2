@@ -37,10 +37,10 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
             @Param("currentGeneration") int currentGeneration
     );
 
-    @Query("SELECT a FROM Application a join fetch User u ON a.user.id = u.id WHERE a.id = :id")
+    @Query("SELECT a FROM Application a JOIN FETCH a.user u WHERE a.id = :id")
     Optional<Application> findByIdWithUser(@Param("id") Long id);
 
-    @Query("SELECT a FROM Application a join fetch User u ON a.user.id = u.id " +
+    @Query("SELECT a FROM Application a JOIN FETCH a.user u " +
             "WHERE a.recruitment.generation = :currentGeneration " +
             "AND a.status = :status")
     List<Application> findAllByStatus(

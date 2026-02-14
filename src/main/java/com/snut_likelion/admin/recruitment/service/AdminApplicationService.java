@@ -10,6 +10,7 @@ import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.ApplicationStatus;
 import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
+import com.snut_likelion.domain.recruitment.entity.RecruitmentType;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.entity.User;
@@ -20,6 +21,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 
@@ -92,6 +95,19 @@ public class AdminApplicationService {
 
     private void doProcess(Application app, ApplicationStatus status, User user) {
         app.setStatus(status);
-        notificationService.sendNotification(user, status, app);
+
+        String email = user.getEmail();
+        String name = user.getUsername();
+        String recruitmentTypeDesc = app.getDepartmentType() != null
+                ? RecruitmentType.MANAGER.getDescription()
+                : RecruitmentType.MEMBER.getDescription();
+        String partDesc = app.getPart().getDescription();
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                notificationService.sendNotification(email, name, status, recruitmentTypeDesc, partDesc);
+            }
+        });
     }
 }
