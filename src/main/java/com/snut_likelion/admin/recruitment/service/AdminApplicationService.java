@@ -62,7 +62,7 @@ public class AdminApplicationService {
     @Transactional
     public void updateApplicationStatus(ChangeApplicationStatusParameter status, ChangeApplicationStatusRequest req) {
         if (status == ChangeApplicationStatusParameter.PAPER_PASS) {
-            List<Application> apps = applicationRepository.findAllByStatus(SUBMITTED, currentGeneration);
+            List<Application> apps = applicationRepository.findAllByStatus(SUBMITTED, req.getRecId());
 
             apps.forEach(app -> {
                 User user = app.getUser();
@@ -74,7 +74,7 @@ public class AdminApplicationService {
                 }
             });
         } else if (status == ChangeApplicationStatusParameter.FINAL_PASS) {
-            List<Application> apps = applicationRepository.findAllByStatus(PAPER_PASS, currentGeneration);
+            List<Application> apps = applicationRepository.findAllByStatus(PAPER_PASS, req.getRecId());
 
             apps.forEach(app -> {
                 User user = app.getUser();
@@ -90,7 +90,8 @@ public class AdminApplicationService {
 
     private void generateLionInfo(Application app, User user) {
         Role role = app.getDepartmentType() == null ? Role.ROLE_USER : Role.ROLE_MANAGER;
-        user.generateCurrentLionInfo(currentGeneration, app.getPart(), role, app.getDepartmentType());
+        int generation = app.getRecruitment().getGeneration();
+        user.generateCurrentLionInfo(generation, app.getPart(), role, app.getDepartmentType());
     }
 
     private void doProcess(Application app, ApplicationStatus status, User user) {

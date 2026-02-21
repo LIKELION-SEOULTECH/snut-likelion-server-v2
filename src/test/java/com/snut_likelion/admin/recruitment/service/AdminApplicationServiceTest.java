@@ -34,7 +34,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -101,13 +101,13 @@ class AdminApplicationServiceTest {
         app1.setUser(user);
         User user2 = User.builder().id(2L).build();
         app2.setUser(user2);
-        when(applicationRepository.findAllByStatus(eq(ApplicationStatus.SUBMITTED), anyInt()))
+        when(applicationRepository.findAllByStatus(eq(ApplicationStatus.SUBMITTED), anyLong()))
                 .thenReturn(List.of(app1, app2));
 
         // when
         service.updateApplicationStatus(
                 ChangeApplicationStatusParameter.PAPER_PASS,
-                new ChangeApplicationStatusRequest(List.of(1L))
+                new ChangeApplicationStatusRequest(recId, List.of(1L))
         );
 
         // simulate transaction commit
@@ -141,6 +141,7 @@ class AdminApplicationServiceTest {
                 .departmentType(DepartmentType.OPERATION)
                 .build();
         app.setUser(user);
+        app.setRecruitment(recruitment);
 
         Application app2 = Application.builder()
                 .id(2L)
@@ -150,14 +151,15 @@ class AdminApplicationServiceTest {
                 .build();
         User user2 = User.builder().id(2L).build();
         app2.setUser(user2);
+        app2.setRecruitment(recruitment);
 
-        when(applicationRepository.findAllByStatus(eq(ApplicationStatus.PAPER_PASS), anyInt()))
+        when(applicationRepository.findAllByStatus(eq(ApplicationStatus.PAPER_PASS), anyLong()))
                 .thenReturn(List.of(app, app2));
 
         // when
         service.updateApplicationStatus(
                 ChangeApplicationStatusParameter.FINAL_PASS,
-                new ChangeApplicationStatusRequest(List.of(1L))
+                new ChangeApplicationStatusRequest(recId, List.of(1L))
         );
 
         // simulate transaction commit
