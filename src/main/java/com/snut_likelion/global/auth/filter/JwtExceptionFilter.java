@@ -3,6 +3,7 @@ package com.snut_likelion.global.auth.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.snut_likelion.global.dto.ApiResponse;
 import com.snut_likelion.global.error.GlobalErrorCode;
+import com.snut_likelion.global.error.exception.UnauthorizedException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -30,7 +31,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response); // JwtAuthenticationFilter로 이동
-        } catch (JwtException ex) {
+        } catch (JwtException | UnauthorizedException ex) {
             // JwtAuthenticationFilter에서 예외 발생하면 바로 setErrorResponse 호출
             setErrorResponse(response, ex);
         }
