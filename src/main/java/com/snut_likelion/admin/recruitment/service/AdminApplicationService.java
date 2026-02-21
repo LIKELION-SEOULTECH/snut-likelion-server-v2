@@ -54,7 +54,7 @@ public class AdminApplicationService {
 
     @Transactional(readOnly = true)
     public ApplicationDetailsResponse getApplicationDetails(Long appId) {
-        Application application = applicationRepository.findWithDetailsById(appId, currentGeneration)
+        Application application = applicationRepository.findWithDetailsById(appId)
                 .orElseThrow(() -> new NotFoundException(ApplicationErrorCode.NOT_FOUND_APPLICATION));
         return ApplicationDetailsResponse.from(application);
     }
