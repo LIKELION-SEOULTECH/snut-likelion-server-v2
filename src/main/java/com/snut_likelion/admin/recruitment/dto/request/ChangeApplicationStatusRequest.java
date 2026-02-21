@@ -10,9 +10,11 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ChangeApplicationStatusRequest {
 
+    private Long recId;
     private List<Long> ids;
 
-    public ChangeApplicationStatusRequest(List<Long> ids) {
+    public ChangeApplicationStatusRequest(Long recId, List<Long> ids) {
+        this.recId = recId;
         this.ids = ids;
     }
 }
