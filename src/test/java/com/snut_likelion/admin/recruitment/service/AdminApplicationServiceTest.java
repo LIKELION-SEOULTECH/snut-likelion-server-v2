@@ -26,7 +26,13 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.global.error.exception.NotFoundException;
+
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
@@ -178,6 +184,41 @@ class AdminApplicationServiceTest {
                         eq(RecruitmentType.MANAGER.getDescription()),
                         eq(Part.BACKEND.getDescription()))
         );
+    }
+
+    @Test
+    void getApplicationDetails_성공_기수와_무관하게_조회() {
+        // given
+        Application app = Application.builder()
+                .id(appId)
+                .status(ApplicationStatus.SUBMITTED)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .build();
+        app.setUser(user);
+
+        when(applicationRepository.findWithDetailsById(appId))
+                .thenReturn(Optional.of(app));
+
+        // when
+        ApplicationDetailsResponse response = service.getApplicationDetails(appId);
+
+        // then
+        assertAll(
+                () -> assertThat(response).isNotNull(),
+                () -> assertThat(response.getPart()).isEqualTo(Part.BACKEND.name())
+        );
+    }
+
+    @Test
+    void getApplicationDetails_존재하지_않는_id_예외발생() {
+        // given
+        when(applicationRepository.findWithDetailsById(appId))
+                .thenReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> service.getApplicationDetails(appId))
+                .isInstanceOf(NotFoundException.class);
     }
 
     @Test
