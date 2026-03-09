@@ -56,9 +56,10 @@ public class GmailSender implements MailSender {
                         "지원자님께서는 서울과학기술대학교 멋쟁이사자처럼 %d기 %s 서류 전형에 합격하셨습니다.\n\n" +
                         "진심으로 축하드립니다!!\n\n" +
                         "멋쟁이사자처럼 %d기 %s 면접은 오프라인으로 진행됩니다.\n" +
-                        "아래 면접 테이블을 확인하시고, 늦지 않게 와주시길 바랍니다.\n\n" +
-                        "대기 장소에서 대기하시다가 지원자님 면접 시간에 맞춰 면접 장소로 이동해주시면 됩니다.\n\n" +
-                        "다시 한번, 서류 합격을 축하드립니다! 감사합니다 :)",
+                        "아래 면접 시간표를 확인하시고, 해당 시간에 늦지 않게 와주시길 바랍니다.\n\n" +
+                        "면접 시간표: https://docs.google.com/spreadsheets/d/1x-s4cVZI6xAy0vD3QLOB5hqF9Y4agTckxtjkg0AOXqU/edit?usp=sharing\n\n" +
+                        "대기 장소에서 대기하시다가 지원자님의 면접 시간에 맞춰 면접 장소로 이동해주시면 됩니다.\n\n" +
+                        "다시 한번, 서류 합격을 진심으로 축하드립니다! 감사합니다 :)",
                 currentGeneration, recruitmentType, currentGeneration, recruitmentType
         );
 
