@@ -29,11 +29,18 @@ public class UserInfo {
         Role role = null;
 
         if (user.getLionInfos() != null) {
-            role = user.getLionInfos().stream()
-                    .filter(lionInfo -> lionInfo.getGeneration() == currentGeneration)
-                    .findFirst()
-                    .map(LionInfo::getRole)
-                    .orElse(null);
+            boolean isAdmin = user.getLionInfos().stream()
+                    .anyMatch(lionInfo -> lionInfo.getRole() == Role.ROLE_ADMIN);
+
+            if (isAdmin) {
+                role = Role.ROLE_ADMIN;
+            } else {
+                role = user.getLionInfos().stream()
+                        .filter(lionInfo -> lionInfo.getGeneration() == currentGeneration)
+                        .findFirst()
+                        .map(LionInfo::getRole)
+                        .orElse(null);
+            }
         }
 
         return UserInfo.builder()
