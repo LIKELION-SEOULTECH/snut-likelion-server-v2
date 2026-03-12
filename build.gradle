@@ -31,6 +31,8 @@ ext {
     set('springCloudVersion', "2024.0.1")
 }
 
+ext['commons-lang3.version'] = '3.18.0'
+
 dependencyManagement {
     imports {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
