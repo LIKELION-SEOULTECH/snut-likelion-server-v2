@@ -71,6 +71,7 @@ public class GmailSender implements MailSender {
     public void sendAcceptedMail(String toEmail, String username, String recruitmentType, String part) {
         String subject = String.format("[서울과학기술대학교 멋쟁이사자처럼] %d기 %s 최종 결과 안내", currentGeneration, recruitmentType);
         String acceptanceMsg = String.format(
+
                 "안녕하세요, 서울과학기술대학교 멋쟁이사자처럼 대학입니다.\n\n" +
                         "지원자님께서는 서울과학기술대학교 멋쟁이사자처럼 %d기 %s %s 파트에 최종 합격하셨습니다. 진심으로 축하드립니다!\n\n" +
                         "지원자님과 서울과학기술대학교 멋쟁이사자처럼 %d기를 함께하게 되어 진심으로 기쁩니다. 향후 활동은 공식 노션과 카카오톡 단체 채팅방을 통해 운영 및 진행되며 곧 초대드릴 예정입니다. 금주 진행되는 19일 ot는 필참이니 참고 부탁드립니다.\n\n" +
