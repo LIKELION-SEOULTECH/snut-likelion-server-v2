@@ -3,6 +3,8 @@ name: Gemini Code Review
 on:
   pull_request:
     types: [opened, synchronize]
+    branches:
+      - dev
 
 jobs:
   review:
