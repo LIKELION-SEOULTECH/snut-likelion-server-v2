@@ -22,18 +22,18 @@ public class CompleteFileUploadRequest {
     @NotBlank(message = "originalFileName은 필수입니다.")
     private String originalFileName;
 
-    @Schema(description = "파일 Content-Type", example = "image/png")
+    @Schema(description = "파일 Content-Type (STEP 1 발급 요청과 동일한 값)", example = "image/png")
     @NotBlank(message = "Content-Type은 필수입니다.")
     @Pattern(
-            regexp = "^image/(png|jpeg|webp)$",
-            message = "이미지 파일(png, jpeg, webp)만 허용됩니다."
+            regexp = "^(image/(png|jpeg|webp)|application/(pdf|zip|vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|spreadsheetml\\.sheet|presentationml\\.presentation))|text/plain)$",
+            message = "허용되지 않는 Content-Type입니다."
     )
     private String contentType;
 
-    @Schema(description = "파일 크기(Byte)", example = "1048576")
+    @Schema(description = "파일 크기 (Byte 단위)", example = "1048576")
     @NotNull(message = "contentLength는 필수입니다.")
     @Positive(message = "contentLength는 0보다 커야 합니다.")
-    @Max(value = 10 * 1024 * 1024, message = "파일 크기는 최대 10MB까지 허용됩니다.")
+    @Max(value = 50 * 1024 * 1024, message = "파일 크기는 최대 50MB까지 허용됩니다.")
     private Long contentLength;
 
     @Schema(description = "업로드 카테고리", example = "BLOG")

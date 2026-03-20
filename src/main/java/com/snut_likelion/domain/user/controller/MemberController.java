@@ -92,6 +92,45 @@ public class MemberController {
 
                     모든 필드는 선택사항입니다. 수정하고 싶은 필드만 포함하여 요청하세요.
 
+                    ---
+
+                    **프로필 이미지 변경 시 사전 업로드 필요 (3단계)**
+
+                    이미지를 변경하려면 먼저 아래 순서로 파일을 S3에 업로드한 뒤,
+                    응답으로 받은 `storedFileName` 을 `profileImage` 필드에 담아 요청해야 합니다.
+
+                    1. `POST /api/v1/admin/files/presigned-url`
+                       ```json
+                       {
+                         "originalFileName": "profile.png",
+                         "contentType": "image/png",
+                         "contentLength": 102400,
+                         "uploadCategory": "MEMBER",
+                         "fileStorageType": "IMAGE"
+                       }
+                       ```
+                       → 응답: `uploadUrl`, `storedFileName` ("images/members/uuid-profile.png"), `headers`
+
+                    2. 응답의 `uploadUrl` 로 파일을 **직접 PUT 업로드**
+                       - 응답의 `headers` 값을 요청 헤더에 포함 (Content-Type 등)
+                       - URL 유효시간: **10분**
+
+                    3. `POST /api/v1/admin/files/upload-complete`
+                       ```json
+                       {
+                         "storedFileName": "images/members/uuid-profile.png",
+                         "originalFileName": "profile.png",
+                         "contentType": "image/png",
+                         "contentLength": 102400,
+                         "uploadCategory": "MEMBER"
+                       }
+                       ```
+
+                    이후 아래 요청 바디의 `profileImage` 에 `storedFileName` 값을 넣어 호출하세요.
+                    이미지 변경이 없을 경우 `profileImage` 필드를 생략하거나 null로 전달하세요.
+
+                    ---
+
                     **portfolioLinks.name 허용 값:** GITHUB, NOTION, BEHANCE, BLOG, INSTAGRAM, OTHER
                     """
     )
