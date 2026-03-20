@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -25,6 +27,13 @@ public class BlogImage extends BaseEntity {
     @Builder
     public BlogImage(String storedFileName) {
         this.storedFileName = storedFileName;
+    }
+
+    public static List<BlogImage> listOf(List<String> storedFileNames) {
+        if (storedFileNames == null || storedFileNames.isEmpty()) return List.of();
+        return storedFileNames.stream()
+                .map(key -> BlogImage.builder().storedFileName(key).build())
+                .toList();
     }
 
     public void setPost(BlogPost post) { this.post = post; }

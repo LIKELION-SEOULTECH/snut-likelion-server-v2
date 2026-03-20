@@ -1,5 +1,7 @@
 package com.snut_likelion.admin.file.dto.response;
 
+import com.snut_likelion.domain.file.service.FileUploadService;
+import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +30,16 @@ public class PresignedUrlResponse {
 
     @Schema(description = "URL 유효 시간 (초)", example = "600")
     private long expiresInSeconds;
+
+    public static PresignedUrlResponse from(PresignedIssueResult result) {
+        return PresignedUrlResponse.builder()
+                .uploadUrl(result.uploadUrl())
+                .headers(result.headers())
+                .storedFileName(result.storedFileName())
+                .fileUrl(result.fileUrl())
+                .expiresInSeconds(result.expiresInSeconds())
+                .build();
+    }
 
     @Builder
     private PresignedUrlResponse(

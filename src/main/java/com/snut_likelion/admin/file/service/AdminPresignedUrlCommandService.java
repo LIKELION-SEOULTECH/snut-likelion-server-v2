@@ -19,19 +19,13 @@ public class AdminPresignedUrlCommandService {
     private final FileUploadService fileUploadService;
 
     public PresignedUrlResponse issueImageUploadUrl(IssuePresignedUrlRequest req) {
-        FileUploadService.PresignedIssueResult result = fileUploadService.issuePresignedUrl(
-                req.getUploadCategory(),
-                req.getOriginalFileName(),
-                req.getContentType(),
-                req.getContentLength()
+        return PresignedUrlResponse.from(
+                fileUploadService.issuePresignedUrl(
+                        req.getUploadCategory(),
+                        req.getOriginalFileName(),
+                        req.getContentType(),
+                        req.getContentLength()
+                )
         );
-
-        return PresignedUrlResponse.builder()
-                .uploadUrl(result.uploadUrl())
-                .headers(result.headers())
-                .storedFileName(result.storedFileName())
-                .fileUrl(result.fileUrl())
-                .expiresInSeconds(result.expiresInSeconds())
-                .build();
     }
 }

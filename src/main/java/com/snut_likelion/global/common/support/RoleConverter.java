@@ -1,4 +1,4 @@
-package com.snut_likelion.global.support;
+package com.snut_likelion.global.common.support;
 
 import com.snut_likelion.domain.user.entity.Role;
 

@@ -11,7 +11,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 
 @Configuration
-@Profile("prod") // dev에서 AWS 키 없어도 서버 안 터짐
+@Profile("prod") // dev 에서 AWS 키 없어도 서버 안 터짐
 public class S3Config {
 
     @Value("${cloud.aws.credentials.access-key}")

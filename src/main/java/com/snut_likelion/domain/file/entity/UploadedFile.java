@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.file.entity;
 
 import com.snut_likelion.domain.file.dto.UploadCategory;
-import com.snut_likelion.global.support.BaseEntity;
+import com.snut_likelion.global.common.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

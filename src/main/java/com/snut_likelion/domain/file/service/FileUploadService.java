@@ -1,5 +1,6 @@
 package com.snut_likelion.domain.file.service;
 
+import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.entity.UploadedFile;
 import com.snut_likelion.domain.file.repository.UploadedFileRepository;
@@ -16,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -197,12 +197,4 @@ public class FileUploadService {
         };
     }
 
-    // 반환 레코드 (admin DTO와 독립적으로 사용) - 별도 클래스로 리팩터링 예정
-    public record PresignedIssueResult(
-            String uploadUrl,
-            Map<String, String> headers,
-            String storedFileName,
-            String fileUrl,
-            long expiresInSeconds
-    ) {}
 }

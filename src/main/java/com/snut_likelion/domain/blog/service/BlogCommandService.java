@@ -44,7 +44,7 @@ public class BlogCommandService {
         // storedFileNames 검증 후 BlogImage 엔티티로 변환하여 설정
         List<String> keys = req.getImageStoredFileNames();
         fileUploadService.validateStoredFileNames(keys, UploadCategory.BLOG);
-        post.setImages(toBlogImages(keys));
+        post.setImages(BlogImage.listOf(keys));
 
         post.setTaggedMembers(fetchUsers(req.getTaggedMemberIds()));
         post.setStatus(submit ? PostStatus.PUBLISHED : PostStatus.DRAFT);
@@ -67,7 +67,7 @@ public class BlogCommandService {
         if (req.getNewImageStoredFileNames() != null) {
             List<String> keys = req.getNewImageStoredFileNames();
             fileUploadService.validateStoredFileNames(keys, UploadCategory.BLOG);
-            post.setImages(toBlogImages(keys));
+            post.setImages(BlogImage.listOf(keys));
         }
 
         post.setStatus(submit ? PostStatus.PUBLISHED : PostStatus.DRAFT);
@@ -91,14 +91,6 @@ public class BlogCommandService {
         User user = userRepo.findById(author.getId())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         postRepo.deleteByAuthorAndStatus(user, PostStatus.DRAFT);
-    }
-
-    // storedFileName 리스트 → BlogImage 엔티티 리스트 변환
-    private List<BlogImage> toBlogImages(List<String> storedFileNames) {
-        if (storedFileNames == null || storedFileNames.isEmpty()) return List.of();
-        return storedFileNames.stream()
-                .map(key -> BlogImage.builder().storedFileName(key).build())
-                .toList();
     }
 
     private Set<User> fetchUsers(List<Long> ids) {

@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.project.entity;
 
-import com.snut_likelion.global.support.BaseEntity;
+import com.snut_likelion.global.common.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
