@@ -2,12 +2,12 @@ package com.snut_likelion.domain.project.dto.response;
 
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
-import com.snut_likelion.global.provider.FileProvider;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.function.Function;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -21,10 +21,11 @@ public class ProjectResponse {
     private int generation;
     private List<String> tags;
     private String category;
-    private String thumbnailUrl;
+    private String thumbnailUrl; // 응답은 항상 URL (key 아님)
 
     @Builder
-    public ProjectResponse(Long id, String name, String description, int generation, List<String> tags, ProjectCategory category, String thumbnailUrl) {
+    public ProjectResponse(Long id, String name, String description, int generation,
+                           List<String> tags, ProjectCategory category, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -34,20 +35,12 @@ public class ProjectResponse {
         this.thumbnailUrl = thumbnailUrl;
     }
 
-    public static ProjectResponse from(Project project) {
-        return ProjectResponse.builder()
-                .id(project.getId())
-                .name(project.getName())
-                .description(project.getDescription())
-                .generation(project.getGeneration())
-                .tags(project.getTagList())
-                .category(project.getCategory())
-                .thumbnailUrl(project.getThumbnailUrl())
-                .build();
-    }
-
-    // Presigned 전환 이후 조회 안전 버전
-    public static ProjectResponse from(Project project, FileProvider fileProvider) {
+    /**
+     * @param keyToUrl storedFileName(key) → URL 변환 함수
+     *                 ex) fileUploadService::buildFileUrl
+     *                 과거 URL 데이터는 그대로 통과 (http로 시작하는 경우)
+     */
+    public static ProjectResponse from(Project project, Function<String, String> keyToUrl) {
         String thumb = project.getThumbnailUrl();
 
         return ProjectResponse.builder()
@@ -57,13 +50,14 @@ public class ProjectResponse {
                 .generation(project.getGeneration())
                 .tags(project.getTagList())
                 .category(project.getCategory())
-                .thumbnailUrl(resolveToUrl(thumb, fileProvider))
+                .thumbnailUrl(resolveToUrl(thumb, keyToUrl))
                 .build();
     }
 
-    private static String resolveToUrl(String keyOrUrl, FileProvider fileProvider) {
+    // key 또는 과거 URL을 URL로 변환
+    private static String resolveToUrl(String keyOrUrl, Function<String, String> keyToUrl) {
         if (keyOrUrl == null || keyOrUrl.isBlank()) return null;
-        if (keyOrUrl.startsWith("http://") || keyOrUrl.startsWith("https://")) return keyOrUrl; // 과거 데이터 호환
-        return fileProvider.buildImageUrl(keyOrUrl); // key -> URL
+        if (keyOrUrl.startsWith("http://") || keyOrUrl.startsWith("https://")) return keyOrUrl;
+        return keyToUrl.apply(keyOrUrl);
     }
 }
