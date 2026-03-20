@@ -22,6 +22,7 @@ public interface FileProvider {
 
     void deleteFile(String storedFileName);
 
+    // MultipartFile 직접 업로드: 레거시 코드
     String storeFile(MultipartFile file);
 
     String extractImageName(String imageUrl);

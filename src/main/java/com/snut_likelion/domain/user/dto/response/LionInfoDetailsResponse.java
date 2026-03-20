@@ -4,7 +4,7 @@ import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;
-import com.snut_likelion.global.support.RoleConverter;
+import com.snut_likelion.global.common.support.RoleConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

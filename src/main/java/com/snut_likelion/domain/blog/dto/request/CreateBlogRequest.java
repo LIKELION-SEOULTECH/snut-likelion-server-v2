@@ -25,14 +25,20 @@ public class CreateBlogRequest {
 
     private List<Long> taggedMemberIds;
 
-    private List<String> images;
+    /**
+     * Presigned URL 업로드 완료 후 받은 storedFileName 목록
+     * ex) ["images/blogs/uuid-name.png", ...]
+     * 비어있으면 이미지 없는 게시글로 처리한다.
+     */
+    private List<String> imageStoredFileNames;
 
     @Builder
-    public CreateBlogRequest(String title, String contentHtml, Category category, List<String> images, List<Long> taggedMemberIds) {
+    public CreateBlogRequest(String title, String contentHtml, Category category,
+                             List<String> imageStoredFileNames, List<Long> taggedMemberIds) {
         this.title = title;
         this.contentHtml = contentHtml;
         this.category = category;
-        this.images = images;
+        this.imageStoredFileNames = imageStoredFileNames;
         this.taggedMemberIds = taggedMemberIds;
     }
 

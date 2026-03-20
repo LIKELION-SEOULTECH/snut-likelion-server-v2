@@ -23,4 +23,9 @@ public class MemberSearchResponse {
         this.generation = generation;
         this.profileImageUrl = profileImageUrl;
     }
+
+    public MemberSearchResponse withProfileImageUrl(String url) {
+        this.profileImageUrl = url;
+        return this;
+    }
 }

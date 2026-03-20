@@ -36,12 +36,12 @@ public class MemberDetailResponse {
         this.generations = generations;
     }
 
-    public static MemberDetailResponse of(User member, List<Integer> generations) {
+    public static MemberDetailResponse of(User member, List<Integer> generations, String profileImageUrl) {
         return MemberDetailResponse.builder()
                 .id(member.getId())
                 .email(member.getEmail())
                 .name(member.getUsername())
-                .profileImageUrl(member.getProfileImageUrl())
+                .profileImageUrl(profileImageUrl)
                 .intro(member.getIntro())
                 .description(member.getDescription())
                 .portfolioLinks(member.getPortfolioLinks())

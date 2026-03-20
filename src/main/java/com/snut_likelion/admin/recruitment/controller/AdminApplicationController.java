@@ -6,7 +6,6 @@ import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusRe
 import com.snut_likelion.admin.recruitment.dto.response.ApplicationPageResponse;
 import com.snut_likelion.admin.recruitment.service.AdminApplicationService;
 import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationResponse;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import

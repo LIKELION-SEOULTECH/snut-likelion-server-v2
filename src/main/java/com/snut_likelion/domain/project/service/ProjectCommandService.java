@@ -1,8 +1,10 @@
 package com.snut_likelion.domain.project.service;
 
-import com.snut_likelion.domain.project.dto.request.CreateProjectRequest;
+import com.snut_likelion.domain.file.dto.UploadCategory;
+import com.snut_likelion.domain.file.service.FileUploadService;
+import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
 import com.snut_likelion.domain.project.dto.request.RetrospectionDto;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectRequest;
+import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;
@@ -15,11 +17,10 @@ import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
+import com.snut_likelion.infra.file.FileErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,69 +31,121 @@ public class ProjectCommandService {
 
     private final UserRepository userRepository;
     private final ProjectRepository projectRepository;
-    private final FileProvider fileProvider;
+    private final FileUploadService fileUploadService; // FileProvider + UploadedFileRepository 대체
     private final LionInfoRepository lionInfoRepository;
     private final ProjectRetrospectionRepository projectRetrospectionRepository;
 
+    /**
+     * Presigned 기반 프로젝트 생성
+     * - imageStoredFileNames 검증 후 DB에 key만 저장 (URL 저장 금지)
+     */
     @Transactional
-    public void create(CreateProjectRequest req) {
-        Project project = req.toEntityWithValue();
-        project.setTags(req.getTags());
-        this.storeProjectImages(req.getImages(), project);
-        this.connectRetrospections(req.getRetrospections(), project);
+    public Long createPresigned(CreateProjectPresignedRequest req) {
+        Project project = Project.builder()
+                .name(req.getName())
+                .intro(req.getIntro())
+                .description(req.getDescription())
+                .category(req.getCategory())
+                .generation(req.getGeneration())
+                .build();
+
+        // FileUploadService가 검증 담당 (key 규칙 + UploadedFile 존재 확인)
+        fileUploadService.validateStoredFileNames(req.getImageStoredFileNames(), UploadCategory.PROJECT);
+        project.setImages(req.getImageStoredFileNames());
+
         projectRepository.save(project);
+        return project.getId();
     }
+
+    /**
+     * Presigned 기반 프로젝트 수정
+     * - newImageStoredFileNames가 있을 때만 이미지 추가
+     */
+    @Transactional
+    public void modifyPresigned(Long projectId, UpdateProjectPresignedRequest req) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
+
+        project.update(req.getName(), req.getIntro(), req.getDescription(),
+                req.getGeneration(), req.getCategory());
+
+        if (req.getNewImageStoredFileNames() != null && !req.getNewImageStoredFileNames().isEmpty()) {
+            fileUploadService.validateStoredFileNames(
+                    req.getNewImageStoredFileNames(), UploadCategory.PROJECT
+            );
+            project.addImage(req.getNewImageStoredFileNames());
+        }
+    }
+
+    @Transactional
+    public void remove(Long id) {
+        Project project = projectRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
+
+        // 삭제 전 key 목록 확보 후 프로젝트 삭제, 이후 S3 파일 삭제
+        List<String> imageKeys = project.getImageUrlList();
+        projectRepository.delete(project);
+        imageKeys.forEach(fileUploadService::deleteFile);
+    }
+
+    /**
+     * 프로젝트 이미지 개별 삭제
+     * - storedFileName(key) 기반으로 삭제한다.
+     */
+    @Transactional
+    public void removeImageByKey(Long projectId, String imageStoredFileName) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
+
+        // key 규칙 검증은 FileUploadService에 위임
+        fileUploadService.validateStoredFileNames(
+                List.of(imageStoredFileName), UploadCategory.PROJECT
+        );
+
+        List<String> oldKeys = project.getImageUrlList();
+        if (oldKeys == null || oldKeys.isEmpty()) {
+            return; // 이미 삭제된 상태 — 멱등 처리
+        }
+
+        if (!oldKeys.contains(imageStoredFileName)) {
+            throw new BadRequestException(FileErrorCode.BAD_FILE_URL);
+        }
+
+        List<String> newKeys = new ArrayList<>(oldKeys);
+        newKeys.remove(imageStoredFileName);
+        project.setImages(newKeys);
+
+        fileUploadService.deleteFile(imageStoredFileName);
+    }
+
+    // 회고 관련 (변경 없음)
 
     private void connectRetrospections(List<RetrospectionDto> retrospections, Project project) {
         if (retrospections == null || retrospections.isEmpty()) {
             throw new BadRequestException(ProjectErrorCode.RETROSPECTION_IS_NOT_PROVIDED);
         }
 
-        retrospections
-                .forEach(retrospectionDto -> {
-                    Long memberId = retrospectionDto.getMemberId();
+        retrospections.forEach(retrospectionDto -> {
+            Long memberId = retrospectionDto.getMemberId();
+            LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
+                    .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
 
-                    LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
-                            .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
-
-                    ProjectParticipation projectParticipation = new ProjectParticipation(lionInfo, project);
-                    project.addParticipation(projectParticipation);
-
-                    ProjectRetrospection retrospection = this.createRetrospection(retrospectionDto);
-                    project.addRetrospection(retrospection);
-                });
-    }
-
-
-    @Transactional
-    public void modify(Long id, UpdateProjectRequest req) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
-
-        project.update(req.getName(), req.getIntro(), req.getDescription(), req.getGeneration(), req.getCategory());
-
-        project.setTags(req.getTags());
-
-        this.storeProjectImages(req.getNewImages(), project);
-
-        // 이미 존재하는 회고는 업데이트하고, 새로운 회고는 추가
-        this.upsertRetrospections(req.getRetrospections(), project);
+            project.addParticipation(new ProjectParticipation(lionInfo, project));
+            project.addRetrospection(this.createRetrospection(retrospectionDto));
+        });
     }
 
     private void upsertRetrospections(List<RetrospectionDto> retrospections, Project project) {
-        if (retrospections == null || retrospections.isEmpty()) {
-            return;
-        }
+        if (retrospections == null || retrospections.isEmpty()) return;
 
         retrospections.forEach(retrospection -> {
             projectRetrospectionRepository.findByWriter_IdAndProject_Id(
                             retrospection.getMemberId(), project.getId())
                     .ifPresentOrElse(
-                            existingRetrospection ->
-                                    existingRetrospection.updateContent(retrospection.getContent()),
+                            existing -> existing.updateContent(retrospection.getContent()),
                             () -> {
-                                Long memberId = retrospection.getMemberId();
-                                LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(memberId, project.getGeneration())
+                                LionInfo lionInfo = lionInfoRepository.findByUser_IdAndGeneration(
+                                                retrospection.getMemberId(), project.getGeneration())
                                         .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_LION_INFO));
                                 project.addParticipation(new ProjectParticipation(lionInfo, project));
                                 project.addRetrospection(this.createRetrospection(retrospection));
@@ -107,55 +160,5 @@ public class ProjectCommandService {
         ProjectRetrospection projectRetrospection = new ProjectRetrospection(retrospection.getContent());
         projectRetrospection.setWriter(writer);
         return projectRetrospection;
-    }
-
-    private void storeProjectImages(List<MultipartFile> files, Project project) {
-        if (files == null || files.isEmpty()) {
-            throw new BadRequestException(ProjectErrorCode.PROJECT_IMAGE_NOT_PROVIDED);
-        }
-
-        List<String> imageUrls = new ArrayList<>();
-
-        files.forEach(file -> {
-            String contentType = file.getContentType();
-
-            if (!contentType.startsWith("image/")) {
-                throw new BadRequestException(ProjectErrorCode.INVALID_FILE_FORMAT);
-            }
-
-            String storedName = fileProvider.storeFile(file);
-            fileProvider.setTransactionSynchronizationForImage(storedName);
-            imageUrls.add(fileProvider.buildImageUrl(storedName));
-        });
-
-        project.addImage(imageUrls);
-    }
-
-    @Transactional
-    public void remove(Long id) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
-        projectRepository.delete(project);
-        project.getImageUrlList().forEach(url -> {
-            String storedName = fileProvider.extractImageName(url);
-            fileProvider.deleteFile(storedName);
-        });
-    }
-
-    @Transactional
-    public void removeImage(Long id, String imageUrl) {
-        Project project = projectRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
-
-        List<String> oldList = project.getImageUrlList();
-
-        if (oldList.contains(imageUrl)) {
-            ArrayList<String> newList = new ArrayList<>(oldList);
-            newList.remove(imageUrl);
-            project.setImages(newList);
-
-            String storedName = fileProvider.extractImageName(imageUrl);
-            fileProvider.deleteFile(storedName);
-        }
     }
 }

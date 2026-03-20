@@ -1,5 +1,6 @@
 package com.snut_likelion.domain.project.service;
 
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.project.dto.response.ProjectDetailResponse;
 import com.snut_likelion.domain.project.dto.response.ProjectResponse;
 import com.snut_likelion.domain.project.entity.Project;
@@ -21,16 +22,21 @@ public class ProjectQueryService {
 
     private final ProjectRepository projectRepository;
     private final ProjectQueryRepository projectQueryRepository;
+    private final FileUploadService fileUploadService; // FileProvider 대신 FileUploadService 사용
 
     public List<ProjectResponse> getAllProjects(Integer generation, ProjectCategory category) {
         List<Project> projects = projectQueryRepository.findAllByGenerationAndCategory(generation, category);
-        return projects.stream().map(ProjectResponse::from).toList();
+
+        // key → URL 변환 함수를 람다로 전달
+        return projects.stream()
+                .map(p -> ProjectResponse.from(p, fileUploadService::buildFileUrl))
+                .toList();
     }
 
     public ProjectDetailResponse getProjectById(Long id) {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
-        return ProjectDetailResponse.from(project);
+        return ProjectDetailResponse.from(project, fileUploadService::buildFileUrl);
     }
 }

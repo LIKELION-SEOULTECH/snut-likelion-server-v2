@@ -38,6 +38,8 @@ public enum PermitAllUrls {
     GET_NOTICES("/api/v1/notices", GET),
     GET_NOTICE_DETAIL("/api/v1/notices/{noticeId}", GET),
 
+    LOCAL_PRESIGNED_PUT("/api/v1/files/local/presigned-put", PUT),
+
     /* Swagger UI 관련 */
     SWAGGER_V3_DOCS("/v3/api-docs/**", GET),
     SWAGGER_UI("/swagger-ui/**", GET),
