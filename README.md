@@ -20,7 +20,7 @@
 * **ORM**: Spring Data JPA / QueryDSL 5.0
 * **Security**: Spring Security & **JJWT** (Access/Refresh Token 전략)
 * **Storage**: **AWS S3** (Presigned URL을 통한 이미지 업로드 최적화)
-* **External API**: WebClient (AI 서버 연동 및 챗봇 구현)
+* **External API**: OpenFeign (AI 서버 연동 — 챗봇 · 요약)
 * **DevOps**: Docker, GitHub Actions (CI/CD)
 
 <br/>
@@ -32,7 +32,8 @@
 | **Recruitment** | 기수별 동적 지원서 생성, 지원 상태 관리, 합격 발표 자동화 | Scheduler |
 | **Member** | 운영진/사자 권한 분리, 파트별 멤버 프로필 및 포트폴리오 관리 | Role-based Security |
 | **Project** | 프로젝트 아카이빙, 카테고리별 검색 및 상세 조회 | QueryDSL |
-| **Notice & Blog** | 공지사항 및 기술 블로그 게시판, AI 기반 공지 요약 기능 | External AI API |
+| **Notice & Blog** | 공지사항 및 기술 블로그 게시판, AI 기반 공지 자동 요약 | OpenFeign (AI 서버) |
+| **AI** | 챗봇 intent 매핑 응답, 텍스트 요약 API | OpenFeign, Apache POI |
 | **Auth** | JWT 기반 소셜 및 일반 로그인, 비밀번호 재설정 기능 | Mail Sender |
 
 ## 4. Troubleshooting
@@ -144,3 +145,98 @@ fileUploadService.validateStoredFileNames(fileKeys, UploadCategory.NOTICE, FileS
 | Notice 이미지 | 이미지 | `images/notices/{uuid}-{name}.{ext}` |
 | Notice 파일 첨부 | 문서·파일 | `files/notices/{uuid}-{name}.{ext}` |
 
+<br/>
+
+## 6. AI 챗봇 연동 상세 설계
+
+### 패키지 구조
+
+AI 연동 기능은 JPA Entity·DB를 가지는 일반 비즈니스 도메인(`domain/`)과 성격이 다르기 때문에 최상위 독립 패키지 `ai/`로 분리합니다.
+
+```
+com.snut_likelion/
+├── ai/                          ← AI 기능 독립 패키지 (Entity 없는 외부 연동 기능)
+│   ├── controller/              AiController — POST /api/v1/ai/chat, /summarize
+│   ├── dto/
+│   │   ├── request/             AiChatRequest, AiSummarizeRequest  (@NotBlank + @NoArgsConstructor PROTECTED)
+│   │   └── response/            AiChatResult, AiSummarizeResult    (static of() 팩토리)
+│   ├── exception/               AiErrorCode, AiException (HTTP 503)
+│   ├── repository/              AiChatRepository, AiSummaryRepository, IntentAnswerPort  (포트 인터페이스)
+│   └── service/                 AiQueryService
+│
+└── infra/
+    └── ai/                      ← AI 서버 연동 구현체
+        ├── AiServerChatRequest/Response       (Feign 요청·응답 DTO — flat)
+        ├── AiServerSummarizeRequest/Response  (Feign 요청·응답 DTO — flat)
+        ├── NoticeSummaryApiClientImpl         (공지 자동 요약용 — 폴백 처리, Feign 기반)
+        ├── client/
+        │   ├── ChatFeignClient                POST /chat
+        │   └── SummaryFeignClient             POST /summarize
+        ├── intent/
+        │   └── IntentAnswerResolver           엑셀(intent-answer.xlsx) 로딩·캐싱, IntentAnswerPort 구현
+        └── repository/
+            ├── AiChatRepositoryImpl           AiChatRepository 구현 (폴백 전략)
+            └── AiSummaryRepositoryImpl        AiSummaryRepository 구현 (예외 전파 전략)
+```
+
+### 레이어 의존 방향 (Port-Adapter 패턴)
+
+```
+ai/service/AiQueryService
+    │  depends on (interface only)
+    ├─ ai/repository/AiChatRepository  ←── infra/ai/repository/AiChatRepositoryImpl
+    ├─ ai/repository/AiSummaryRepository ←── infra/ai/repository/AiSummaryRepositoryImpl
+    └─ ai/repository/IntentAnswerPort  ←── infra/ai/intent/IntentAnswerResolver
+```
+
+`ai/` 패키지는 `infra/`를 절대 직접 의존하지 않습니다. 모든 외부 연동은 포트 인터페이스를 통해 주입됩니다.
+
+### 챗봇 요청 흐름 (POST /api/v1/ai/chat)
+
+```
+클라이언트
+  │  { "text": "멋사 지원 방법 알려줘" }
+  ▼
+AiController.chat()
+  ▼
+AiQueryService.chat(text)
+  ├─ AiChatRepository.chat(text)
+  │    └─ ChatFeignClient → POST {ai-server.url}/chat
+  │         응답: { matched_question, score }
+  │         오류 시: ChatQueryResult(null, null) 반환 (폴백)
+  │
+  ├─ IntentAnswerPort.findAnswer(matchedQuestion)
+  │    └─ IntentAnswerResolver → intent-answer.xlsx 인메모리 맵 조회
+  │
+  ├─ 매핑 성공 → 엑셀 answer 반환
+  └─ 매핑 실패·null → "정확한 정보를 찾기 어려워요..." 폴백 문구
+  ▼
+ApiResponse<AiChatResult> { answer, matchedQuestion, score }
+```
+
+### 에러 처리 전략 비교
+
+| API | 오류 발생 시 | 이유 |
+| :--- | :--- | :--- |
+| `/chat` | 폴백 문구 반환 (HTTP 200) | 챗봇은 항상 응답해야 하는 UX 요구사항 |
+| `/summarize` | `AiException` throw (HTTP 503) | 요약 기능은 명시적 실패 처리가 필요 |
+| 공지 자동 요약 | 폴백 문구 저장, 예외 무시 | 요약 실패가 공지 등록을 막으면 안 됨 |
+
+### intent-answer.xlsx 매핑 캐시
+
+```
+애플리케이션 시작 시 (@PostConstruct) 1회 로딩
+  resources/ai/intent-answer.xlsx
+  ├── 헤더: intent | answer
+  ├── 중복 intent / 빈 값 검증 → IllegalStateException
+  └── Map<String, String> (LinkedHashMap → Map.copyOf, 불변)
+```
+
+### 공지 자동 요약과의 관계
+
+| 구분 | 포트 인터페이스 | 구현체 | 오류 전략 |
+| :--- | :--- | :--- | :--- |
+| AI 요약 API | `ai/repository/AiSummaryRepository` | `AiSummaryRepositoryImpl` | 예외 throw |
+| 공지 자동 요약 | `domain/notice/repository/SummaryApiClient` | `NoticeSummaryApiClientImpl` | 폴백 반환 |
+
+두 포트는 역할이 다르므로 분리 유지합니다. 단, 구현체는 모두 `infra/ai/`에 통합되어 동일한 `SummaryFeignClient`를 사용합니다.

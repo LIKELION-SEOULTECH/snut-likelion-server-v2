@@ -1,9 +1,9 @@
 package com.snut_likelion.infra.ai.repository;
 
-import com.snut_likelion.domain.ai.repository.AiChatRepository;
+import com.snut_likelion.ai.repository.AiChatRepository;
+import com.snut_likelion.infra.ai.AiServerChatRequest;
+import com.snut_likelion.infra.ai.AiServerChatResponse;
 import com.snut_likelion.infra.ai.client.ChatFeignClient;
-import com.snut_likelion.infra.ai.dto.request.AiServerChatRequest;
-import com.snut_likelion.infra.ai.dto.response.AiServerChatResponse;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;

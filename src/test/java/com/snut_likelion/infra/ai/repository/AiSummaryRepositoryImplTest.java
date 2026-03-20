@@ -1,10 +1,10 @@
 package com.snut_likelion.infra.ai.repository;
 
-import com.snut_likelion.domain.ai.exception.AiErrorCode;
-import com.snut_likelion.domain.ai.exception.AiException;
+import com.snut_likelion.ai.exception.AiErrorCode;
+import com.snut_likelion.ai.exception.AiException;
+import com.snut_likelion.infra.ai.AiServerSummarizeRequest;
+import com.snut_likelion.infra.ai.AiServerSummarizeResponse;
 import com.snut_likelion.infra.ai.client.SummaryFeignClient;
-import com.snut_likelion.infra.ai.dto.request.AiServerSummarizeRequest;
-import com.snut_likelion.infra.ai.dto.response.AiServerSummarizeResponse;
 import feign.FeignException;
 import feign.Request;
 import feign.Response;
