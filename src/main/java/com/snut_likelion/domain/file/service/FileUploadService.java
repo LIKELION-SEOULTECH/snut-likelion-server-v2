@@ -33,7 +33,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileUploadService {
 
-    // Presigned URL 유효 시간 (10분)
+    // Presigned URL 유효 시간(보안상 10분으로 짧게 유지)
     private static final Duration PRESIGNED_EXPIRES = Duration.ofMinutes(10);
 
     private final PresignedUrlProvider presignedUrlProvider;
