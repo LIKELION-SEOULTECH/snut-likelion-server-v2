@@ -17,21 +17,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Gemini Code Review
-        uses: google-gemini/gemini-code-review-action@v0.1.4
-        with:
-          gemini_api_key: ${{ secrets.GEMINI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          pull_request_diff_url: ${{ github.event.pull_request.diff_url }}
-          prompt_text: |
-            당신은 Spring Boot 백엔드 코드 리뷰어입니다.
-            PR의 변경사항을 분석하고 다음 항목을 한국어로 리뷰해주세요:
-            1. 버그 및 잠재적 오류
-            2. 코드 품질 및 가독성
-            3. 보안 취약점
-            4. 성능 문제
-            5. 개선 제안
-          exclude_patterns: |
-            **/*.md
-            **/*.yml
-            **/generated/**
+      - name: Get PR diff
+        id: diff
+        run: |
+          gh pr diff ${{ github.event.pull_request.number }} > diff.txt
+          echo "diff_size=$(wc -c < diff.txt)" >> $GITHUB_OUTPUT
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Review with Gemini
+        run: |
+          DIFF=$(cat diff.txt | head -c 30000)
+
+          RESPONSE=$(curl -s \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${{ secrets.GEMINI_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"contents\": [{
+                \"parts\": [{
+                  \"text\": \"당신은 Spring Boot 백엔드 코드 리뷰어입니다.\n다음 PR diff를 분석하고 한국어로 리뷰해주세요.\n\n1. 버그 및 잠재적 오류\n2. 코드 품질 및 가독성\n3. 보안 취약점\n4. 성능 문제\n5. 개선 제안\n\n문제가 없는 항목은 생략하고 중요한 사항만 간결하게 작성해주세요.\n\n\`\`\`diff\n$DIFF\n\`\`\`\"
+                }]
+              }]
+            }")
+
+          REVIEW=$(echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          print(data['candidates'][0]['content']['parts'][0]['text'])
+          " 2>/dev/null || echo "리뷰를 생성하지 못했습니다.")
+
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "## 🤖 Gemini 코드 리뷰
+
+          $REVIEW
+
+          ---
+          *Powered by Google Gemini*"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
