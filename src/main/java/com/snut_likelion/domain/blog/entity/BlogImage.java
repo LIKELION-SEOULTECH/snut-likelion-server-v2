@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.blog.entity;
 
-import com.snut_likelion.global.support.BaseEntity;
+import com.snut_likelion.global.common.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -17,11 +17,15 @@ public class BlogImage extends BaseEntity {
     @JoinColumn(name = "post_id")
     private BlogPost post;
 
-    @Column(nullable = false)
-    private String url;
+    // S3 key 저장 (URL 아님)
+    // 조회 시 FileUploadService.buildFileUrl()로 URL 변환한다.
+    @Column(nullable = false, length = 500)
+    private String storedFileName;
 
     @Builder
-    public BlogImage(String url) { this.url = url; }
+    public BlogImage(String storedFileName) {
+        this.storedFileName = storedFileName;
+    }
 
     public void setPost(BlogPost post) { this.post = post; }
 }
