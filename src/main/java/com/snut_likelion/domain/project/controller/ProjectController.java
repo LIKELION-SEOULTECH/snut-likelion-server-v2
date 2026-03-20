@@ -30,10 +30,6 @@ public class ProjectController {
     private final ProjectCommandService projectCommandService;
     private final ProjectQueryService projectQueryService;
 
-    // ─────────────────────────────────────────────
-    // 조회
-    // ─────────────────────────────────────────────
-
     @Operation(summary = "프로젝트 전체 조회")
     @GetMapping
     public ApiResponse<List<ProjectResponse>> getAllProjects(
@@ -56,10 +52,6 @@ public class ProjectController {
                 "프로젝트 상세 조회 성공"
         );
     }
-
-    // ─────────────────────────────────────────────
-    // 생성 / 수정 / 삭제 (Presigned URL 기반)
-    // ─────────────────────────────────────────────
 
     @Operation(summary = "프로젝트 생성 (Presigned URL 기반)",
             description = "Presigned URL로 이미지 업로드 완료 후 storedFileName을 전달하여 프로젝트를 생성합니다.")
