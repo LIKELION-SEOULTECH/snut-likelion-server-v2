@@ -1,9 +1,9 @@
 package com.snut_likelion.ai.controller;
 
-import com.snut_likelion.ai.dto.request.AiChatRequest;
-import com.snut_likelion.ai.dto.request.AiSummarizeRequest;
-import com.snut_likelion.ai.dto.response.AiChatResult;
-import com.snut_likelion.ai.dto.response.AiSummarizeResult;
+import com.snut_likelion.ai.dto.req.AiChatRequest;
+import com.snut_likelion.ai.dto.req.AiSummarizeRequest;
+import com.snut_likelion.ai.dto.res.AiChatResult;
+import com.snut_likelion.ai.dto.res.AiSummarizeResult;
 import com.snut_likelion.ai.service.AiQueryService;
 import com.snut_likelion.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

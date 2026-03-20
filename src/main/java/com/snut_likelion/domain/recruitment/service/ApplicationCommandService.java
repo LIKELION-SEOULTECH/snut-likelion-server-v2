@@ -1,8 +1,8 @@
 package com.snut_likelion.domain.recruitment.service;
 
-import com.snut_likelion.domain.recruitment.dto.request.ApplicationAnswerRequest;
-import com.snut_likelion.domain.recruitment.dto.request.CreateApplicationRequest;
-import com.snut_likelion.domain.recruitment.dto.request.UpdateApplicationRequest;
+import com.snut_likelion.domain.recruitment.dto.req.ApplicationAnswerRequest;
+import com.snut_likelion.domain.recruitment.dto.req.CreateApplicationRequest;
+import com.snut_likelion.domain.recruitment.dto.req.UpdateApplicationRequest;
 import com.snut_likelion.domain.recruitment.entity.*;
 import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;
 import com.snut_likelion.domain.recruitment.exception.QuestionErrorCode;

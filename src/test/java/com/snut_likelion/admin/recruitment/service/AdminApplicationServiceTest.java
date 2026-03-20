@@ -1,9 +1,9 @@
 package com.snut_likelion.admin.recruitment.service;
 
-import com.snut_likelion.admin.recruitment.dto.request.ApplicationListStatus;
-import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusParameter;
-import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusRequest;
-import com.snut_likelion.admin.recruitment.dto.response.ApplicationPageResponse;
+import com.snut_likelion.admin.recruitment.dto.req.ApplicationListStatus;
+import com.snut_likelion.admin.recruitment.dto.req.ChangeApplicationStatusParameter;
+import com.snut_likelion.admin.recruitment.dto.req.ChangeApplicationStatusRequest;
+import com.snut_likelion.admin.recruitment.dto.res.ApplicationPageResponse;
 import com.snut_likelion.admin.recruitment.infra.ApplicationQueryRepository;
 import com.snut_likelion.domain.recruitment.entity.*;
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
@@ -26,7 +26,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationDetailsResponse;
 import com.snut_likelion.global.error.exception.NotFoundException;
 
 import java.util.Optional;

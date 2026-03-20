@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.user.service;
 
-import com.snut_likelion.domain.user.dto.response.SayingResponse;
+import com.snut_likelion.domain.user.dto.res.SayingResponse;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

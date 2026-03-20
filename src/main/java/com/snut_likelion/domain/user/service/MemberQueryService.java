@@ -3,7 +3,7 @@ package com.snut_likelion.domain.user.service;
 import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
-import com.snut_likelion.domain.user.dto.response.*;
+import com.snut_likelion.domain.user.dto.res.*;
 import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.entity.User;

@@ -2,8 +2,8 @@ package com.snut_likelion.domain.project.service;
 
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.service.FileUploadService;
-import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;

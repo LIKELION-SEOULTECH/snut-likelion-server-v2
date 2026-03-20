@@ -1,8 +1,8 @@
 package com.snut_likelion.admin.recruitment.controller;
 
-import com.snut_likelion.admin.recruitment.dto.request.UpdateQuestionsRequest;
+import com.snut_likelion.admin.recruitment.dto.req.UpdateQuestionsRequest;
 import com.snut_likelion.admin.recruitment.service.AdminQuestionService;
-import com.snut_likelion.domain.recruitment.dto.response.QuestionResponse;
+import com.snut_likelion.domain.recruitment.dto.res.QuestionResponse;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,7 @@
 package com.snut_likelion.ai.service;
 
-import com.snut_likelion.ai.dto.response.AiChatResult;
-import com.snut_likelion.ai.dto.response.AiSummarizeResult;
+import com.snut_likelion.ai.dto.res.AiChatResult;
+import com.snut_likelion.ai.dto.res.AiSummarizeResult;
 import com.snut_likelion.ai.repository.AiChatRepository;
 import com.snut_likelion.ai.repository.AiSummaryRepository;
 import com.snut_likelion.ai.repository.IntentAnswerPort;

@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.project.controller;
 
-import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
+import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectRetrospectionService;
 import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;

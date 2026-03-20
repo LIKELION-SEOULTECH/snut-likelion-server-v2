@@ -1,9 +1,9 @@
 package com.snut_likelion.domain.project.controller;
 
-import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.response.ProjectDetailResponse;
-import com.snut_likelion.domain.project.dto.response.ProjectResponse;
+import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.UpdateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.res.ProjectDetailResponse;
+import com.snut_likelion.domain.project.dto.res.ProjectResponse;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.service.ProjectCommandService;
 import com.snut_likelion.domain.project.service.ProjectQueryService;

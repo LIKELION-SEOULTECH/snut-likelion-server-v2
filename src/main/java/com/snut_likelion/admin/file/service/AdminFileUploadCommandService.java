@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.file.service;
 
-import com.snut_likelion.admin.file.dto.request.CompleteFileUploadRequest;
-import com.snut_likelion.admin.file.dto.response.CompleteFileUploadResponse;
+import com.snut_likelion.admin.file.dto.req.CompleteFileUploadRequest;
+import com.snut_likelion.admin.file.dto.res.CompleteFileUploadResponse;
 import com.snut_likelion.domain.file.entity.UploadedFile;
 import com.snut_likelion.domain.file.service.FileUploadService;
 import lombok.RequiredArgsConstructor;

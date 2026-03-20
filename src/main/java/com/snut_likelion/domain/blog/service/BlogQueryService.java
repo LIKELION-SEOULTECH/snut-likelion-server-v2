@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.blog.service;
 
-import com.snut_likelion.domain.blog.dto.response.BlogDetailResponse;
-import com.snut_likelion.domain.blog.dto.response.BlogSummaryPageResponse;
+import com.snut_likelion.domain.blog.dto.res.BlogDetailResponse;
+import com.snut_likelion.domain.blog.dto.res.BlogSummaryPageResponse;
 import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.entity.PostStatus;

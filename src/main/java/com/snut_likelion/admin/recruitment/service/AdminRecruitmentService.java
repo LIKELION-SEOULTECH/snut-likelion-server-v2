@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.recruitment.service;
 
-import com.snut_likelion.admin.recruitment.dto.request.CreateRecruitmentRequest;
-import com.snut_likelion.admin.recruitment.dto.request.UpdateRecruitmentRequest;
+import com.snut_likelion.admin.recruitment.dto.req.CreateRecruitmentRequest;
+import com.snut_likelion.admin.recruitment.dto.req.UpdateRecruitmentRequest;
 import com.snut_likelion.domain.recruitment.entity.Recruitment;
 import com.snut_likelion.domain.recruitment.exception.RecruitmentErrorCode;
 import com.snut_likelion.domain.recruitment.infra.RecruitmentRepository;

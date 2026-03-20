@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.recruitment.service;
 
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationAnswerResponse;
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationAnswerResponse;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationDetailsResponse;
 import com.snut_likelion.domain.recruitment.entity.Answer;
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.Question;

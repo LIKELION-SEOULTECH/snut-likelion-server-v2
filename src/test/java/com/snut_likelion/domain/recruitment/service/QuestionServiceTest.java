@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.recruitment.service;
 
-import com.snut_likelion.domain.recruitment.dto.response.QuestionResponse;
+import com.snut_likelion.domain.recruitment.dto.res.QuestionResponse;
 import com.snut_likelion.domain.recruitment.entity.*;
 import com.snut_likelion.domain.recruitment.exception.RecruitmentErrorCode;
 import com.snut_likelion.domain.recruitment.infra.QuestionFilter;

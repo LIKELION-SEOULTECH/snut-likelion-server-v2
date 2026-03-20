@@ -1,8 +1,8 @@
 package com.snut_likelion.ai.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.snut_likelion.ai.dto.response.AiChatResult;
-import com.snut_likelion.ai.dto.response.AiSummarizeResult;
+import com.snut_likelion.ai.dto.res.AiChatResult;
+import com.snut_likelion.ai.dto.res.AiSummarizeResult;
 import com.snut_likelion.ai.service.AiQueryService;
 import com.snut_likelion.global.auth.jwt.JwtService;
 import org.junit.jupiter.api.Test;
