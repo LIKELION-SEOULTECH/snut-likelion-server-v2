@@ -22,6 +22,7 @@ public class AdminPresignedUrlCommandService {
         return PresignedUrlResponse.from(
                 fileUploadService.issuePresignedUrl(
                         req.getUploadCategory(),
+                        req.getFileStorageType(),
                         req.getOriginalFileName(),
                         req.getContentType(),
                         req.getContentLength()

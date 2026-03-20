@@ -2,6 +2,7 @@ package com.snut_likelion.admin.file.service;
 
 import com.snut_likelion.admin.file.dto.request.IssuePresignedUrlRequest;
 import com.snut_likelion.admin.file.dto.response.PresignedUrlResponse;
+import com.snut_likelion.domain.file.dto.FileStorageType;
 import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.service.FileUploadService;
@@ -30,6 +31,7 @@ class AdminPresignedUrlCommandServiceTest {
         // Given
         IssuePresignedUrlRequest req = mock(IssuePresignedUrlRequest.class);
         when(req.getUploadCategory()).thenReturn(UploadCategory.BLOG);
+        when(req.getFileStorageType()).thenReturn(FileStorageType.IMAGE);
         when(req.getOriginalFileName()).thenReturn("photo.png");
         when(req.getContentType()).thenReturn("image/png");
         when(req.getContentLength()).thenReturn(1024L);
@@ -42,7 +44,7 @@ class AdminPresignedUrlCommandServiceTest {
                 600L
         );
         when(fileUploadService.issuePresignedUrl(
-                UploadCategory.BLOG, "photo.png", "image/png", 1024L
+                UploadCategory.BLOG, FileStorageType.IMAGE, "photo.png", "image/png", 1024L
         )).thenReturn(result);
 
         // When

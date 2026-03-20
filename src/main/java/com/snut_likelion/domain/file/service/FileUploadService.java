@@ -1,5 +1,6 @@
 package com.snut_likelion.domain.file.service;
 
+import com.snut_likelion.domain.file.dto.FileStorageType;
 import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.entity.UploadedFile;
@@ -42,7 +43,7 @@ public class FileUploadService {
     private final UploadedFileRepository uploadedFileRepository;
 
     /**
-     * S3 Presigned PUT URL과 storedFileName(S3 key)을 발급한다.
+     * S3 Presigned PUT URL과 storedFileName(S3 key)을 발급한다. (이미지 전용 기본값)
      *
      * @param category         업로드 카테고리 (BLOG, PROJECT, MEMBER, NOTICE)
      * @param originalFileName 클라이언트가 보낸 원본 파일명
@@ -55,9 +56,28 @@ public class FileUploadService {
             String contentType,
             long contentLength
     ) {
-        // 서버가 S3 key를 직접 생성 — 형식: images/{category}/{uuid}-{sanitizedName}.{ext}
+        return issuePresignedUrl(category, FileStorageType.IMAGE, originalFileName, contentType, contentLength);
+    }
+
+    /**
+     * S3 Presigned PUT URL과 storedFileName(S3 key)을 발급한다.
+     *
+     * @param category         업로드 카테고리 (BLOG, PROJECT, MEMBER, NOTICE)
+     * @param storageType      저장 유형 (IMAGE → images/, FILE → files/)
+     * @param originalFileName 클라이언트가 보낸 원본 파일명
+     * @param contentType      MIME 타입
+     * @param contentLength    파일 크기 (bytes)
+     */
+    public PresignedIssueResult issuePresignedUrl(
+            UploadCategory category,
+            FileStorageType storageType,
+            String originalFileName,
+            String contentType,
+            long contentLength
+    ) {
+        // 서버가 S3 key를 직접 생성 — 형식: {storageRoot}/{category}/{uuid}-{sanitizedName}.{ext}
         String storedFileName = generateStoredFileName(
-                category.getFolderName(), originalFileName, contentType
+                storageType, category.getFolderName(), originalFileName, contentType
         );
 
         PresignedUrlProvider.PresignedPutUrl putUrl =
@@ -116,17 +136,28 @@ public class FileUploadService {
 
     /**
      * 도메인 서비스(BlogCommandService, ProjectCommandService 등)에서
-     * imageStoredFileNames를 받아 엔티티에 저장하기 전에 호출한다.
+     * imageStoredFileNames를 받아 엔티티에 저장하기 전에 호출한다. (이미지 전용 기본값)
      *
      * 검증 내용:
      *   1. key 형식: "images/{category}/" 로 시작, ".." 금지
      *   2. UploadedFile 테이블에 실제 존재 (STEP 3이 완료된 파일만 허용)
      */
     public void validateStoredFileNames(List<String> storedFileNames, UploadCategory category) {
+        validateStoredFileNames(storedFileNames, category, FileStorageType.IMAGE);
+    }
+
+    /**
+     * 도메인 서비스에서 storedFileNames를 받아 엔티티에 저장하기 전에 호출한다.
+     *
+     * 검증 내용:
+     *   1. key 형식: "{storageRoot}/{category}/" 로 시작, ".." 금지
+     *   2. UploadedFile 테이블에 실제 존재 (STEP 3이 완료된 파일만 허용)
+     */
+    public void validateStoredFileNames(List<String> storedFileNames, UploadCategory category, FileStorageType storageType) {
         if (storedFileNames == null || storedFileNames.isEmpty()) return;
 
         storedFileNames.forEach(key -> {
-            validateKeyRule(key, category);
+            validateKeyRule(key, category, storageType);
 
             if (!uploadedFileRepository.existsByStoredFileName(key)) {
                 throw new BadRequestException(
@@ -135,6 +166,15 @@ public class FileUploadService {
                 );
             }
         });
+    }
+
+    /**
+     * storedFileNames에 해당하는 UploadedFile 목록을 조회한다.
+     * 첨부파일 생성 시 originalFileName을 가져올 때 사용한다.
+     */
+    public List<UploadedFile> findUploadedFiles(List<String> storedFileNames) {
+        if (storedFileNames == null || storedFileNames.isEmpty()) return List.of();
+        return uploadedFileRepository.findAllByStoredFileNameIn(storedFileNames);
     }
 
 
@@ -157,15 +197,20 @@ public class FileUploadService {
 
 
     // 내부 유틸
-    private String generateStoredFileName(String folderName, String originalFileName, String contentType) {
+    private String generateStoredFileName(FileStorageType storageType, String folderName,
+                                          String originalFileName, String contentType) {
         String uuid = UUID.randomUUID().toString();
         String baseName = sanitizeBaseName(originalFileName);
         String ext = extensionFromContentType(contentType);
-        return String.format("images/%s/%s-%s.%s", folderName, uuid, baseName, ext);
+        return String.format("%s/%s/%s-%s.%s", storageType.getStorageRoot(), folderName, uuid, baseName, ext);
     }
 
     private void validateKeyRule(String storedFileName, UploadCategory category) {
-        String expectedPrefix = "images/" + category.getFolderName() + "/";
+        validateKeyRule(storedFileName, category, FileStorageType.IMAGE);
+    }
+
+    private void validateKeyRule(String storedFileName, UploadCategory category, FileStorageType storageType) {
+        String expectedPrefix = storageType.getStorageRoot() + "/" + category.getFolderName() + "/";
         if (storedFileName == null || storedFileName.isBlank()
                 || !storedFileName.startsWith(expectedPrefix)
                 || storedFileName.contains("..")) {
@@ -186,14 +231,19 @@ public class FileUploadService {
     }
 
 
-    // contentType enum으로 리팩터링 예정!
     private String extensionFromContentType(String contentType) {
-        if (contentType == null) return "png";
+        if (contentType == null) return "bin";
         return switch (contentType.toLowerCase(Locale.ROOT)) {
-            case "image/png"  -> "png";
-            case "image/jpeg" -> "jpg";
-            case "image/webp" -> "webp";
-            default           -> "png";
+            case "image/png"       -> "png";
+            case "image/jpeg"      -> "jpg";
+            case "image/webp"      -> "webp";
+            case "application/pdf" -> "pdf";
+            case "application/zip" -> "zip";
+            case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> "docx";
+            case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"       -> "xlsx";
+            case "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "pptx";
+            case "text/plain"      -> "txt";
+            default                -> "bin";
         };
     }
 
