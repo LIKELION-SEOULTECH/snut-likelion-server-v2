@@ -55,15 +55,17 @@ public class ApplicationPageResponse {
 
         private Long id;
         private String username;
+        private String email;
         private String part; // 지원 파트
         private String departmentType; // 부서 (운영진 지원일 경우)
         private String status;
         private LocalDateTime submittedAt; // 지원서 제출 시간
 
         @Builder
-        public ApplicationListResponse(Long id, String username, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
+        public ApplicationListResponse(Long id, String username, String email, Part part, DepartmentType departmentType, ApplicationStatus status, LocalDateTime submittedAt) {
             this.id = id;
             this.username = username;
+            this.email = email;
             this.part = part.getDescription();
             this.departmentType = departmentType != null ? departmentType.getDescription() : null;
             this.status = status.getDescription();

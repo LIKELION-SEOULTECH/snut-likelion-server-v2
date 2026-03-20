@@ -33,6 +33,7 @@ public class ApplicationQueryRepository {
                                 ApplicationPageResponse.ApplicationListResponse.class,
                                 application.id,
                                 application.user.username,
+                                application.user.email,
                                 application.part,
                                 application.departmentType,
                                 application.status,

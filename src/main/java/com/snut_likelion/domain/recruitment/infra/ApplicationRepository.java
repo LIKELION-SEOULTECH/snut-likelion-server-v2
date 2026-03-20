@@ -29,22 +29,18 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
                     "JOIN FETCH a.user u " +
                     "LEFT JOIN FETCH a.answers ans " +
                     "LEFT JOIN FETCH ans.question q " +
-                    "WHERE a.id = :id " +
-                    "AND a.recruitment.generation = :currentGeneration"
+                    "WHERE a.id = :id"
     )
-    Optional<Application> findWithDetailsById(
-            @Param("id") Long id,
-            @Param("currentGeneration") int currentGeneration
-    );
+    Optional<Application> findWithDetailsById(@Param("id") Long id);
 
-    @Query("SELECT a FROM Application a join fetch User u ON a.user.id = u.id WHERE a.id = :id")
+    @Query("SELECT a FROM Application a JOIN FETCH a.user u WHERE a.id = :id")
     Optional<Application> findByIdWithUser(@Param("id") Long id);
 
-    @Query("SELECT a FROM Application a join fetch User u ON a.user.id = u.id " +
-            "WHERE a.recruitment.generation = :currentGeneration " +
+    @Query("SELECT a FROM Application a JOIN FETCH a.user u JOIN FETCH a.recruitment " +
+            "WHERE a.recruitment.id = :recId " +
             "AND a.status = :status")
     List<Application> findAllByStatus(
             @Param("status") ApplicationStatus status,
-            @Param("currentGeneration") int currentGeneration
+            @Param("recId") Long recId
     );
 }

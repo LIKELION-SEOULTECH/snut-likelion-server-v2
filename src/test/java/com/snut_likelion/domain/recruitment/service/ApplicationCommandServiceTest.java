@@ -104,10 +104,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar4 = createAnsReq(4L);
 
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
@@ -132,10 +128,6 @@ class ApplicationCommandServiceTest {
 
         assertAll(
                 () -> assertThat(saved.getUser()).isEqualTo(user),
-                () -> assertThat(saved.getMajor()).isEqualTo("공학"),
-                () -> assertThat(saved.getInSchool()).isTrue(),
-                () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
-                () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.BACKEND),
@@ -157,10 +149,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar4 = createAnsReq(4L);
 
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
@@ -185,10 +173,6 @@ class ApplicationCommandServiceTest {
 
         assertAll(
                 () -> assertThat(saved.getUser()).isEqualTo(user),
-                () -> assertThat(saved.getMajor()).isEqualTo("공학"),
-                () -> assertThat(saved.getInSchool()).isTrue(),
-                () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
-                () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.BACKEND),
@@ -219,10 +203,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar6 = createAnsReq(6L);
 
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.FRONTEND)
                 .departmentType(DepartmentType.OPERATION)
@@ -249,10 +229,6 @@ class ApplicationCommandServiceTest {
 
         assertAll(
                 () -> assertThat(saved.getUser()).isEqualTo(user),
-                () -> assertThat(saved.getMajor()).isEqualTo("공학"),
-                () -> assertThat(saved.getInSchool()).isTrue(),
-                () -> assertThat(saved.getStudentId()).isEqualTo("20201234"),
-                () -> assertThat(saved.getGrade()).isEqualTo(3),
                 () -> assertThat(saved.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(saved.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(saved.getPart()).isEqualTo(Part.FRONTEND),
@@ -280,10 +256,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar3 = createAnsReq(3L);
 
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
@@ -310,10 +282,6 @@ class ApplicationCommandServiceTest {
         // Given
         when(recruitmentRepository.findById(recId)).thenReturn(Optional.empty());
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("x")
-                .studentId("y")
-                .grade(1)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.AI)
                 .departmentType(null)
@@ -335,10 +303,6 @@ class ApplicationCommandServiceTest {
         when(questionRepository.findById(q1.getId())).thenReturn(Optional.of(q1));
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
         CreateApplicationRequest req = CreateApplicationRequest.builder()
-                .major("x")
-                .studentId("y")
-                .grade(1)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.AI)
                 .departmentType(null)
@@ -365,10 +329,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar4 = createAnsReq(4L);
 
         UpdateApplicationRequest req = UpdateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
@@ -391,10 +351,6 @@ class ApplicationCommandServiceTest {
         // then
         assertAll(
                 () -> assertThat(application.getUser()).isEqualTo(user),
-                () -> assertThat(application.getMajor()).isEqualTo("공학"),
-                () -> assertThat(application.getInSchool()).isTrue(),
-                () -> assertThat(application.getStudentId()).isEqualTo("20201234"),
-                () -> assertThat(application.getGrade()).isEqualTo(3),
                 () -> assertThat(application.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(application.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(application.getPart()).isEqualTo(Part.BACKEND),
@@ -421,10 +377,6 @@ class ApplicationCommandServiceTest {
         ApplicationAnswerRequest ar4 = createAnsReq(4L);
 
         UpdateApplicationRequest req = UpdateApplicationRequest.builder()
-                .major("공학")
-                .studentId("20201234")
-                .grade(3)
-                .inSchool(true)
                 .isPersonalInfoConsent(true)
                 .part(Part.BACKEND)
                 .departmentType(null)
@@ -448,10 +400,6 @@ class ApplicationCommandServiceTest {
         // then
         assertAll(
                 () -> assertThat(application.getUser()).isEqualTo(user),
-                () -> assertThat(application.getMajor()).isEqualTo("공학"),
-                () -> assertThat(application.getInSchool()).isTrue(),
-                () -> assertThat(application.getStudentId()).isEqualTo("20201234"),
-                () -> assertThat(application.getGrade()).isEqualTo(3),
                 () -> assertThat(application.getIsPersonalInfoConsent()).isTrue(),
                 () -> assertThat(application.getPortfolio()).isEqualTo("https://example.com/portfolio.pdf"),
                 () -> assertThat(application.getPart()).isEqualTo(Part.BACKEND),
@@ -462,6 +410,87 @@ class ApplicationCommandServiceTest {
                         .extracting(Answer::getQuestion)
                         .containsExactlyInAnyOrder(q1, q2, q3, q4)
         );
+    }
+
+    @Test
+    void createApplication_submit_withDefaultQuestions_allAnswered() {
+        // Given: QuestionFilter가 DEFAULT + COMMON + PART 질문을 반환
+        Question dq1 = createQuestion(10L, QuestionTarget.DEFAULT, null, null);
+        Question dq2 = createQuestion(11L, QuestionTarget.DEFAULT, null, null);
+
+        ApplicationAnswerRequest ar1 = createAnsReq(1L);
+        ApplicationAnswerRequest ar2 = createAnsReq(2L);
+        ApplicationAnswerRequest ar3 = createAnsReq(3L);
+        ApplicationAnswerRequest ar4 = createAnsReq(4L);
+        ApplicationAnswerRequest ar10 = createAnsReq(10L);
+        ApplicationAnswerRequest ar11 = createAnsReq(11L);
+
+        CreateApplicationRequest req = CreateApplicationRequest.builder()
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(ar10, ar11, ar1, ar2, ar3, ar4))
+                .build();
+
+        when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
+        when(questionRepository.findById(2L)).thenReturn(Optional.of(q2));
+        when(questionRepository.findById(3L)).thenReturn(Optional.of(q3));
+        when(questionRepository.findById(4L)).thenReturn(Optional.of(q4));
+        when(questionRepository.findById(10L)).thenReturn(Optional.of(dq1));
+        when(questionRepository.findById(11L)).thenReturn(Optional.of(dq2));
+        when(questionFilter.getRequiredQuestions(recruitment, req.getPart(), req.getDepartmentType()))
+                .thenReturn(List.of(dq1, dq2, q1, q2, q3, q4));
+
+        // When
+        service.createApplication(recId, userId, true, req);
+
+        // Then
+        ArgumentCaptor<Application> captor = ArgumentCaptor.forClass(Application.class);
+        verify(applicationRepository).save(captor.capture());
+        Application saved = captor.getValue();
+
+        assertAll(
+                () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.SUBMITTED),
+                () -> assertThat(saved.getAnswers()).hasSize(6)
+                        .extracting(Answer::getQuestion)
+                        .containsExactlyInAnyOrder(dq1, dq2, q1, q2, q3, q4)
+        );
+    }
+
+    @Test
+    void createApplication_submit_withDefaultQuestions_missingDefaultAnswers_throws() {
+        // Given: QuestionFilter가 DEFAULT 질문 포함하여 반환하지만, answers에 DEFAULT 답변 누락
+        Question dq1 = createQuestion(10L, QuestionTarget.DEFAULT, null, null);
+
+        ApplicationAnswerRequest ar1 = createAnsReq(1L);
+        ApplicationAnswerRequest ar2 = createAnsReq(2L);
+        ApplicationAnswerRequest ar3 = createAnsReq(3L);
+        ApplicationAnswerRequest ar4 = createAnsReq(4L);
+
+        CreateApplicationRequest req = CreateApplicationRequest.builder()
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(ar1, ar2, ar3, ar4))
+                .build();
+
+        when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
+        when(questionRepository.findById(2L)).thenReturn(Optional.of(q2));
+        when(questionRepository.findById(3L)).thenReturn(Optional.of(q3));
+        when(questionRepository.findById(4L)).thenReturn(Optional.of(q4));
+        when(questionFilter.getRequiredQuestions(recruitment, req.getPart(), req.getDepartmentType()))
+                .thenReturn(List.of(dq1, q1, q2, q3, q4));
+
+        // When / Then: DEFAULT 질문 답변이 빠져서 INVALID_ANSWER_SET 발생
+        assertThatThrownBy(() -> service.createApplication(recId, userId, true, req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining(ApplicationErrorCode.INVALID_ANSWER_SET.getMessage());
     }
 
     @Test
@@ -478,6 +507,81 @@ class ApplicationCommandServiceTest {
 
         // then
         verify(applicationRepository).delete(app);
+    }
+
+    @Test
+    void createApplication_draft_withDefaultAnswers() {
+        // Given: DEFAULT + COMMON 질문 답변 포함한 임시저장
+        Question dq1 = createQuestion(10L, QuestionTarget.DEFAULT, null, null);
+        Question dq2 = createQuestion(11L, QuestionTarget.DEFAULT, null, null);
+
+        ApplicationAnswerRequest ar1 = createAnsReq(1L);
+        ApplicationAnswerRequest ar2 = createAnsReq(2L);
+        ApplicationAnswerRequest ar10 = createAnsReq(10L);
+        ApplicationAnswerRequest ar11 = createAnsReq(11L);
+
+        CreateApplicationRequest req = CreateApplicationRequest.builder()
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(ar10, ar11, ar1, ar2))
+                .build();
+
+        when(recruitmentRepository.findById(recId)).thenReturn(Optional.of(recruitment));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(questionRepository.findById(1L)).thenReturn(Optional.of(q1));
+        when(questionRepository.findById(2L)).thenReturn(Optional.of(q2));
+        when(questionRepository.findById(10L)).thenReturn(Optional.of(dq1));
+        when(questionRepository.findById(11L)).thenReturn(Optional.of(dq2));
+
+        // When
+        service.createApplication(recId, userId, false, req);
+
+        // Then
+        ArgumentCaptor<Application> captor = ArgumentCaptor.forClass(Application.class);
+        verify(applicationRepository).save(captor.capture());
+        Application saved = captor.getValue();
+
+        assertAll(
+                () -> assertThat(saved.getStatus()).isEqualTo(ApplicationStatus.DRAFT),
+                () -> assertThat(saved.getAnswers()).hasSize(4)
+                        .extracting(Answer::getQuestion)
+                        .containsExactlyInAnyOrder(dq1, dq2, q1, q2),
+                () -> assertThat(saved.getAnswers())
+                        .filteredOn(a -> a.getQuestion().getQuestionTarget() == QuestionTarget.DEFAULT)
+                        .hasSize(2)
+        );
+    }
+
+    @Test
+    void updateApplication_alreadySubmitted_throws() {
+        // Given: 이미 SUBMITTED 상태인 지원서
+        int currentGeneration = 13;
+
+        Application application = Application.builder()
+                .id(appId)
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .status(ApplicationStatus.SUBMITTED)
+                .build();
+
+        UpdateApplicationRequest req = UpdateApplicationRequest.builder()
+                .isPersonalInfoConsent(true)
+                .part(Part.BACKEND)
+                .departmentType(null)
+                .portfolio(null)
+                .answers(List.of(createAnsReq(1L)))
+                .build();
+
+        when(applicationRepository.findById(appId)).thenReturn(Optional.of(application));
+
+        UserInfo userInfo = UserInfo.from(user, currentGeneration);
+
+        // When / Then
+        assertThatThrownBy(() -> service.updateApplication(appId, userInfo, false, req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessage(ApplicationErrorCode.ALREADY_SUBMITTED.getMessage());
     }
 
 }
