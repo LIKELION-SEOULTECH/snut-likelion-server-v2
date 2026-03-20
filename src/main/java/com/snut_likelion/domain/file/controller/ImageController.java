@@ -1,4 +1,4 @@
-package com.snut_likelion.domain.file;
+package com.snut_likelion.domain.file.controller;
 
 import com.snut_likelion.global.provider.FileProvider;
 import io.swagger.v3.oas.annotations.Operation;

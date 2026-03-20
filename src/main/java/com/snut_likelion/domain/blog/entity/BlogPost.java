@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.blog.entity;
 
 import com.snut_likelion.domain.user.entity.User;
-import com.snut_likelion.global.support.BaseEntity;
+import com.snut_likelion.global.common.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -26,9 +26,10 @@ public class BlogPost extends BaseEntity {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;  // HTML
 
-    // 대표 썸네일 URL
-    @Column(name = "thumbnail_url")
-    private String thumbnailUrl;
+    // 대표 썸네일 S3 key (URL 아님)
+    // 조회 시 FileUploadService.buildFileUrl()로 URL 변환한다.
+    @Column(name = "thumbnail_url", length = 500)
+    private String thumbnailKey;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -97,7 +98,7 @@ public class BlogPost extends BaseEntity {
         this.images.clear();
 
         if (images == null || images.isEmpty()) {
-            this.thumbnailUrl = null;
+            this.thumbnailKey = null;
             return;
         }
 
@@ -106,7 +107,8 @@ public class BlogPost extends BaseEntity {
         }
 
         this.images.addAll(images);
-        this.thumbnailUrl = images.get(0).getUrl();
+        // 첫 번째 이미지의 storedFileName(key)을 썸네일로 사용
+        this.thumbnailKey = images.get(0).getStoredFileName();
     }
 
     public void setTaggedMembers(Set<User> taggedMembers) {

@@ -2,7 +2,7 @@ package com.snut_likelion.domain.recruitment.entity;
 
 import com.snut_likelion.domain.recruitment.exception.RecruitmentErrorCode;
 import com.snut_likelion.global.error.exception.BadRequestException;
-import com.snut_likelion.global.support.BaseEntity;
+import com.snut_likelion.global.common.support.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -1,12 +1,14 @@
 package com.snut_likelion.domain.user.service;
 
+import com.snut_likelion.domain.file.dto.UploadCategory;
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
-import com.snut_likelion.domain.user.repository.LionInfoRepository;
 import com.snut_likelion.domain.user.repository.PortfolioLinkRepository;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
+import com.snut_likelion.global.error.exception.BadRequestException;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,10 +31,10 @@ public class MemberCommandServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private LionInfoRepository lionInfoRepository;
+    private PortfolioLinkRepository portfolioLinkRepository;
 
     @Mock
-    private PortfolioLinkRepository portfolioLinkRepository;
+    private FileUploadService fileUploadService;
 
     @InjectMocks
     private MemberCommandService memberCommandService;
@@ -40,30 +42,23 @@ public class MemberCommandServiceTest {
     @Mock
     private UserInfo loginUser;
 
+    private static final String OLD_KEY = "images/members/old-uuid-profile.png";
+    private static final String NEW_KEY = "images/members/new-uuid-profile.png";
+
     @Test
-    void updateProfile_withImageAndLinks_updatesImageAndLinksAndProfile() {
+    void updateProfile_withValidStoredFileName_validatesDeletesOldAndSavesNewKey() {
         // Given
         Long memberId = 1L;
         User user = spy(User.builder()
                 .id(memberId)
-                .profileImageUrl("http://cdn/old.png")
+                .profileImageUrl(OLD_KEY)
                 .build());
-        when(userRepository.findWithLionUserById(memberId))
-                .thenReturn(Optional.of(user));
-
-        // Prepare request
-        String imageUrl = "http://cdn/new.png";
-        UpdateProfileRequest.PortfolioLinkDto pl1 = new UpdateProfileRequest.PortfolioLinkDto("GITHUB", "https://github.com/example");
-        UpdateProfileRequest.PortfolioLinkDto pl2 = new UpdateProfileRequest.PortfolioLinkDto("NOTION", "https://notion.com/example");
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
 
         UpdateProfileRequest req = UpdateProfileRequest.builder()
-                .profileImage(imageUrl)
+                .profileImage(NEW_KEY)
                 .intro("새로운 소개")
-                .description("새로운 설명")
-                .major("컴퓨터공학")
-                .saying("명언")
-                .stacks(List.of("JAVA", "SPRING"))
-                .portfolioLinks(List.of(pl1, pl2))
+                .portfolioLinks(List.of())
                 .build();
 
         // When
@@ -71,19 +66,96 @@ public class MemberCommandServiceTest {
 
         // Then
         assertAll(
-                () -> verify(user).changeProfileImage("http://cdn/new.png"),
+                () -> verify(fileUploadService).validateStoredFileNames(List.of(NEW_KEY), UploadCategory.MEMBER),
+                () -> verify(fileUploadService).deleteFile(OLD_KEY),
+                () -> verify(user).changeProfileImage(NEW_KEY)
+        );
+    }
+
+    @Test
+    void updateProfile_withNoOldImage_doesNotCallDeleteFile() {
+        // Given
+        Long memberId = 1L;
+        User user = spy(User.builder()
+                .id(memberId)
+                .profileImageUrl(null) // 기존 이미지 없음
+                .build());
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
+
+        UpdateProfileRequest req = UpdateProfileRequest.builder()
+                .profileImage(NEW_KEY)
+                .portfolioLinks(List.of())
+                .build();
+
+        // When
+        memberCommandService.updateProfile(loginUser, memberId, req);
+
+        // Then
+        verify(fileUploadService, never()).deleteFile(any());
+        verify(user).changeProfileImage(NEW_KEY);
+    }
+
+    @Test
+    void updateProfile_withInvalidStoredFileName_throwsBadRequest() {
+        // Given
+        Long memberId = 1L;
+        User user = User.builder().id(memberId).build();
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
+
+        String invalidKey = "images/projects/uuid.png"; // MEMBER가 아닌 경로
+        doThrow(new BadRequestException(null, "storedFileName 규칙 위반"))
+                .when(fileUploadService).validateStoredFileNames(List.of(invalidKey), UploadCategory.MEMBER);
+
+        UpdateProfileRequest req = UpdateProfileRequest.builder()
+                .profileImage(invalidKey)
+                .portfolioLinks(List.of())
+                .build();
+
+        // When & Then
+        assertThatThrownBy(() -> memberCommandService.updateProfile(loginUser, memberId, req))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void updateProfile_withImageAndLinks_updatesAllFields() {
+        // Given
+        Long memberId = 1L;
+        User user = spy(User.builder()
+                .id(memberId)
+                .profileImageUrl(OLD_KEY)
+                .build());
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
+
+        UpdateProfileRequest.PortfolioLinkDto pl1 = new UpdateProfileRequest.PortfolioLinkDto("GITHUB", "https://github.com/example");
+        UpdateProfileRequest req = UpdateProfileRequest.builder()
+                .profileImage(NEW_KEY)
+                .intro("새로운 소개")
+                .description("새로운 설명")
+                .major("컴퓨터공학")
+                .saying("명언")
+                .stacks(List.of("JAVA", "SPRING"))
+                .portfolioLinks(List.of(pl1))
+                .build();
+
+        // When
+        memberCommandService.updateProfile(loginUser, memberId, req);
+
+        // Then
+        assertAll(
+                () -> verify(fileUploadService).validateStoredFileNames(List.of(NEW_KEY), UploadCategory.MEMBER),
+                () -> verify(fileUploadService).deleteFile(OLD_KEY),
+                () -> verify(user).changeProfileImage(NEW_KEY),
                 () -> verify(portfolioLinkRepository).saveAll(anyList()),
-                () -> verify(user).setPortfolioLinkList(anyList()),
                 () -> verify(user).updateProfile("새로운 소개", "새로운 설명", "컴퓨터공학", "명언", List.of("JAVA", "SPRING"))
         );
     }
 
     @Test
-    void updateProfile_withoutImageAndLinks_onlyUpdatesProfile() {
+    void updateProfile_withoutImage_onlyUpdatesProfile() {
+        // Given
         Long memberId = 1L;
         User user = User.builder().id(memberId).build();
-        when(userRepository.findWithLionUserById(memberId))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
 
         UpdateProfileRequest req = UpdateProfileRequest.builder()
                 .intro("새로운 소개")
@@ -93,10 +165,12 @@ public class MemberCommandServiceTest {
                 .stacks(List.of("JAVA", "SPRING"))
                 .build();
 
-
+        // When
         memberCommandService.updateProfile(loginUser, memberId, req);
 
+        // Then
         assertAll(
+                () -> verifyNoInteractions(fileUploadService),
                 () -> verify(portfolioLinkRepository, never()).saveAll(any()),
                 () -> assertThat(user.getIntro()).isEqualTo("새로운 소개"),
                 () -> assertThat(user.getDescription()).isEqualTo("새로운 설명"),
@@ -108,49 +182,32 @@ public class MemberCommandServiceTest {
 
     @Test
     void updateProfile_withBlankImage_doesNotUpdateImage() {
-        Long memberId = 1L;
-        User user = spy(User.builder()
-                .id(memberId)
-                .profileImageUrl("http://cdn/old.png")
-                .build());
-        when(userRepository.findWithLionUserById(memberId))
-                .thenReturn(Optional.of(user));
-
-        UpdateProfileRequest req = UpdateProfileRequest.builder()
-                .profileImage("   ") // blank string
-                .intro("새로운 소개")
-                .build();
-
-        memberCommandService.updateProfile(loginUser, memberId, req);
-
-        verify(user, never()).changeProfileImage(anyString());
-    }
-
-    @Test
-    void withdrawMember_shouldDeleteUser() {
         // Given
         Long memberId = 1L;
         User user = spy(User.builder()
                 .id(memberId)
-                .profileImageUrl("http://cdn/avatar.png")
+                .profileImageUrl(OLD_KEY)
                 .build());
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.of(user));
 
-        when(userRepository.findById(memberId))
-                .thenReturn(Optional.of(user));
+        UpdateProfileRequest req = UpdateProfileRequest.builder()
+                .profileImage("   ") // blank
+                .intro("새로운 소개")
+                .build();
 
-        // when
-        memberCommandService.withdrawMember(loginUser, memberId);
+        // When
+        memberCommandService.updateProfile(loginUser, memberId, req);
 
-        // then
-        verify(userRepository).delete(user);
+        // Then
+        verifyNoInteractions(fileUploadService);
+        verify(user, never()).changeProfileImage(anyString());
     }
 
     @Test
     void updateProfile_userNotFound_throwsNotFound() {
         // Given
         Long memberId = 1L;
-        when(userRepository.findWithLionUserById(memberId))
-                .thenReturn(Optional.empty());
+        when(userRepository.findWithLionUserById(memberId)).thenReturn(Optional.empty());
         UpdateProfileRequest req = mock(UpdateProfileRequest.class);
 
         // When & Then
@@ -160,11 +217,24 @@ public class MemberCommandServiceTest {
     }
 
     @Test
+    void withdrawMember_shouldDeleteUser() {
+        // Given
+        Long memberId = 1L;
+        User user = User.builder().id(memberId).build();
+        when(userRepository.findById(memberId)).thenReturn(Optional.of(user));
+
+        // When
+        memberCommandService.withdrawMember(loginUser, memberId);
+
+        // Then
+        verify(userRepository).delete(user);
+    }
+
+    @Test
     void withdrawMember_userNotFound_throwsNotFound() {
         // Given
         Long memberId = 1L;
-        when(userRepository.findById(memberId))
-                .thenReturn(Optional.empty());
+        when(userRepository.findById(memberId)).thenReturn(Optional.empty());
 
         // When & Then
         assertThatThrownBy(() -> memberCommandService.withdrawMember(loginUser, memberId))

@@ -4,7 +4,7 @@ import com.snut_likelion.domain.user.entity.LionInfo;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;
 import com.snut_likelion.domain.user.entity.User;
-import com.snut_likelion.global.support.RoleConverter;
+import com.snut_likelion.global.common.support.RoleConverter;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,11 +39,11 @@ public class MemberResponse {
         this.portfolioLinks = portfolioLinks;
     }
 
-    public static MemberResponse of(User member, LionInfo lionInfo, List<PortfolioLinkDto> portfolioLinks) {
+    public static MemberResponse of(User member, LionInfo lionInfo, List<PortfolioLinkDto> portfolioLinks, String profileImageUrl) {
         return MemberResponse.builder()
                 .id(member.getId())
                 .name(member.getUsername())
-                .profileImageUrl(member.getProfileImageUrl())
+                .profileImageUrl(profileImageUrl)
                 .generation(lionInfo.getGeneration())
                 .role(lionInfo.getRole())
                 .major(member.getMajor())

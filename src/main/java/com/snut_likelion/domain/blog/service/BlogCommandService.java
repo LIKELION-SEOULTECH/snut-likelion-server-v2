@@ -7,18 +7,18 @@ import com.snut_likelion.domain.blog.entity.BlogPost;
 import com.snut_likelion.domain.blog.entity.PostStatus;
 import com.snut_likelion.domain.blog.exception.BlogErrorCode;
 import com.snut_likelion.domain.blog.repository.BlogPostRepository;
+import com.snut_likelion.domain.file.dto.UploadCategory;
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.auth.model.UserInfo;
 import com.snut_likelion.global.error.exception.NotFoundException;
-import com.snut_likelion.global.provider.FileProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,8 +29,9 @@ public class BlogCommandService {
 
     private final BlogPostRepository postRepo;
     private final UserRepository userRepo;
-    private final FileProvider fileProvider;
+    private final FileUploadService fileUploadService; // FileProvider 대신 FileUploadService 사용
 
+    // save 이므로 void형태로 반환
     @Transactional
     @PreAuthorize("@authChecker.checkIsOfficialAndManager(#req.category, #author)")
     public Long createPost(CreateBlogRequest req, UserInfo author, boolean submit) {
@@ -39,14 +40,14 @@ public class BlogCommandService {
         User user = userRepo.findById(author.getId())
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         post.setAuthor(user);
-        post.setImages(this.mappingToBlogImages(req.getImages()));
-        post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
 
-        if (submit) {
-            post.setStatus(PostStatus.PUBLISHED);
-        } else {
-            post.setStatus(PostStatus.DRAFT);
-        }
+        // storedFileNames 검증 후 BlogImage 엔티티로 변환하여 설정
+        List<String> keys = req.getImageStoredFileNames();
+        fileUploadService.validateStoredFileNames(keys, UploadCategory.BLOG);
+        post.setImages(BlogImage.listOf(keys));
+
+        post.setTaggedMembers(fetchUsers(req.getTaggedMemberIds()));
+        post.setStatus(submit ? PostStatus.PUBLISHED : PostStatus.DRAFT);
 
         return postRepo.save(post).getId();
     }
@@ -57,25 +58,19 @@ public class BlogCommandService {
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
-        post.updatePost(
-                req.getTitle(),
-                req.getContentHtml(),
-                req.getCategory()
-        );
+        post.updatePost(req.getTitle(), req.getContentHtml(), req.getCategory());
 
         if (req.getTaggedMemberIds() != null) {
-            post.setTaggedMembers(this.fetchUsers(req.getTaggedMemberIds()));
+            post.setTaggedMembers(fetchUsers(req.getTaggedMemberIds()));
         }
 
-        if (req.getNewImages() != null) {
-            post.setImages(this.mappingToBlogImages(req.getNewImages()));
+        if (req.getNewImageStoredFileNames() != null) {
+            List<String> keys = req.getNewImageStoredFileNames();
+            fileUploadService.validateStoredFileNames(keys, UploadCategory.BLOG);
+            post.setImages(BlogImage.listOf(keys));
         }
 
-        if (submit) {
-            post.setStatus(PostStatus.PUBLISHED);
-        } else {
-            post.setStatus(PostStatus.DRAFT);
-        }
+        post.setStatus(submit ? PostStatus.PUBLISHED : PostStatus.DRAFT);
     }
 
     @Transactional
@@ -84,14 +79,13 @@ public class BlogCommandService {
         BlogPost post = postRepo.findById(postId)
                 .orElseThrow(() -> new NotFoundException(BlogErrorCode.POST_NOT_FOUND));
 
-        // S3(또는 로컬)에 저장된 이미지 삭제
+        // storedFileName(S3 key)으로 직접 삭제 — extractImageName 사용 금지
         post.getImages()
-                .forEach(img -> fileProvider.deleteFile(img.getUrl()));
+                .forEach(img -> fileUploadService.deleteFile(img.getStoredFileName()));
 
         postRepo.delete(post);
     }
 
-    // 버리기
     @Transactional
     public void discardDraft(UserInfo author) {
         User user = userRepo.findById(author.getId())
@@ -99,21 +93,8 @@ public class BlogCommandService {
         postRepo.deleteByAuthorAndStatus(user, PostStatus.DRAFT);
     }
 
-    private List<BlogImage> mappingToBlogImages(List<String> imageUrls) {
-        if (imageUrls == null || imageUrls.isEmpty()) return List.of();
-        List<BlogImage> list = new ArrayList<>();
-        for (String url : imageUrls) {
-            BlogImage blogImage = BlogImage.builder()
-                    .url(url)
-                    .build();
-            list.add(blogImage);
-        }
-        return list;
-    }
-
     private Set<User> fetchUsers(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return Set.of();
-        return userRepo.findAllById(ids).stream()
-                .collect(Collectors.toSet());
+        return userRepo.findAllById(ids).stream().collect(Collectors.toSet());
     }
 }

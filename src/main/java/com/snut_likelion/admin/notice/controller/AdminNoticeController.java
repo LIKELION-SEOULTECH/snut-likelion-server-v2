@@ -80,4 +80,14 @@ public class AdminNoticeController {
     ) {
         adminNoticeService.removeNotices(ids);
     }
+
+    @Operation(summary = "공지사항 첨부파일 단건 삭제", description = "공지사항에 연결된 특정 첨부파일(이미지 또는 파일)을 삭제합니다.")
+    @DeleteMapping("/{noticeId}/attachments/{attachmentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAttachment(
+            @Parameter(description = "공지사항 ID") @PathVariable Long noticeId,
+            @Parameter(description = "첨부파일 ID") @PathVariable Long attachmentId
+    ) {
+        adminNoticeService.removeAttachment(noticeId, attachmentId);
+    }
 }

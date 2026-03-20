@@ -16,7 +16,7 @@ import java.util.List;
 @Schema(description = "프로필 수정 요청")
 public class UpdateProfileRequest {
 
-    @Schema(description = "프로필 이미지 URL (presigned URL 방식 예정)", example = "https://example.com/image.jpg", nullable = true)
+    @Schema(description = "프로필 이미지 storedFileName (S3 key, upload-complete 후 받은 값)", example = "images/members/uuid-profile.png", nullable = true)
     private String profileImage;
 
     @Schema(description = "한 줄 소개", example = "안녕하세요!", nullable = true)

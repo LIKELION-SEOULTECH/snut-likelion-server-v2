@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Function;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -28,13 +29,19 @@ public class BlogSummaryPageResponse {
         this.content = content;
     }
 
-    public static BlogSummaryPageResponse from(Page<BlogPost> page) {
+    /**
+     * @param keyToUrl thumbnailKey(S3 key) → URL 변환 함수
+     *                 ex) fileUploadService::buildFileUrl
+     */
+    public static BlogSummaryPageResponse from(Page<BlogPost> page, Function<String, String> keyToUrl) {
         return BlogSummaryPageResponse.builder()
                 .page(page.getNumber())
                 .size(page.getSize())
                 .totalElements(page.getTotalElements())
                 .totalPages(page.getTotalPages())
-                .content(page.getContent().stream().map(BlogSummaryResponse::from).toList())
+                .content(page.getContent().stream()
+                        .map(post -> BlogSummaryResponse.from(post, keyToUrl))
+                        .toList())
                 .build();
     }
 
@@ -55,12 +62,19 @@ public class BlogSummaryPageResponse {
             this.thumbnailUrl = thumbnailUrl;
         }
 
-        public static BlogSummaryResponse from(BlogPost blogPost) {
+        /**
+         * @param keyToUrl thumbnailKey → URL 변환 함수
+         */
+        public static BlogSummaryResponse from(BlogPost blogPost, Function<String, String> keyToUrl) {
+            String thumbnailUrl = blogPost.getThumbnailKey() != null
+                    ? keyToUrl.apply(blogPost.getThumbnailKey())
+                    : null;
+
             return BlogSummaryResponse.builder()
                     .postId(blogPost.getId())
                     .title(blogPost.getTitle())
                     .updatedAt(blogPost.getUpdatedAt())
-                    .thumbnailUrl(blogPost.getThumbnailUrl())
+                    .thumbnailUrl(thumbnailUrl)
                     .build();
         }
     }

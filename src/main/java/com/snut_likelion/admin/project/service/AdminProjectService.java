@@ -2,8 +2,8 @@ package com.snut_likelion.admin.project.service;
 
 import com.snut_likelion.admin.project.dto.response.ProjectPageResponse;
 import com.snut_likelion.admin.project.infra.AdminProjectQueryRepository;
-import com.snut_likelion.domain.project.dto.request.CreateProjectRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectRequest;
+import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectCommandService;
 import com.snut_likelion.domain.project.service.ProjectRetrospectionService;
@@ -39,18 +39,18 @@ public class AdminProjectService {
     }
 
     @Transactional
-    public void create(CreateProjectRequest req) {
-        projectCommandService.create(req);
+    public void create(CreateProjectPresignedRequest req) {
+        projectCommandService.createPresigned(req);
     }
 
     @Transactional
-    public void modify(Long projectId, UpdateProjectRequest req) {
-        projectCommandService.modify(projectId, req);
+    public void modify(Long projectId, UpdateProjectPresignedRequest req) {
+        projectCommandService.modifyPresigned(projectId, req);
     }
 
     @Transactional
-    public void removeImage(Long projectId, String imageUrl) {
-        projectCommandService.removeImage(projectId, imageUrl);
+    public void removeImage(Long projectId, String imageStoredFileName) {
+        projectCommandService.removeImageByKey(projectId, imageStoredFileName);
     }
 
     @Transactional(readOnly = true)

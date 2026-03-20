@@ -6,6 +6,7 @@ import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.project.infra.ProjectQueryRepository;
 import com.snut_likelion.domain.project.infra.ProjectRepository;
 import com.snut_likelion.domain.user.entity.LionInfo;
@@ -37,6 +38,9 @@ class ProjectQueryServiceTest {
 
     @Mock
     private ProjectQueryRepository projectQueryRepository;
+
+    @Mock
+    private FileUploadService fileUploadService;
 
     @InjectMocks
     private ProjectQueryService projectQueryService;

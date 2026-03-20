@@ -51,6 +51,11 @@ public class AdminNoticeService {
     @Transactional
     public void removeNotices(List<Long> ids) { ids.forEach(this::remove); }
 
+    @Transactional
+    public void removeAttachment(Long noticeId, Long attachmentId) {
+        noticeService.removeAttachment(noticeId, attachmentId);
+    }
+
     // 핀 토글
     @Transactional
     public void togglePin(Long noticeId) {

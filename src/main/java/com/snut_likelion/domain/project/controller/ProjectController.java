@@ -1,7 +1,7 @@
 package com.snut_likelion.domain.project.controller;
 
-import com.snut_likelion.domain.project.dto.request.CreateProjectRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectRequest;
+import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.dto.response.ProjectDetailResponse;
 import com.snut_likelion.domain.project.dto.response.ProjectResponse;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
@@ -30,18 +30,7 @@ public class ProjectController {
     private final ProjectCommandService projectCommandService;
     private final ProjectQueryService projectQueryService;
 
-    @Operation(summary = "프로젝트 생성", description = "새로운 프로젝트를 생성합니다. (USER 권한 필요)")
-    @PostMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Object> createProject(
-            @ModelAttribute @Valid CreateProjectRequest req
-    ) {
-        projectCommandService.create(req);
-        return ApiResponse.success("프로젝트 생성 성공");
-    }
-
-    @Operation(summary = "프로젝트 전체 조회", description = "기수(generation)나 카테고리별로 프로젝트 목록을 필터링하여 조회합니다.")
+    @Operation(summary = "프로젝트 전체 조회")
     @GetMapping
     public ApiResponse<List<ProjectResponse>> getAllProjects(
             @RequestParam(required = false) Integer generation,
@@ -53,30 +42,46 @@ public class ProjectController {
         );
     }
 
-    @Operation(summary = "프로젝트 상세 조회", description = "프로젝트 ID를 통해 상세 정보를 조회합니다.")
+    @Operation(summary = "프로젝트 상세 조회")
     @GetMapping("/{projectId}")
     public ApiResponse<ProjectDetailResponse> getProject(
             @PathVariable("projectId") Long projectId
     ) {
-        return ApiResponse.success(projectQueryService.getProjectById(projectId), "프로젝트 상세 조회 성공");
+        return ApiResponse.success(
+                projectQueryService.getProjectById(projectId),
+                "프로젝트 상세 조회 성공"
+        );
     }
 
-    @Operation(summary = "프로젝트 수정", description = "자신의 프로젝트 정보를 수정합니다.")
+    @Operation(summary = "프로젝트 생성 (Presigned URL 기반)",
+            description = "Presigned URL로 이미지 업로드 완료 후 storedFileName을 전달하여 프로젝트를 생성합니다.")
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<Object> createProject(
+            @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
+            @Valid @RequestBody CreateProjectPresignedRequest request
+    ) {
+        Long id = projectCommandService.createPresigned(request);
+        return ApiResponse.success("프로젝트가 등록되었습니다. projectId=" + id);
+    }
+
+    @Operation(summary = "프로젝트 수정 (Presigned URL 기반)")
     @PatchMapping("/{projectId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void modifyProject(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
-            @PathVariable("projectId") Long projectId,
-            @ModelAttribute("updateProjectRequest") @Valid UpdateProjectRequest req
+            @PathVariable Long projectId,
+            @Valid @RequestBody UpdateProjectPresignedRequest request
     ) {
-        projectCommandService.modify(projectId, req);
+        projectCommandService.modifyPresigned(projectId, request);
     }
 
-    @Operation(summary = "프로젝트 삭제", description = "자신의 프로젝트를 삭제합니다.")
+    @Operation(summary = "프로젝트 삭제")
     @DeleteMapping("/{projectId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProject(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId
@@ -84,16 +89,16 @@ public class ProjectController {
         projectCommandService.remove(projectId);
     }
 
-    @Operation(summary = "프로젝트 이미지 삭제", description = "프로젝트에 포함된 특정 이미지를 삭제합니다.")
+    @Operation(summary = "프로젝트 이미지 삭제",
+            description = "storedFileName(S3 key)으로 프로젝트 이미지를 삭제합니다.")
     @DeleteMapping("/{projectId}/images")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("@authChecker.isMyProject(#loginUser.userInfo, #projectId)")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProjectImage(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
             @PathVariable("projectId") Long projectId,
-            @RequestParam("imageUrl") String imageUrl
+            @RequestParam("imageStoredFileName") String imageStoredFileName
     ) {
-        projectCommandService.removeImage(projectId, imageUrl);
+        projectCommandService.removeImageByKey(projectId, imageStoredFileName);
     }
-
 }
