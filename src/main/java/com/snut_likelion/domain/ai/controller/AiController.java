@@ -29,7 +29,7 @@ public class AiController {
         return ApiResponse.success(aiQueryService.chat(request.getText()));
     }
 
-    @Operation(summary = "AI summarize", description = "Query AI summarize.")
+    @Operation(summary = "AI 요약", description = "텍스트를 AI 서버에 전달하여 요약 결과를 반환합니다.")
     @PostMapping("/summarize")
     public ApiResponse<AiSummarizeResult> summarize(@Valid @RequestBody AiSummarizeRequest request) {
         return ApiResponse.success(aiQueryService.summarize(request.getText()));

@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.core.io.ClassPathResource;
+import com.snut_likelion.domain.ai.repository.IntentAnswerPort;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class IntentAnswerResolver {
+public class IntentAnswerResolver implements IntentAnswerPort {
 
     private static final String RESOURCE_PATH = "ai/intent-answer.xlsx";
     private static final String HEADER_INTENT = "intent";

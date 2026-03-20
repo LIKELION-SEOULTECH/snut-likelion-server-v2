@@ -42,11 +42,7 @@ class AiControllerTest {
     @Test
     void chat_whenValidRequest_returnsSuccessResponse() throws Exception {
         // Given
-        AiChatResult result = AiChatResult.builder()
-                .answer("mapped answer")
-                .matchedQuestion("intent-key")
-                .score(0.95)
-                .build();
+        AiChatResult result = AiChatResult.of("mapped answer", "intent-key", 0.95);
         when(aiQueryService.chat(anyString())).thenReturn(result);
 
         String requestBody = objectMapper.writeValueAsString(new TestTextRequest("question"));
@@ -65,9 +61,7 @@ class AiControllerTest {
     @Test
     void summarize_whenValidRequest_returnsSuccessResponse() throws Exception {
         // Given
-        AiSummarizeResult result = AiSummarizeResult.builder()
-                .summary("summary text")
-                .build();
+        AiSummarizeResult result = AiSummarizeResult.of("summary text");
         when(aiQueryService.summarize(anyString())).thenReturn(result);
 
         String requestBody = objectMapper.writeValueAsString(new TestTextRequest("long text"));

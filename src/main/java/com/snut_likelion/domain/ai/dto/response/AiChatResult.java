@@ -1,7 +1,6 @@
 package com.snut_likelion.domain.ai.dto.response;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,10 +12,13 @@ public class AiChatResult {
     private String matchedQuestion;
     private Double score;
 
-    @Builder
-    public AiChatResult(String answer, String matchedQuestion, Double score) {
+    private AiChatResult(String answer, String matchedQuestion, Double score) {
         this.answer = answer;
         this.matchedQuestion = matchedQuestion;
         this.score = score;
+    }
+
+    public static AiChatResult of(String answer, String matchedQuestion, Double score) {
+        return new AiChatResult(answer, matchedQuestion, score);
     }
 }

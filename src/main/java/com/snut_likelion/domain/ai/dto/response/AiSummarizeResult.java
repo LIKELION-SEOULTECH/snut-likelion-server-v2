@@ -1,7 +1,6 @@
 package com.snut_likelion.domain.ai.dto.response;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,8 +10,11 @@ public class AiSummarizeResult {
 
     private String summary;
 
-    @Builder
-    public AiSummarizeResult(String summary) {
+    private AiSummarizeResult(String summary) {
         this.summary = summary;
+    }
+
+    public static AiSummarizeResult of(String summary) {
+        return new AiSummarizeResult(summary);
     }
 }

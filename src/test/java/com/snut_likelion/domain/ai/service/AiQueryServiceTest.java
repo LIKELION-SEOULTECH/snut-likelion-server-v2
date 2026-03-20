@@ -6,7 +6,7 @@ import com.snut_likelion.domain.ai.exception.AiErrorCode;
 import com.snut_likelion.domain.ai.exception.AiException;
 import com.snut_likelion.domain.ai.repository.AiChatRepository;
 import com.snut_likelion.domain.ai.repository.AiSummaryRepository;
-import com.snut_likelion.infra.ai.mapping.IntentAnswerResolver;
+import com.snut_likelion.domain.ai.repository.IntentAnswerPort;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,7 +29,7 @@ class AiQueryServiceTest {
     private AiSummaryRepository aiSummaryRepository;
 
     @Mock
-    private IntentAnswerResolver intentAnswerResolver;
+    private IntentAnswerPort intentAnswerPort;
 
     @InjectMocks
     private AiQueryService aiQueryService;
@@ -42,7 +42,7 @@ class AiQueryServiceTest {
         Double score = 0.91;
 
         when(aiChatRepository.chat(text)).thenReturn(new AiChatRepository.ChatQueryResult(matchedQuestion, score));
-        when(intentAnswerResolver.findAnswer(matchedQuestion)).thenReturn(Optional.of("mapped answer"));
+        when(intentAnswerPort.findAnswer(matchedQuestion)).thenReturn(Optional.of("mapped answer"));
 
         // When
         AiChatResult result = aiQueryService.chat(text);
@@ -59,7 +59,7 @@ class AiQueryServiceTest {
         String text = "question";
 
         when(aiChatRepository.chat(text)).thenReturn(new AiChatRepository.ChatQueryResult(null, 0.2));
-        when(intentAnswerResolver.findAnswer(null)).thenReturn(Optional.empty());
+        when(intentAnswerPort.findAnswer(null)).thenReturn(Optional.empty());
 
         // When
         AiChatResult result = aiQueryService.chat(text);
@@ -77,7 +77,7 @@ class AiQueryServiceTest {
         String matchedQuestion = "unknown-intent";
 
         when(aiChatRepository.chat(text)).thenReturn(new AiChatRepository.ChatQueryResult(matchedQuestion, 0.7));
-        when(intentAnswerResolver.findAnswer(matchedQuestion)).thenReturn(Optional.empty());
+        when(intentAnswerPort.findAnswer(matchedQuestion)).thenReturn(Optional.empty());
 
         // When
         AiChatResult result = aiQueryService.chat(text);
