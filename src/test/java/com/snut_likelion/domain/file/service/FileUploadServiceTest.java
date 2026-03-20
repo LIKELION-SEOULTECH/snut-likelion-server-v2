@@ -1,5 +1,6 @@
 package com.snut_likelion.domain.file.service;
 
+import com.snut_likelion.domain.file.dto.FileStorageType;
 import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.entity.UploadedFile;
@@ -22,8 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+
 
 @ExtendWith(MockitoExtension.class)
 class FileUploadServiceTest {
@@ -173,6 +174,121 @@ class FileUploadServiceTest {
         // When / Then
         assertThatThrownBy(() -> fileUploadService.validateStoredFileNames(List.of(key), UploadCategory.BLOG))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    // ── issuePresignedUrl (FileStorageType 오버로드) ──────────────────────────
+
+    @Test
+    void issuePresignedUrl_withFileStorageType_generatesFilesRootPath() {
+        // Given
+        PresignedUrlProvider.PresignedPutUrl putUrl =
+                new PresignedUrlProvider.PresignedPutUrl("https://s3.upload.url", Map.of("Content-Type", "application/pdf"));
+        when(presignedUrlProvider.issuePutUrl(anyString(), eq("application/pdf"), any())).thenReturn(putUrl);
+        when(fileProvider.buildImageUrl(anyString())).thenReturn("https://cdn/files/notices/uuid-report.pdf");
+
+        // When
+        PresignedIssueResult result = fileUploadService.issuePresignedUrl(
+                UploadCategory.NOTICE, FileStorageType.FILE, "report.pdf", "application/pdf", 204800L
+        );
+
+        // Then
+        assertThat(result.storedFileName()).startsWith("files/notices/");
+        assertThat(result.storedFileName()).endsWith(".pdf");
+    }
+
+    @Test
+    void issuePresignedUrl_defaultOverload_usesImageStorageType() {
+        // Given
+        PresignedUrlProvider.PresignedPutUrl putUrl =
+                new PresignedUrlProvider.PresignedPutUrl("https://s3.upload.url", Map.of());
+        when(presignedUrlProvider.issuePutUrl(anyString(), eq("image/webp"), any())).thenReturn(putUrl);
+        when(fileProvider.buildImageUrl(anyString())).thenReturn("https://cdn/images/members/uuid.webp");
+
+        // When
+        PresignedIssueResult result = fileUploadService.issuePresignedUrl(
+                UploadCategory.MEMBER, "avatar.webp", "image/webp", 512L
+        );
+
+        // Then — 기본값은 images/ 경로
+        assertThat(result.storedFileName()).startsWith("images/members/");
+        assertThat(result.storedFileName()).endsWith(".webp");
+    }
+
+    // ── validateStoredFileNames (FileStorageType 오버로드) ────────────────────
+
+    @Test
+    void validateStoredFileNames_withFileStorageType_acceptsFilesPrefix() {
+        // Given
+        String key = "files/notices/uuid-report.pdf";
+        when(uploadedFileRepository.existsByStoredFileName(key)).thenReturn(true);
+
+        // When / Then
+        assertDoesNotThrow(() ->
+                fileUploadService.validateStoredFileNames(List.of(key), UploadCategory.NOTICE, FileStorageType.FILE));
+    }
+
+    @Test
+    void validateStoredFileNames_withFileStorageType_rejectsImagesPrefix() {
+        // "images/..." 경로는 FileStorageType.FILE 검증에서 실패해야 함
+        String key = "images/notices/uuid-photo.png";
+
+        assertThatThrownBy(() ->
+                fileUploadService.validateStoredFileNames(List.of(key), UploadCategory.NOTICE, FileStorageType.FILE))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    void validateStoredFileNames_withImageStorageType_rejectsFilesPrefix() {
+        // "files/..." 경로는 FileStorageType.IMAGE 검증에서 실패해야 함
+        String key = "files/notices/uuid-report.pdf";
+
+        assertThatThrownBy(() ->
+                fileUploadService.validateStoredFileNames(List.of(key), UploadCategory.NOTICE, FileStorageType.IMAGE))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    // ── findUploadedFiles ────────────────────────────────────────────────────
+
+    @Test
+    void findUploadedFiles_returnsMatchingEntities() {
+        // Given
+        List<String> keys = List.of("images/notices/uuid1.png", "files/notices/uuid2.pdf");
+        List<UploadedFile> files = List.of(
+                UploadedFile.builder().uploadCategory(UploadCategory.NOTICE)
+                        .storedFileName("images/notices/uuid1.png").originalFileName("banner.png")
+                        .contentType("image/png").contentLength(1024L).build(),
+                UploadedFile.builder().uploadCategory(UploadCategory.NOTICE)
+                        .storedFileName("files/notices/uuid2.pdf").originalFileName("report.pdf")
+                        .contentType("application/pdf").contentLength(204800L).build()
+        );
+        when(uploadedFileRepository.findAllByStoredFileNameIn(keys)).thenReturn(files);
+
+        // When
+        List<UploadedFile> result = fileUploadService.findUploadedFiles(keys);
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(UploadedFile::getOriginalFileName)
+                .containsExactlyInAnyOrder("banner.png", "report.pdf");
+    }
+
+    @Test
+    void findUploadedFiles_emptyInput_returnsEmptyList() {
+        // When
+        List<UploadedFile> result = fileUploadService.findUploadedFiles(List.of());
+
+        // Then
+        assertThat(result).isEmpty();
+        verifyNoInteractions(uploadedFileRepository);
+    }
+
+    @Test
+    void findUploadedFiles_nullInput_returnsEmptyList() {
+        // When
+        List<UploadedFile> result = fileUploadService.findUploadedFiles(null);
+
+        // Then
+        assertThat(result).isEmpty();
     }
 
     // ── deleteFile / buildFileUrl ────────────────────────────────────────────
