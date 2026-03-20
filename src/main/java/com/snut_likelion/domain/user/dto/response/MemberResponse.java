@@ -39,11 +39,11 @@ public class MemberResponse {
         this.portfolioLinks = portfolioLinks;
     }
 
-    public static MemberResponse of(User member, LionInfo lionInfo, List<PortfolioLinkDto> portfolioLinks) {
+    public static MemberResponse of(User member, LionInfo lionInfo, List<PortfolioLinkDto> portfolioLinks, String profileImageUrl) {
         return MemberResponse.builder()
                 .id(member.getId())
                 .name(member.getUsername())
-                .profileImageUrl(member.getProfileImageUrl())
+                .profileImageUrl(profileImageUrl)
                 .generation(lionInfo.getGeneration())
                 .role(lionInfo.getRole())
                 .major(member.getMajor())

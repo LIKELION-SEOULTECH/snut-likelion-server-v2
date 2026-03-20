@@ -1,5 +1,6 @@
 package com.snut_likelion.domain.user.service;
 
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.user.dto.response.*;
@@ -23,6 +24,7 @@ public class MemberQueryService {
 
     private final UserRepository userRepository;
     private final LionInfoRepository lionInfoRepository;
+    private final FileUploadService fileUploadService;
 
     @Transactional(readOnly = true)
     public List<MemberResponse> getMembersByQuery(int generation, boolean isManager) {
@@ -34,7 +36,8 @@ public class MemberQueryService {
                     User user = lionInfo.getUser();
                     List<PortfolioLinkDto> portfolioLinks = user.getPortfolioLinks().stream()
                             .map(PortfolioLinkDto::from).toList();
-                    return MemberResponse.of(user, lionInfo, portfolioLinks);
+                    String imageUrl = buildProfileImageUrl(user.getProfileImageUrl());
+                    return MemberResponse.of(user, lionInfo, portfolioLinks, imageUrl);
                 })
                 .sorted(Comparator.comparing(r -> !r.getRole().equals("대표")))
                 .toList();
@@ -53,7 +56,8 @@ public class MemberQueryService {
         User user = userRepository.findUserDetailsByUserId(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
         List<Integer> generations = lionInfoRepository.findGenerationsByUser_Id(memberId);
-        return MemberDetailResponse.of(user, generations);
+        String imageUrl = buildProfileImageUrl(user.getProfileImageUrl());
+        return MemberDetailResponse.of(user, generations, imageUrl);
     }
 
     @Transactional(readOnly = true)
@@ -65,7 +69,8 @@ public class MemberQueryService {
 
         User user = userRepository.findUserDetailsByUserId(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
-        return MemberDetailResponse.of(user, generations);
+        String imageUrl = buildProfileImageUrl(user.getProfileImageUrl());
+        return MemberDetailResponse.of(user, generations, imageUrl);
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +86,13 @@ public class MemberQueryService {
 
     @Transactional(readOnly = true)
     public List<MemberSearchResponse> searchMembers(String keyword) {
-        return userRepository.searchUserByKeyword(keyword);
+        return userRepository.searchUserByKeyword(keyword).stream()
+                .map(r -> r.withProfileImageUrl(buildProfileImageUrl(r.getProfileImageUrl())))
+                .toList();
+    }
+
+    private String buildProfileImageUrl(String storedFileName) {
+        if (storedFileName == null || storedFileName.isBlank()) return null;
+        return fileUploadService.buildFileUrl(storedFileName);
     }
 }

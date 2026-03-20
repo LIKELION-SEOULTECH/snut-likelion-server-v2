@@ -1,5 +1,7 @@
 package com.snut_likelion.domain.user.service;
 
+import com.snut_likelion.domain.file.dto.UploadCategory;
+import com.snut_likelion.domain.file.service.FileUploadService;
 import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.PortfolioLink;
 import com.snut_likelion.domain.user.entity.User;
@@ -21,6 +23,7 @@ public class MemberCommandService {
 
     private final UserRepository userRepository;
     private final PortfolioLinkRepository portfolioLinkRepository;
+    private final FileUploadService fileUploadService;
 
     @Transactional
     @PreAuthorize("@authChecker.isMe(#loginUser, #memberId)")
@@ -28,9 +31,15 @@ public class MemberCommandService {
         User user = userRepository.findWithLionUserById(memberId)
                 .orElseThrow(() -> new NotFoundException(UserErrorCode.NOT_FOUND));
 
-        // 프로필 이미지 URL이 있으면 저장 (presigned URL 방식 예정)
         if (req.getProfileImage() != null && !req.getProfileImage().isBlank()) {
-            user.changeProfileImage(req.getProfileImage());
+            fileUploadService.validateStoredFileNames(
+                    List.of(req.getProfileImage()), UploadCategory.MEMBER
+            );
+            // 기존 프로필 이미지 S3에서 삭제
+            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isBlank()) {
+                fileUploadService.deleteFile(user.getProfileImageUrl());
+            }
+            user.changeProfileImage(req.getProfileImage()); // storedFileName 저장
         }
 
         if (!req.getPortfolioLinks().isEmpty()) {
