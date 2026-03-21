@@ -8,7 +8,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -18,18 +21,26 @@ import java.util.Map;
 import java.util.Optional;
 
 @Component
-public class IntentAnswerResolver implements IntentAnswerPort {
+public class IntentAnswerResolver implements IntentAnswerPort, ResourceLoaderAware {
 
-    private static final String RESOURCE_PATH = "ai/intent-answer.xlsx";
     private static final String HEADER_INTENT = "intent";
     private static final String HEADER_ANSWER = "answer";
 
+    @Value("${ai.intent-answer.resource-path:classpath:ai/intent-answer.xlsx}")
+    String resourcePath;  // package-private for testing
+
+    private ResourceLoader resourceLoader;
     private final DataFormatter dataFormatter = new DataFormatter();
     private Map<String, String> intentAnswerMap = Map.of();
 
+    @Override
+    public void setResourceLoader(ResourceLoader resourceLoader) {
+        this.resourceLoader = resourceLoader;
+    }
+
     @PostConstruct
     void load() {
-        intentAnswerMap = loadIntentAnswerMap();
+        intentAnswerMap = loadIntentAnswerMap(resourcePath);
     }
 
     @Override
@@ -46,23 +57,23 @@ public class IntentAnswerResolver implements IntentAnswerPort {
         return Optional.ofNullable(intentAnswerMap.get(normalizedIntent));
     }
 
-    private Map<String, String> loadIntentAnswerMap() {
-        ClassPathResource resource = new ClassPathResource(RESOURCE_PATH);
+    private Map<String, String> loadIntentAnswerMap(String path) {
+        Resource resource = resourceLoader.getResource(path);
         if (!resource.exists()) {
-            throw new IllegalStateException("Intent-answer file not found: " + RESOURCE_PATH);
+            throw new IllegalStateException("Intent-answer file not found: " + path);
         }
 
         try (InputStream inputStream = resource.getInputStream();
              Workbook workbook = WorkbookFactory.create(inputStream)) {
 
             if (workbook.getNumberOfSheets() == 0) {
-                throw new IllegalStateException("No sheet found in: " + RESOURCE_PATH);
+                throw new IllegalStateException("No sheet found in: " + path);
             }
 
             Sheet sheet = workbook.getSheetAt(0);
             Row headerRow = sheet.getRow(sheet.getFirstRowNum());
             if (headerRow == null) {
-                throw new IllegalStateException("Header row is missing in: " + RESOURCE_PATH);
+                throw new IllegalStateException("Header row is missing in: " + path);
             }
 
             int intentColumnIndex = findHeaderColumnIndex(headerRow, HEADER_INTENT);
@@ -104,7 +115,7 @@ public class IntentAnswerResolver implements IntentAnswerPort {
 
             return Map.copyOf(loadedMap);
         } catch (IOException ex) {
-            throw new IllegalStateException("Failed to load intent-answer file: " + RESOURCE_PATH, ex);
+            throw new IllegalStateException("Failed to load intent-answer file: " + path, ex);
         }
     }
 
