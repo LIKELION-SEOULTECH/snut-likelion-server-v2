@@ -1,10 +1,10 @@
 package com.snut_likelion.domain.user.controller;
 
-import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
-import com.snut_likelion.domain.user.dto.response.LionInfoDetailsResponse;
-import com.snut_likelion.domain.user.dto.response.MemberDetailResponse;
-import com.snut_likelion.domain.user.dto.response.MemberResponse;
-import com.snut_likelion.domain.user.dto.response.MemberSearchResponse;
+import com.snut_likelion.domain.user.dto.req.UpdateProfileRequest;
+import com.snut_likelion.domain.user.dto.res.LionInfoDetailsResponse;
+import com.snut_likelion.domain.user.dto.res.MemberDetailResponse;
+import com.snut_likelion.domain.user.dto.res.MemberResponse;
+import com.snut_likelion.domain.user.dto.res.MemberSearchResponse;
 import com.snut_likelion.domain.user.service.MemberCommandService;
 import com.snut_likelion.domain.user.service.MemberQueryService;
 import com.snut_likelion.global.auth.model.SnutLikeLionUser;

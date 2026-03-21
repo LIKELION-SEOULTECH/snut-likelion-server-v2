@@ -1,9 +1,9 @@
 package com.snut_likelion.domain.notice.controller;
 
-import com.snut_likelion.domain.notice.dto.request.CreateNoticeRequest;
-import com.snut_likelion.domain.notice.dto.response.NoticeDetailResponse;
-import com.snut_likelion.domain.notice.dto.response.NoticePageResponse;
-import com.snut_likelion.domain.notice.dto.request.UpdateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.req.CreateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.res.NoticeDetailResponse;
+import com.snut_likelion.domain.notice.dto.res.NoticePageResponse;
+import com.snut_likelion.domain.notice.dto.req.UpdateNoticeRequest;
 import com.snut_likelion.domain.notice.service.NoticeService;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import

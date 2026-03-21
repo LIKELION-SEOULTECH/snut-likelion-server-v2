@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.recruitment.controller;
 
-import com.snut_likelion.domain.recruitment.dto.response.QuestionResponse;
+import com.snut_likelion.domain.recruitment.dto.res.QuestionResponse;
 import com.snut_likelion.domain.recruitment.entity.DepartmentType;
 import com.snut_likelion.domain.recruitment.service.QuestionService;
 import com.snut_likelion.domain.user.entity.Part;

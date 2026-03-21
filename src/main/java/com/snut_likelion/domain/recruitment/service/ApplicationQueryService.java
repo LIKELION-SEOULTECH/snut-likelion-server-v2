@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.recruitment.service;
 
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationDetailsResponse;
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.infra.ApplicationRepository;
 import lombok.RequiredArgsConstructor;

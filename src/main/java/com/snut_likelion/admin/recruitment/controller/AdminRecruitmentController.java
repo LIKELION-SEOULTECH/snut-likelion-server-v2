@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.recruitment.controller;
 
-import com.snut_likelion.admin.recruitment.dto.request.CreateRecruitmentRequest;
-import com.snut_likelion.admin.recruitment.dto.request.UpdateRecruitmentRequest;
+import com.snut_likelion.admin.recruitment.dto.req.CreateRecruitmentRequest;
+import com.snut_likelion.admin.recruitment.dto.req.UpdateRecruitmentRequest;
 import com.snut_likelion.admin.recruitment.service.AdminRecruitmentService;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import 추가

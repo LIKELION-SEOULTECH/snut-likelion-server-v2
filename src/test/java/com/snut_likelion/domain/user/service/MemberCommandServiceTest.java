@@ -2,7 +2,7 @@ package com.snut_likelion.domain.user.service;
 
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.service.FileUploadService;
-import com.snut_likelion.domain.user.dto.request.UpdateProfileRequest;
+import com.snut_likelion.domain.user.dto.req.UpdateProfileRequest;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.PortfolioLinkRepository;

@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.file.controller;
 
-import com.snut_likelion.admin.file.dto.request.CompleteFileUploadRequest;
-import com.snut_likelion.admin.file.dto.response.CompleteFileUploadResponse;
+import com.snut_likelion.admin.file.dto.req.CompleteFileUploadRequest;
+import com.snut_likelion.admin.file.dto.res.CompleteFileUploadResponse;
 import com.snut_likelion.admin.file.service.AdminFileUploadCommandService;
 import com.snut_likelion.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

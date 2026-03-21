@@ -1,9 +1,9 @@
 package com.snut_likelion.admin.notice.controller;
 
-import com.snut_likelion.admin.notice.dto.response.NoticePageResponse;
+import com.snut_likelion.admin.notice.dto.res.NoticePageResponse;
 import com.snut_likelion.admin.notice.service.AdminNoticeService;
-import com.snut_likelion.domain.notice.dto.request.CreateNoticeRequest;
-import com.snut_likelion.domain.notice.dto.request.UpdateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.req.CreateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.req.UpdateNoticeRequest;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import
 import io.swagger.v3.oas.annotations.Operation;

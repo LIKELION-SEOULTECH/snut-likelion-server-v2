@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.file.service;
 
-import com.snut_likelion.admin.file.dto.request.IssuePresignedUrlRequest;
-import com.snut_likelion.admin.file.dto.response.PresignedUrlResponse;
+import com.snut_likelion.admin.file.dto.req.IssuePresignedUrlRequest;
+import com.snut_likelion.admin.file.dto.res.PresignedUrlResponse;
 import com.snut_likelion.domain.file.dto.FileStorageType;
 import com.snut_likelion.domain.file.dto.PresignedIssueResult;
 import com.snut_likelion.domain.file.dto.UploadCategory;

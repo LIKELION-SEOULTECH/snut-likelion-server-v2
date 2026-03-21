@@ -1,10 +1,10 @@
 package com.snut_likelion.admin.project.controller;
 
-import com.snut_likelion.admin.project.dto.response.ProjectPageResponse;
+import com.snut_likelion.admin.project.dto.res.ProjectPageResponse;
 import com.snut_likelion.admin.project.service.AdminProjectService;
-import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
+import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.UpdateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.global.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

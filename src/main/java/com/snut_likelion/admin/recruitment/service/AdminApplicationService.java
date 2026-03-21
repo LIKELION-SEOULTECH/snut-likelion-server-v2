@@ -1,11 +1,11 @@
 package com.snut_likelion.admin.recruitment.service;
 
-import com.snut_likelion.admin.recruitment.dto.request.ApplicationListStatus;
-import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusParameter;
-import com.snut_likelion.admin.recruitment.dto.request.ChangeApplicationStatusRequest;
-import com.snut_likelion.admin.recruitment.dto.response.ApplicationPageResponse;
+import com.snut_likelion.admin.recruitment.dto.req.ApplicationListStatus;
+import com.snut_likelion.admin.recruitment.dto.req.ChangeApplicationStatusParameter;
+import com.snut_likelion.admin.recruitment.dto.req.ChangeApplicationStatusRequest;
+import com.snut_likelion.admin.recruitment.dto.res.ApplicationPageResponse;
 import com.snut_likelion.admin.recruitment.infra.ApplicationQueryRepository;
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationDetailsResponse;
 import com.snut_likelion.domain.recruitment.entity.Application;
 import com.snut_likelion.domain.recruitment.entity.ApplicationStatus;
 import com.snut_likelion.domain.recruitment.exception.ApplicationErrorCode;

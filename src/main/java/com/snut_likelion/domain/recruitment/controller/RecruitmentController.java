@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.recruitment.controller;
 
-import com.snut_likelion.domain.recruitment.dto.response.RecruitmentResponse;
+import com.snut_likelion.domain.recruitment.dto.res.RecruitmentResponse;
 import com.snut_likelion.domain.recruitment.entity.RecruitmentType;
 import com.snut_likelion.domain.recruitment.service.RecruitmentService;
 import com.snut_likelion.global.dto.ApiResponse;
