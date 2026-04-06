@@ -1,3 +1,4 @@
+# GCP GCE 배포 설정
 services:
   app:
     image: kimgt2828/likelion-app:latest
