@@ -50,7 +50,7 @@ jobs:
           username: ${{ secrets.GCE_USERNAME }}
           key: ${{ secrets.GCE_SSH_KEY }}
           script: |
-            cd ~/likelion
+            cd ~/application
             # 도커 허브 로그인 (이미지 pull 권한 확보)
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
             # 최신 이미지 pull 및 컨테이너 재시작
