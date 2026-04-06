@@ -1,9 +1,9 @@
 package com.snut_likelion.domain.blog.controller;
 
-import com.snut_likelion.domain.blog.dto.request.CreateBlogRequest;
-import com.snut_likelion.domain.blog.dto.request.UpdateBlogRequest;
-import com.snut_likelion.domain.blog.dto.response.BlogDetailResponse;
-import com.snut_likelion.domain.blog.dto.response.BlogSummaryPageResponse;
+import com.snut_likelion.domain.blog.dto.req.CreateBlogRequest;
+import com.snut_likelion.domain.blog.dto.req.UpdateBlogRequest;
+import com.snut_likelion.domain.blog.dto.res.BlogDetailResponse;
+import com.snut_likelion.domain.blog.dto.res.BlogSummaryPageResponse;
 import com.snut_likelion.domain.blog.entity.Category;
 import com.snut_likelion.domain.blog.service.BlogCommandService;
 import com.snut_likelion.domain.blog.service.BlogQueryService;

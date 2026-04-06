@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.project.service;
 
-import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
+import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectParticipation;
 import com.snut_likelion.domain.project.entity.ProjectRetrospection;

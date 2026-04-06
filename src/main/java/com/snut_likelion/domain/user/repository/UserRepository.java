@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.user.repository;
 
-import com.snut_likelion.domain.user.dto.response.MemberSearchResponse;
+import com.snut_likelion.domain.user.dto.res.MemberSearchResponse;
 import com.snut_likelion.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -30,7 +30,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "where u.id = :userId")
     Optional<User> findUserDetailsByUserId(@Param("userId") Long userId);
 
-    @Query("select new com.snut_likelion.domain.user.dto.response.MemberSearchResponse(" +
+    @Query("select new com.snut_likelion.domain.user.dto.res.MemberSearchResponse(" +
             "u.id, u.username, li.part, li.generation, u.profileImageUrl) " +
             "from User u join LionInfo li on u.id = li.user.id " +
             "where lower(u.username) like lower(concat('%', :keyword, '%'))"

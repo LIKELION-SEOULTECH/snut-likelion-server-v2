@@ -1,8 +1,8 @@
 package com.snut_likelion.domain.recruitment.controller;
 
-import com.snut_likelion.domain.recruitment.dto.request.CreateApplicationRequest;
-import com.snut_likelion.domain.recruitment.dto.request.UpdateApplicationRequest;
-import com.snut_likelion.domain.recruitment.dto.response.ApplicationDetailsResponse;
+import com.snut_likelion.domain.recruitment.dto.req.CreateApplicationRequest;
+import com.snut_likelion.domain.recruitment.dto.req.UpdateApplicationRequest;
+import com.snut_likelion.domain.recruitment.dto.res.ApplicationDetailsResponse;
 import com.snut_likelion.domain.recruitment.service.ApplicationCommandService;
 import com.snut_likelion.domain.recruitment.service.ApplicationQueryService;
 import com.snut_likelion.global.auth.model.SnutLikeLionUser;

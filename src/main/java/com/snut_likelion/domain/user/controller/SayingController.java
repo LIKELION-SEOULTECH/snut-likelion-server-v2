@@ -1,6 +1,6 @@
 package com.snut_likelion.domain.user.controller;
 
-import com.snut_likelion.domain.user.dto.response.SayingResponse;
+import com.snut_likelion.domain.user.dto.res.SayingResponse;
 import com.snut_likelion.domain.user.service.SayingService;
 import com.snut_likelion.global.dto.ApiResponse;
 // Swagger 관련 import

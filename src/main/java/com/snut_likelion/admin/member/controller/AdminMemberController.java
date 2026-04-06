@@ -1,7 +1,7 @@
 package com.snut_likelion.admin.member.controller;
 
-import com.snut_likelion.admin.member.dto.request.UpdateMemberRequest;
-import com.snut_likelion.admin.member.dto.response.MemberPageResponse;
+import com.snut_likelion.admin.member.dto.req.UpdateMemberRequest;
+import com.snut_likelion.admin.member.dto.res.MemberPageResponse;
 import com.snut_likelion.admin.member.service.AdminMemberService;
 import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.Role;

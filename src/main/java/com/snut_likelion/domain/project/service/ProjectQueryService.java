@@ -1,8 +1,8 @@
 package com.snut_likelion.domain.project.service;
 
 import com.snut_likelion.domain.file.service.FileUploadService;
-import com.snut_likelion.domain.project.dto.response.ProjectDetailResponse;
-import com.snut_likelion.domain.project.dto.response.ProjectResponse;
+import com.snut_likelion.domain.project.dto.res.ProjectDetailResponse;
+import com.snut_likelion.domain.project.dto.res.ProjectResponse;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.project.exception.ProjectErrorCode;

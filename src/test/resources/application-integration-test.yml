@@ -1,0 +1,69 @@
+spring:
+  config:
+    import: ""
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: test@test.com
+    password: test-password
+    protocol: smtp
+
+admin:
+  init:
+    email: admin@seoultech-likelion.com
+    password: test-admin-password
+
+snut:
+  likelion:
+    current-generation: 14
+
+server:
+  error:
+    whitelabel:
+      enabled: false
+
+jwt:
+  secret-key: test-secret-key-that-is-at-least-256-bits-long-for-hmac-sha
+  access-token:
+    expiration: 3600000
+  refresh-token:
+    expiration: 86400000
+
+cloud:
+  aws:
+    credentials:
+      access-key: test-access-key
+      secret-key: test-secret-key
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: test-bucket
+
+ai:
+  intent-answer:
+    resource-path: classpath:ai/intent-answer.xlsx
+
+feign:
+  client:
+    config:
+      chatFeignClient:
+        connectTimeout: 3000
+        readTimeout: 5000
+      summaryFeignClient:
+        connectTimeout: 3000
+        readTimeout: 5000

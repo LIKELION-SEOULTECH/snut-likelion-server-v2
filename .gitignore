@@ -47,3 +47,6 @@ out/
 docker-compose-dev.yml
 
 CLAUDE.md
+
+# Claude Code memory
+memory/

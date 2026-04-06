@@ -1,9 +1,9 @@
 package com.snut_likelion.admin.notice.service;
 
-import com.snut_likelion.admin.notice.dto.response.NoticePageResponse;
+import com.snut_likelion.admin.notice.dto.res.NoticePageResponse;
 import com.snut_likelion.admin.notice.infra.AdminNoticeQueryRepository;
-import com.snut_likelion.domain.notice.dto.request.CreateNoticeRequest;
-import com.snut_likelion.domain.notice.dto.request.UpdateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.req.CreateNoticeRequest;
+import com.snut_likelion.domain.notice.dto.req.UpdateNoticeRequest;
 import com.snut_likelion.domain.notice.entity.Notice;
 import com.snut_likelion.domain.notice.exception.NoticeErrorCode;
 import com.snut_likelion.domain.notice.repository.NoticeRepository;

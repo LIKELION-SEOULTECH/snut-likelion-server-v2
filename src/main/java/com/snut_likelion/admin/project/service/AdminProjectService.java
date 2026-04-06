@@ -1,10 +1,10 @@
 package com.snut_likelion.admin.project.service;
 
-import com.snut_likelion.admin.project.dto.response.ProjectPageResponse;
+import com.snut_likelion.admin.project.dto.res.ProjectPageResponse;
 import com.snut_likelion.admin.project.infra.AdminProjectQueryRepository;
-import com.snut_likelion.domain.project.dto.request.CreateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.request.UpdateProjectPresignedRequest;
-import com.snut_likelion.domain.project.dto.response.RetrospectionResponse;
+import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.UpdateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectCommandService;
 import com.snut_likelion.domain.project.service.ProjectRetrospectionService;
 import lombok.RequiredArgsConstructor;
