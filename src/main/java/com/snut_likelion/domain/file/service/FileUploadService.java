@@ -236,6 +236,7 @@ public class FileUploadService {
         return switch (contentType.toLowerCase(Locale.ROOT)) {
             case "image/png"       -> "png";
             case "image/jpeg"      -> "jpg";
+            case "image/jpg"   -> "jpg";
             case "image/webp"      -> "webp";
             case "application/pdf" -> "pdf";
             case "application/zip" -> "zip";
