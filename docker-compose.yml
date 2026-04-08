@@ -10,6 +10,20 @@ services:
     environment:
       TZ: Asia/Seoul
     restart: always
+    depends_on:
+      - ai-chatbot
+    networks:
+      - likelion-net
+
+  ai-chatbot:
+    image: kayo2e/ai-chatbot:latest
+    container_name: ai-chatbot
+    expose:
+      - "8000"
+    hostname: ai.seoultech-likelion
+    environment:
+      TZ: Asia/Seoul
+    restart: always
     networks:
       - likelion-net
 
