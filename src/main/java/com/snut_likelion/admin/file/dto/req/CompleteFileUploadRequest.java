@@ -25,7 +25,7 @@ public class CompleteFileUploadRequest {
     @Schema(description = "파일 Content-Type (STEP 1 발급 요청과 동일한 값)", example = "image/png")
     @NotBlank(message = "Content-Type은 필수입니다.")
     @Pattern(
-            regexp = "^(image/(png|jpeg|webp)|application/(pdf|zip|vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|spreadsheetml\\.sheet|presentationml\\.presentation))|text/plain)$",
+            regexp = "^(image/(png|jpeg|jpg|webp)|application/(pdf|zip|vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|spreadsheetml\\.sheet|presentationml\\.presentation))|text/plain)$",
             message = "허용되지 않는 Content-Type입니다."
     )
     private String contentType;
