@@ -31,7 +31,7 @@ spring.config.activate.on-profile: dev
 
 client.url: http://localhost:5173
 server.url: http://localhost:8080
-ai-server.url: http://localhost:8081
+ai-server.url: http://localhost:8000
 
 spring:
   h2:
@@ -44,7 +44,7 @@ spring.config.activate.on-profile: prod
 
 client.url: https://www.seoultech-likelion.com
 server.url: http://seoultech-likelion:8080
-ai-server.url: http://ai.seoultech-likelion:8081
+ai-server.url: http://ai.seoultech-likelion:8000
 
 spring:
   h2:
