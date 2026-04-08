@@ -244,6 +244,7 @@ public class FileUploadService {
             case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"       -> "xlsx";
             case "application/vnd.openxmlformats-officedocument.presentationml.presentation" -> "pptx";
             case "text/plain"      -> "txt";
+            case "image/svg+xml" -> "svg";
             default                -> "bin";
         };
     }

@@ -28,7 +28,7 @@ public class IssuePresignedUrlRequest {
     )
     @NotBlank(message = "Content-Type은 필수입니다.")
     @Pattern(
-            regexp = "^(image/(png|jpeg|jpg|webp)|application/(pdf|zip|vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|spreadsheetml\\.sheet|presentationml\\.presentation))|text/plain)$",
+            regexp = "^(image/(png|jpeg|jpg|webp|svg\\+xml)|application/(pdf|zip|vnd\\.openxmlformats-officedocument\\.(wordprocessingml\\.document|spreadsheetml\\.sheet|presentationml\\.presentation))|text/plain)$",
             message = "허용되지 않는 Content-Type입니다."
     )
     private String contentType;
