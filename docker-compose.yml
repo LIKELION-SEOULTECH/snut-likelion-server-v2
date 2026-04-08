@@ -20,12 +20,13 @@ services:
     container_name: ai-chatbot
     expose:
       - "8000"
-    hostname: ai.seoultech-likelion
     environment:
       TZ: Asia/Seoul
     restart: always
     networks:
-      - likelion-net
+      likelion-net:
+        aliases:
+          - ai.seoultech-likelion
 
   nginx:
     image: nginx:latest
