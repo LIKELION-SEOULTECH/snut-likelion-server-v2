@@ -53,8 +53,10 @@ jobs:
             cd ~/application
             # 도커 허브 로그인 (이미지 pull 권한 확보)
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            # pull 전 dangling 이미지·중단 컨테이너·미사용 네트워크 정리
+            docker system prune -f
             # 최신 이미지 pull 및 컨테이너 재시작
             docker compose pull
             docker compose up -d
-
+            # 배포 후 이전 이미지 태그 정리
             docker image prune -f
