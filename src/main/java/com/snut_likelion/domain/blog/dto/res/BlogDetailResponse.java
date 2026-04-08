@@ -23,20 +23,20 @@ public class BlogDetailResponse {
     private List<String> imageUrls;  // 응답은 항상 URL (key 아님)
     private LocalDateTime updatedAt;
     private String authorName;
-    private List<String> taggedMemberNames;
+    private List<Long> taggedMemberIds;
     private String category;
 
     @Builder
     public BlogDetailResponse(Long postId, String title, String contentHtml,
                               List<String> imageUrls, LocalDateTime updatedAt,
-                              String authorName, List<String> taggedMemberNames, String category) {
+                              String authorName, List<Long> taggedMemberIds, String category) {
         this.postId = postId;
         this.title = title;
         this.contentHtml = contentHtml;
         this.imageUrls = imageUrls;
         this.updatedAt = updatedAt;
         this.authorName = authorName;
-        this.taggedMemberNames = taggedMemberNames;
+        this.taggedMemberIds = taggedMemberIds;
         this.category = category;
     }
 
@@ -55,8 +55,8 @@ public class BlogDetailResponse {
                         .toList())
                 .updatedAt(post.getUpdatedAt())
                 .authorName(post.getAuthor().getUsername())
-                .taggedMemberNames(post.getTaggedMembers().stream()
-                        .map(User::getUsername)
+                .taggedMemberIds(post.getTaggedMembers().stream()
+                        .map(User::getId)
                         .toList())
                 .category(post.getCategory().name())
                 .build();
