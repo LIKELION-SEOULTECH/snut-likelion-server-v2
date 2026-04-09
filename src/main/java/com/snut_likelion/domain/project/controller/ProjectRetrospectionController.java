@@ -1,13 +1,14 @@
 package com.snut_likelion.domain.project.controller;
 
+import com.snut_likelion.domain.project.dto.req.CreateRetrospectionRequest;
 import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectRetrospectionService;
 import com.snut_likelion.global.auth.model.SnutLikeLionUser;
 import com.snut_likelion.global.dto.ApiResponse;
-// Swagger 관련 import
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,6 +24,21 @@ import java.util.List;
 public class ProjectRetrospectionController {
 
     private final ProjectRetrospectionService projectRetrospectionService;
+
+    @Operation(summary = "프로젝트 회고 작성", description = "특정 프로젝트에 회고를 작성합니다. 회고 작성 시 프로젝트 참여자로 자동 등록됩니다.")
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<RetrospectionResponse> createRetrospection(
+            @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
+            @Parameter(description = "프로젝트 ID") @PathVariable("projectId") Long projectId,
+            @Valid @RequestBody CreateRetrospectionRequest request
+    ) {
+        return ApiResponse.success(
+                projectRetrospectionService.create(projectId, loginUser.getId(), request),
+                "프로젝트 회고 작성 성공"
+        );
+    }
 
     @Operation(summary = "프로젝트 회고 목록 조회", description = "특정 프로젝트에 작성된 모든 회고 목록을 조회합니다.")
     @GetMapping
