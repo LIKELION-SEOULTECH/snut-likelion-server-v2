@@ -187,12 +187,20 @@ public class FileUploadService {
     }
 
     /**
-     * storedFileName(S3 key) → 접근 가능한 URL로 변환한다.
-     * 조회 응답 DTO에서 key를 URL로 바꿀 때 사용한다.
+     * storedFileName(S3 key) → 이미지 접근 URL로 변환한다.
      * ex) "images/blogs/uuid-name.png" → "https://bucket.s3.../images/blogs/uuid-name.png"
      */
     public String buildFileUrl(String storedFileName) {
         return fileProvider.buildImageUrl(storedFileName);
+    }
+
+    /**
+     * storedFileName(S3 key) → 파일 다운로드 URL로 변환한다.
+     * ex) "files/notices/uuid-name.pdf" → "/api/v1/files/download?fileName=..." (dev)
+     *                                   → "https://bucket.s3.../files/notices/..." (prod)
+     */
+    public String buildFileDownloadUrl(String storedFileName) {
+        return fileProvider.buildFileDownloadUrl(storedFileName);
     }
 
 

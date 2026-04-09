@@ -119,4 +119,9 @@ public class S3FileProvider implements FileProvider {
                 region,
                 key);
     }
+
+    @Override
+    public String buildFileDownloadUrl(String key) {
+        return buildImageUrl(key);
+    }
 }
