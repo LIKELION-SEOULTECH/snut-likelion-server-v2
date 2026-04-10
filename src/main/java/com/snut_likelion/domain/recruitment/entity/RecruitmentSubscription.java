@@ -27,18 +27,23 @@ public class RecruitmentSubscription {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(nullable = false)
+    private int generation;
+
     @Builder
-    public RecruitmentSubscription(Long id, String email, SubscriptionType subscriptionType) {
+    public RecruitmentSubscription(Long id, String email, SubscriptionType subscriptionType, int generation) {
         this.id = id;
         this.email = email;
         this.subscriptionType = subscriptionType;
+        this.generation = generation;
         this.createdAt = LocalDateTime.now();
     }
 
-    public static RecruitmentSubscription of(String email, SubscriptionType subscriptionType) {
+    public static RecruitmentSubscription of(String email, SubscriptionType subscriptionType, int generation) {
         return RecruitmentSubscription.builder()
                 .email(email)
                 .subscriptionType(subscriptionType)
+                .generation(generation)
                 .build();
     }
 }

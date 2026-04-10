@@ -45,13 +45,13 @@ public class RecruitmentNotifyScheduler {
                 .collect(Collectors.toSet());
 
         for (Recruitment rec : toNotify) {
-            // 1) 타입별 구독자 조회
+            // 1) 타입·기수별 구독자 조회
             SubscriptionType subType = rec.getRecruitmentType() == RecruitmentType.MEMBER
                     ? SubscriptionType.MEMBER
                     : SubscriptionType.MANAGER;
 
             List<RecruitmentSubscription> subs = recruitmentSubscriptionRepository
-                    .findAllBySubscriptionType(subType);
+                    .findAllBySubscriptionTypeAndGeneration(subType, rec.getGeneration());
 
             // 2) 구독자 이메일 Set
             Set<String> subscriberEmails = subs.stream()
