@@ -311,4 +311,52 @@ class FileUploadServiceTest {
         // Then
         assertThat(url).isEqualTo("https://cdn/images/blogs/uuid-photo.png");
     }
+
+    @Test
+    void buildFileDownloadUrl_delegatesToFileProvider() {
+        // Given
+        when(fileProvider.buildFileDownloadUrl("files/notices/uuid-report.pdf"))
+                .thenReturn("https://cdn/files/notices/uuid-report.pdf");
+
+        // When
+        String url = fileUploadService.buildFileDownloadUrl("files/notices/uuid-report.pdf");
+
+        // Then
+        assertThat(url).isEqualTo("https://cdn/files/notices/uuid-report.pdf");
+    }
+
+    @Test
+    void issuePresignedUrl_zip_generatesZipExtension() {
+        PresignedUrlProvider.PresignedPutUrl putUrl =
+                new PresignedUrlProvider.PresignedPutUrl("https://s3.upload.url", Map.of());
+        when(presignedUrlProvider.issuePutUrl(anyString(), eq("application/zip"), any())).thenReturn(putUrl);
+        when(fileProvider.buildImageUrl(anyString())).thenReturn("https://cdn/any");
+
+        PresignedIssueResult result = fileUploadService.issuePresignedUrl(
+                UploadCategory.NOTICE, FileStorageType.FILE, "archive.zip", "application/zip", 1024L
+        );
+        assertThat(result.storedFileName()).endsWith(".zip");
+    }
+
+    @Test
+    void issuePresignedUrl_unknownContentType_generatesBinExtension() {
+        PresignedUrlProvider.PresignedPutUrl putUrl =
+                new PresignedUrlProvider.PresignedPutUrl("https://s3.upload.url", Map.of());
+        when(presignedUrlProvider.issuePutUrl(anyString(), eq("application/octet-stream"), any())).thenReturn(putUrl);
+        when(fileProvider.buildImageUrl(anyString())).thenReturn("https://cdn/any");
+
+        PresignedIssueResult result = fileUploadService.issuePresignedUrl(
+                UploadCategory.BLOG, FileStorageType.IMAGE, "file.bin", "application/octet-stream", 1024L
+        );
+        assertThat(result.storedFileName()).endsWith(".bin");
+    }
+
+    @Test
+    void issuePresignedUrl_completeUpload_invalidKeyRule_throws() {
+        // A key not starting with expected prefix
+        assertThatThrownBy(() -> fileUploadService.completeUpload(
+                UploadCategory.BLOG, FileStorageType.IMAGE,
+                "images/projects/uuid-photo.png", "photo.png", "image/png", 1024L
+        )).isInstanceOf(BadRequestException.class);
+    }
 }

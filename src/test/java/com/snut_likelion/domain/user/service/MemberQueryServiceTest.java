@@ -293,4 +293,42 @@ public class MemberQueryServiceTest {
         // Then
         assertThat(result).isEmpty();
     }
+
+    @Test
+    void getMyDetails_success() {
+        // Given
+        Long memberId = 1L;
+        User user = User.builder()
+                .id(memberId)
+                .email("my@test.com")
+                .username("myuser")
+                .profileImageUrl(USER_KEY)
+                .intro("내 소개")
+                .description("상세 설명")
+                .build();
+
+        when(userRepository.findUserDetailsByUserId(memberId)).thenReturn(Optional.of(user));
+        when(lionInfoRepository.findGenerationsByUser_Id(memberId)).thenReturn(List.of(13, 14));
+        when(fileUploadService.buildFileUrl(USER_KEY)).thenReturn(USER_URL);
+
+        // When
+        MemberDetailResponse detail = memberQueryService.getMyDetails(memberId);
+
+        // Then
+        assertThat(detail.getId()).isEqualTo(memberId);
+        assertThat(detail.getProfileImageUrl()).isEqualTo(USER_URL);
+        assertThat(detail.getGenerations()).containsExactly(13, 14);
+    }
+
+    @Test
+    void getMyDetails_notFound_throws() {
+        // Given
+        Long memberId = 99L;
+        when(userRepository.findUserDetailsByUserId(memberId)).thenReturn(Optional.empty());
+
+        // When / Then
+        assertThatThrownBy(() -> memberQueryService.getMyDetails(memberId))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(UserErrorCode.NOT_FOUND.getMessage());
+    }
 }

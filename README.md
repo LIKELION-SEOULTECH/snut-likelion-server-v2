@@ -7,7 +7,22 @@
 
 - **개발 기간**: 2025.10 ~ 현재 운영 중
 - **목적**: 신입 회원 모집 프로세스 자동화, 멤버 활동 이력 관리, 공지 및 콘텐츠 허브 구축
-- **성과**: 2026년 14기 신입 회원 모집 시 실제 도입하여 안정적으로 운영, 공식 멋쟁이 사자처럼 대학 본부 프로젝트 기재, 공식 멋쟁이 사자처럼 대학 본부 프로젝트 기재
+- **성과**: 2026년 14기 신입 회원 모집 시 실제 도입하여 안정적으로 운영, 공식 멋쟁이사자처럼 대학 본부 프로젝트 기재
+
+<br/>
+
+## v1 → v2 주요 개선 사항
+
+[v1 레포지토리](https://github.com/LIKELION-SEOULTECH/snut-likelion-server) 대비 아래 항목을 개선·확장했습니다.
+
+| 구분 | v1 | v2 |
+| :--- | :--- | :--- |
+| **AI 기능** | 없음 | AI 챗봇(intent 매핑) + 공지 자동 요약 추가 (OpenFeign) |
+| **배포 인프라** | EC2 + Aiven(MySQL) | GCE + Cloud SQL, Spring Boot / AI 서버 Docker 컨테이너 분리 운영 |
+| **파일 업로드** | 기본 S3 업로드 | Presigned URL 직접 업로드 + FileStorageType(이미지/파일) 분리 |
+| **모집 알림** | 단순 알림 구독 | 기수별 구독 분리로 불필요한 알림 차단 |
+| **비밀번호 재설정** | 링크 방식 | 이메일 인증 코드 입력 방식으로 UX 개선 |
+| **테스트** | 미비 | 단위·통합(WireMock) 테스트 300개 이상, **서비스 레이어 JaCoCo 커버리지 92% 달성** |
 
 <br/>
 
@@ -129,16 +144,19 @@ AiQueryService
 
 **원칙**: 서비스 레이어는 외부 의존성(DB, S3, AI 서버)을 Mockito로 격리해 비즈니스 로직만 검증합니다. 실제 HTTP 통신이 필요한 경우에만 WireMock 통합 테스트로 검증합니다.
 
-| 테스트 클래스 | 종류 | 테스트 수 | 핵심 검증 |
-| :--- | :--- | :---: | :--- |
-| `ApplicationCommandServiceTest` | 단위 | 12 | 지원서 생성·수정·삭제 비즈니스 규칙 |
-| `AuthServiceTest` | 단위 | 8 | 비밀번호 재설정 인증 코드 검증 |
-| `FileUploadServiceTest` | 단위 | 16 | Presigned URL 발급·완료·검증 전 단계 |
-| `AiQueryServiceTest` | 단위 | 5 | 인텐트 매핑·폴백 조립 |
-| `AiChatRepositoryImplTest` | 단위 | 6 | Feign 예외 유형별 폴백 |
-| `IntentAnswerResolverTest` | 단위 | 13 | Excel 로딩 정상·이상 경로 |
-| `NoticeSummaryApiClientImplTest` | 단위 | 8 | 공지 요약 Feign 예외 폴백 |
-| `AiControllerTest` | 단위 (WebMvc) | 4 | 유효성 검사 + HTTP 응답 포맷 |
-| `AiIntegrationTest` | 통합 (WireMock) | 14 | AI 기능 E2E 흐름 |
-| 기타 (Blog, Notice, Project 등) | 단위 | 92 | 각 도메인 서비스 로직 |
-| **합계** | | **178** | |
+> **서비스 레이어 JaCoCo 커버리지 92% 달성** (2971 / 3230 instructions, JwtService 4% 포함)
+
+| 테스트 클래스 | 종류 | 핵심 검증 |
+| :--- | :--- | :--- |
+| `ApplicationCommandServiceTest` | 단위 | 지원서 생성·수정·삭제 비즈니스 규칙 |
+| `AuthServiceTest` | 단위 | 비밀번호 재설정 인증 코드 검증, 회원가입, 비밀번호 변경 |
+| `FileUploadServiceTest` | 단위 | Presigned URL 발급·완료·검증 전 단계 |
+| `JwtServiceTest` | 단위 | 토큰 발급·검증·갱신·쿠키 설정 |
+| `ProjectCommandServiceTest` | 단위 | Presigned 기반 프로젝트 생성·수정·이미지 삭제 |
+| `ProjectRetrospectionServiceTest` | 단위 | 회고 생성·조회·삭제 전 단계 |
+| `BlogCommandServiceTest` | 단위 | 게시글 생성(임시저장/발행)·수정·삭제·초안 삭제 |
+| `MemberQueryServiceTest` | 단위 | 멤버 조회·기수별 필터링·검색·LionInfo 상세 |
+| `AiQueryServiceTest` | 단위 | 인텐트 매핑·폴백 조립 |
+| `AiIntegrationTest` | 통합 (WireMock) | AI 기능 E2E 흐름 |
+| 관리자 서비스 (Blog·Notice·Project·Member) | 단위 | 위임 호출·목록 페이지네이션 검증 |
+| 기타 (Auth Mail, Notification, Subscription 등) | 단위 | 각 도메인 서비스 로직 |
