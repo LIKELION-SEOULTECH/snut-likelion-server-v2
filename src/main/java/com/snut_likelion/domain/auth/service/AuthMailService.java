@@ -35,7 +35,7 @@ public class AuthMailService {
         boolean isExists = userRepository.existsByEmail(email);
         if (!isExists) throw new NotFoundException(UserErrorCode.NOT_FOUND);
         String code = this.generateCertificationCode(email);
-        mailSender.sendChangePasswordLinkMail(email, code);
+        mailSender.sendPasswordResetCode(email, code);
     }
 
     private String generateCertificationCode(String email) {

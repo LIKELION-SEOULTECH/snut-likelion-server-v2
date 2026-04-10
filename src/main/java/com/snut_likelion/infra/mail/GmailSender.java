@@ -40,12 +40,11 @@ public class GmailSender implements MailSender {
     }
 
     @Override
-    public void sendChangePasswordLinkMail(String toEmail, String code) {
-        String changePasswordUrl = clientUrl + "/auth/change-password?code=" + code;
-        String subject = "[서울과학기술대학교 멋쟁이사자처럼] 비밀번호 변경 페이지 주소";
-        String changePwdMsg = "비밀번호 변경 페이지 주소: " + changePasswordUrl;
-        mailSender.send(this.generationMessage(toEmail, subject, changePwdMsg));
-        log.info("비밀번호 변경 링크 메일 발송 성공: {}, {}", toEmail, code);
+    public void sendPasswordResetCode(String toEmail, String code) {
+        String subject = "[서울과학기술대학교 멋쟁이사자처럼] 비밀번호 재설정 인증 코드";
+        String body = "인증 코드: " + code + "\n\n이 코드는 10분간 유효합니다.";
+        mailSender.send(this.generationMessage(toEmail, subject, body));
+        log.info("비밀번호 재설정 인증 코드 메일 발송 성공: {}, {}", toEmail, code);
     }
 
     @Override
