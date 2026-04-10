@@ -98,7 +98,7 @@ class FileUploadServiceTest {
 
         // When
         UploadedFile result = fileUploadService.completeUpload(
-                UploadCategory.BLOG, key, "photo.png", "image/png", 1024L
+                UploadCategory.BLOG, FileStorageType.IMAGE, key, "photo.png", "image/png", 1024L
         );
 
         // Then
@@ -114,7 +114,7 @@ class FileUploadServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> fileUploadService.completeUpload(
-                UploadCategory.BLOG, key, "photo.png", "image/png", 1024L
+                UploadCategory.BLOG, FileStorageType.IMAGE, key, "photo.png", "image/png", 1024L
         )).isInstanceOf(ExistingResourceException.class);
     }
 
@@ -127,7 +127,7 @@ class FileUploadServiceTest {
 
         // When / Then
         assertThatThrownBy(() -> fileUploadService.completeUpload(
-                UploadCategory.BLOG, key, "photo.png", "image/png", 1024L
+                UploadCategory.BLOG, FileStorageType.IMAGE, key, "photo.png", "image/png", 1024L
         )).isInstanceOf(BadRequestException.class);
     }
 
