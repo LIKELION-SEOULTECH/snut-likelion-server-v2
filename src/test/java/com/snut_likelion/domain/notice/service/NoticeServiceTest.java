@@ -245,7 +245,7 @@ class NoticeServiceTest {
 
         when(noticeRepository.findByIdWithAttachments(1L)).thenReturn(Optional.of(notice));
         when(fileUploadService.buildFileUrl(IMG_KEY_1)).thenReturn(IMG_URL_1);
-        when(fileUploadService.buildFileUrl(FILE_KEY_1)).thenReturn(FILE_URL_1);
+        when(fileUploadService.buildFileDownloadUrl(FILE_KEY_1)).thenReturn(FILE_URL_1);
 
         // When
         NoticeDetailResponse response = noticeService.getNoticeDetail(1L);

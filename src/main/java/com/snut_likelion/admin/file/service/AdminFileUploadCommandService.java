@@ -24,6 +24,7 @@ public class AdminFileUploadCommandService {
     public CompleteFileUploadResponse completeUpload(CompleteFileUploadRequest req) {
         UploadedFile saved = fileUploadService.completeUpload(
                 req.getUploadCategory(),
+                req.getFileStorageType(),
                 req.getStoredFileName(),
                 req.getOriginalFileName(),
                 req.getContentType(),
