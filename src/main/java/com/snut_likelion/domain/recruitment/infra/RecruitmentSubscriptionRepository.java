@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface RecruitmentSubscriptionRepository extends JpaRepository<RecruitmentSubscription, Long> {
 
-    List<RecruitmentSubscription> findAllBySubscriptionType(SubscriptionType type);
+    List<RecruitmentSubscription> findAllBySubscriptionTypeAndGeneration(SubscriptionType type, int generation);
 
-    boolean existsByEmailAndSubscriptionType(String email, SubscriptionType type);
+    boolean existsByEmailAndSubscriptionTypeAndGeneration(String email, SubscriptionType type, int generation);
 }

@@ -16,11 +16,11 @@ public class SubscriptionService {
     private final RecruitmentSubscriptionRepository recruitmentSubscriptionRepository;
 
     @Transactional
-    public void register(String email, SubscriptionType subscriptionType) {
-        if (recruitmentSubscriptionRepository.existsByEmailAndSubscriptionType(email, subscriptionType)) {
+    public void register(String email, SubscriptionType subscriptionType, int generation) {
+        if (recruitmentSubscriptionRepository.existsByEmailAndSubscriptionTypeAndGeneration(email, subscriptionType, generation)) {
             throw new BadRequestException(RecruitmentErrorCode.ALREADY_ENROLLED_EMAIL);
         }
 
-        recruitmentSubscriptionRepository.save(RecruitmentSubscription.of(email, subscriptionType));
+        recruitmentSubscriptionRepository.save(RecruitmentSubscription.of(email, subscriptionType, generation));
     }
 }
