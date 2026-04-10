@@ -224,11 +224,17 @@ class AiIntegrationTest {
     // ── 인증 검사 ──────────────────────────────────────────────────────────
 
     @Test
-    void chat_whenNotAuthenticated_returns401() throws Exception {
+    void chat_whenNotAuthenticated_returns200() throws Exception {
+        stubFor(WireMock.post(urlEqualTo("/chat"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody("{\"matched_question\": null, \"score\": null}")));
+
         mockMvc.perform(post("/api/v1/ai/chat")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new TextRequest("질문"))))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 
     @Test
