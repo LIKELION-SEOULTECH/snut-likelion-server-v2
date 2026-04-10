@@ -1,5 +1,7 @@
 package com.snut_likelion.domain.auth.service;
 
+import com.snut_likelion.domain.auth.dto.ChangePasswordRequest;
+import com.snut_likelion.domain.auth.dto.RegisterReq;
 import com.snut_likelion.domain.auth.dto.ResetPasswordRequest;
 import com.snut_likelion.domain.auth.entity.CertificationToken;
 import com.snut_likelion.domain.auth.exception.AuthErrorCode;
@@ -8,6 +10,7 @@ import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.domain.user.repository.UserRepository;
 import com.snut_likelion.global.error.exception.BadRequestException;
+import com.snut_likelion.global.error.exception.ExistingResourceException;
 import com.snut_likelion.global.error.exception.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -215,5 +218,84 @@ class AuthServiceTest {
                 .hasMessage(AuthErrorCode.INVALID_CERTIFICATION_TOKEN.getMessage());
 
         verify(certificationTokenRepository, never()).delete(any());
+    }
+
+    @Test
+    void register_success() {
+        // given
+        RegisterReq req = RegisterReq.builder()
+                .email("new@example.com")
+                .username("newuser")
+                .password("pass123!")
+                .confirmPassword("pass123!")
+                .phoneNumber("01012345678")
+                .isEmailVerified(true)
+                .build();
+
+        when(userRepository.existsByEmailOrUsernameOrPhoneNumber(any(), any(), any())).thenReturn(false);
+        when(passwordEncoder.encode("pass123!")).thenReturn("encoded_pass123!");
+
+        // when
+        authService.register(req);
+
+        // then
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void register_existingUser_throws() {
+        // given
+        RegisterReq req = RegisterReq.builder()
+                .email(email)
+                .username("tester")
+                .password("pass123!")
+                .confirmPassword("pass123!")
+                .phoneNumber("01012345678")
+                .isEmailVerified(true)
+                .build();
+
+        when(userRepository.existsByEmailOrUsernameOrPhoneNumber(any(), any(), any())).thenReturn(true);
+
+        // when / then
+        assertThatThrownBy(() -> authService.register(req))
+                .isInstanceOf(ExistingResourceException.class);
+
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void changePassword_success() {
+        // given
+        ChangePasswordRequest req = ChangePasswordRequest.builder()
+                .oldPassword("oldPwd123!")
+                .newPassword("newPwd456!")
+                .confirmPassword("newPwd456!")
+                .build();
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPwd456!")).thenReturn("encoded_newPwd456!");
+
+        // when
+        authService.changePassword(1L, req);
+
+        // then
+        assertThat(user.getPassword()).isEqualTo("encoded_newPwd456!");
+    }
+
+    @Test
+    void changePassword_userNotFound_throws() {
+        // given
+        ChangePasswordRequest req = ChangePasswordRequest.builder()
+                .oldPassword("oldPwd123!")
+                .newPassword("newPwd456!")
+                .confirmPassword("newPwd456!")
+                .build();
+
+        when(userRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // when / then
+        assertThatThrownBy(() -> authService.changePassword(99L, req))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage(UserErrorCode.NOT_FOUND.getMessage());
     }
 }

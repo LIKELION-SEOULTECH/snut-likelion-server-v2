@@ -222,4 +222,74 @@ class BlogCommandServiceTest {
                 .isInstanceOf(NotFoundException.class)
                 .hasMessage(BlogErrorCode.POST_NOT_FOUND.getMessage());
     }
+
+    // ── discardDraft ─────────────────────────────────────────────────────────
+
+    @Test
+    void discardDraft_success_deletesUserDraft() {
+        when(authorInfo.getId()).thenReturn(1L);
+        when(userRepo.findById(1L)).thenReturn(Optional.of(author));
+
+        blogCommandService.discardDraft(authorInfo);
+
+        verify(postRepo).deleteByAuthorAndStatus(author, PostStatus.DRAFT);
+    }
+
+    @Test
+    void discardDraft_userNotFound_throwsNotFoundException() {
+        when(authorInfo.getId()).thenReturn(99L);
+        when(userRepo.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> blogCommandService.discardDraft(authorInfo))
+                .isInstanceOf(NotFoundException.class);
+
+        verify(postRepo, never()).deleteByAuthorAndStatus(any(), any());
+    }
+
+    // ── createPost user not found ────────────────────────────────────────────
+
+    @Test
+    void createPost_userNotFound_throwsNotFoundException() {
+        CreateBlogRequest req = CreateBlogRequest.builder()
+                .title("제목")
+                .contentHtml("<p>내용</p>")
+                .category(Category.UNOFFICIAL)
+                .imageStoredFileNames(List.of())
+                .taggedMemberIds(List.of())
+                .build();
+
+        when(authorInfo.getId()).thenReturn(99L);
+        when(userRepo.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> blogCommandService.createPost(req, authorInfo, true))
+                .isInstanceOf(NotFoundException.class);
+
+        verify(postRepo, never()).save(any());
+    }
+
+    // ── updatePost with taggedMembers ────────────────────────────────────────
+
+    @Test
+    void updatePost_withTaggedMembers_setsTaggedMembers() {
+        Long postId = 1L;
+        BlogPost post = BlogPost.builder().title("old").content("<p>old</p>").category(Category.UNOFFICIAL).build();
+        post.setImages(List.of());
+
+        when(postRepo.findById(postId)).thenReturn(Optional.of(post));
+
+        User member1 = User.builder().id(10L).username("member1").build();
+        User member2 = User.builder().id(11L).username("member2").build();
+
+        UpdateBlogRequest req = mock(UpdateBlogRequest.class);
+        when(req.getTitle()).thenReturn("제목");
+        when(req.getContentHtml()).thenReturn("<p>내용</p>");
+        when(req.getCategory()).thenReturn(Category.UNOFFICIAL);
+        when(req.getTaggedMemberIds()).thenReturn(List.of(10L, 11L));
+        when(req.getNewImageStoredFileNames()).thenReturn(null);
+        when(userRepo.findAllById(List.of(10L, 11L))).thenReturn(List.of(member1, member2));
+
+        blogCommandService.updatePost(postId, req, authorInfo, true);
+
+        assertThat(post.getTaggedMembers()).containsExactlyInAnyOrder(member1, member2);
+    }
 }
