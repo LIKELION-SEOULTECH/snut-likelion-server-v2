@@ -101,13 +101,14 @@ public class FileUploadService {
     @Transactional
     public UploadedFile completeUpload(
             UploadCategory category,
+            FileStorageType storageType,
             String storedFileName,
             String originalFileName,
             String contentType,
             long contentLength
     ) {
         // key 규칙 검증 (카테고리 폴더 prefix, ".." 금지)
-        validateKeyRule(storedFileName, category);
+        validateKeyRule(storedFileName, category, storageType);
 
         // 중복 등록 방지
         if (uploadedFileRepository.existsByStoredFileName(storedFileName)) {

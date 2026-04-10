@@ -1,5 +1,6 @@
 package com.snut_likelion.admin.file.dto.req;
 
+import com.snut_likelion.domain.file.dto.FileStorageType;
 import com.snut_likelion.domain.file.dto.UploadCategory;
 import com.snut_likelion.domain.file.entity.UploadedFile;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +40,9 @@ public class CompleteFileUploadRequest {
     @Schema(description = "업로드 카테고리", example = "BLOG")
     @NotNull(message = "uploadCategory는 필수입니다.")
     private UploadCategory uploadCategory;
+
+    @Schema(description = "저장 유형. IMAGE → images/, FILE → files/ (기본값: IMAGE)", example = "IMAGE", nullable = true)
+    private FileStorageType fileStorageType = FileStorageType.IMAGE;
 
     public UploadedFile toEntity() {
         return UploadedFile.builder()
