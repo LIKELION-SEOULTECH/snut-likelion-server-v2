@@ -36,8 +36,10 @@ public class LocalPresignedController {  // Dev용 가짜 S3
             HttpServletRequest request
     ) {
         try {
-            // 1. 보안 검사: key는 반드시 images/로 시작해야 함 & 상위폴더 이동(..) 금지
-            if (key == null || key.isBlank() || !key.startsWith("images/") || key.contains("..")) {
+            // 1. 보안 검사: key는 반드시 images/ 또는 files/로 시작해야 함 & 상위폴더 이동(..) 금지
+            if (key == null || key.isBlank()
+                    || (!key.startsWith("images/") && !key.startsWith("files/"))
+                    || key.contains("..")) {
                 log.warn("[Local S3] Invalid key: {}", key);
                 return ResponseEntity.badRequest().build();
             }

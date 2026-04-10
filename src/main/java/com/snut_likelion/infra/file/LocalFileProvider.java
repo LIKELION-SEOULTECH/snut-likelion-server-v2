@@ -117,6 +117,11 @@ public class LocalFileProvider implements FileProvider {
         return String.format("%s/api/v1/images?imageName=%s", serverUrl, storedFileName);
     }
 
+    @Override
+    public String buildFileDownloadUrl(String storedFileName) {
+        return String.format("%s/api/v1/files/download?fileName=%s", serverUrl, storedFileName);
+    }
+
     private void validateStoredFileName(String storedFileName) {
         if (storedFileName == null || storedFileName.isBlank()) {
             throw new BadRequestException(FileErrorCode.INVALID_FILE_KEY);

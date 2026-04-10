@@ -28,4 +28,6 @@ public interface FileProvider {
     String extractImageName(String imageUrl);
 
     String buildImageUrl(String storedFileName);
+
+    String buildFileDownloadUrl(String storedFileName);
 }

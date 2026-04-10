@@ -170,7 +170,9 @@ public class NoticeService {
         return attachments.stream()
                 .collect(Collectors.toMap(
                         NoticeAttachment::getStoredFileName,
-                        a -> fileUploadService.buildFileUrl(a.getStoredFileName())
+                        a -> a.getAttachmentType() == AttachmentType.FILE
+                                ? fileUploadService.buildFileDownloadUrl(a.getStoredFileName())
+                                : fileUploadService.buildFileUrl(a.getStoredFileName())
                 ));
     }
 }
