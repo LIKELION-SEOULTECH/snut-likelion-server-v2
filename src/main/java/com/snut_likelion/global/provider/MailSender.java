@@ -8,7 +8,7 @@ public interface MailSender {
 
     void sendVerificationCode(String toEmail, String code);
 
-    void sendChangePasswordLinkMail(String toEmail, String code);
+    void sendPasswordResetCode(String toEmail, String code);
 
     void sendInterviewScheduledMail(String toEmail, String username, String recruitmentType);
 
