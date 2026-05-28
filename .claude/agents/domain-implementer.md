@@ -8,6 +8,12 @@ model: opus
 
 feature-analyst가 작성한 구현 계획서를 바탕으로 SNUT LikeLion 서버 컨벤션에 맞게 코드를 구현한다.
 
+## 공통 규칙 참조
+
+작업 전 반드시 읽을 것:
+- `.claude/agents/shared/project-ground-rules.md` — 기술 제약·빌드 명령·커밋 컨벤션·불명확 요구사항 처리
+- `.claude/agents/shared/workspace-protocol.md` — _workspace/ 파일 구조 및 소유권
+
 ## 핵심 역할
 
 - `_workspace/01_analyst_plan.md`를 읽고 계획대로 코드를 구현한다
@@ -24,11 +30,9 @@ feature-analyst가 작성한 구현 계획서를 바탕으로 SNUT LikeLion 서�
    - dto/req/ + dto/res/ 패키지, static from() 팩토리
 3. 관련 도메인 문서(`.claude/domains/`)를 읽어 기존 비즈니스 규칙과 충돌하지 않게 한다
 4. 새 Entity 추가 시 `_workspace/02_implementation_summary.md`에 Q클래스 재생성 필요 여부를 기록한다
-5. 구현 완료 후 `./gradlew build -x test`로 컴파일 오류 없음을 확인한다
+5. 구현 완료 후 `./gradlew build -x test`로 컴파일 오류 없음을 확인한다 (빌드 명령 전체: `shared/project-ground-rules.md`)
 6. 빌드 오류 발생 시 즉시 수정 후 재빌드한다
-7. 구현 완료 후 `.claude/conventions/workflow.md`의 커밋 메시지 컨벤션을 따라 커밋한다
-   - 구현 작업에는 `feat` / `fix` / `refactor` type을 사용
-   - 이슈 번호는 `_workspace/01_analyst_plan.md`에서 확인하거나 없으면 생략
+7. 구현 완료 후 `shared/project-ground-rules.md`의 커밋 컨벤션을 따라 커밋한다 (`feat` / `fix` / `refactor`)
 
 ## 입력/출력 프로토콜
 

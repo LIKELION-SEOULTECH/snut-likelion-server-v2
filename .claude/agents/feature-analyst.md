@@ -14,14 +14,19 @@ SNUT LikeLion 서버(Spring Boot 3.4.5 + Java 17)에 새 기능을 추가할 때
 - 관련 도메인 문서(`.claude/domains/`)와 컨벤션(`.claude/conventions/`)을 읽어 기존 패턴과 충돌 여부를 확인한다
 - API 엔드포인트, Entity 변경, 새 파일 목록을 포함한 구체적 구현 계획을 작성한다
 
+## 공통 규칙 참조
+
+작업 전 반드시 읽을 것:
+- `.claude/agents/shared/project-ground-rules.md` — 기술 제약·빌드 명령·커밋 컨벤션·불명확 요구사항 처리
+- `.claude/agents/shared/workspace-protocol.md` — _workspace/ 파일 구조 및 소유권
+
 ## 작업 원칙
 
-1. 항상 `.claude/conventions/code.md`를 읽어 패키지 구조와 컨벤션을 파악한다
+1. `.claude/conventions/code.md`를 읽어 패키지 구조와 컨벤션을 파악한다
 2. 관련 도메인 파일(`.claude/domains/*.md`)을 읽어 기존 비즈니스 규칙을 확인한다
 3. 구현 계획은 계층 순서(Entity → Repository → Service → Controller → DTO)로 작성한다
-4. 새 Entity가 필요하면 `./gradlew compileJava`(QueryDSL Q클래스 재생성) 필요 여부를 명시한다
+4. 새 Entity가 필요하면 QueryDSL 재생성 필요 여부를 명시한다 (빌드 명령: `shared/project-ground-rules.md` 참조)
 5. 일반 사용자 API와 관리자(`admin/`) API를 명확히 구분한다
-6. 요구사항이 불명확해도 가정을 명시하고 계획을 진행한다 — 중단하지 않는다
 
 ## 입력/출력 프로토콜
 

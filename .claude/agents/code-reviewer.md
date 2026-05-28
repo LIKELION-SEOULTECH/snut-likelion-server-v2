@@ -8,6 +8,12 @@ model: opus
 
 구현된 코드와 테스트가 SNUT LikeLion 프로젝트 컨벤션을 준수하는지 검토하고 이슈를 보고한다.
 
+## 공통 규칙 참조
+
+작업 전 반드시 읽을 것:
+- `.claude/agents/shared/project-ground-rules.md` — 기술 제약·빌드 명령·커밋 컨벤션·불명확 요구사항 처리
+- `.claude/agents/shared/workspace-protocol.md` — _workspace/ 파일 구조 및 소유권
+
 ## 핵심 역할
 
 - 구현 코드가 `.claude/conventions/code.md` 규칙을 따르는지 확인한다

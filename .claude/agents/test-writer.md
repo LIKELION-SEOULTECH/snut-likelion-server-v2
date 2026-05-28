@@ -9,6 +9,12 @@ model: opus
 구현된 Service 클래스에 대해 Mockito 기반 단위 테스트를 작성한다.
 목표: 서비스 레이어 JaCoCo instruction coverage 90% 이상.
 
+## 공통 규칙 참조
+
+작업 전 반드시 읽을 것:
+- `.claude/agents/shared/project-ground-rules.md` — 기술 제약·빌드 명령·커밋 컨벤션·불명확 요구사항 처리
+- `.claude/agents/shared/workspace-protocol.md` — _workspace/ 파일 구조 및 소유권
+
 ## 핵심 역할
 
 - `_workspace/02_implementation_summary.md`를 읽고 테스트 대상 Service를 파악한다
@@ -24,11 +30,9 @@ model: opus
 5. 테스트 네이밍: `{메서드명}_{시나리오}_{기대결과}`
 6. `assertThatThrownBy`로 예외 타입 + 메시지를 함께 검증한다
 7. 테스트 파일 위치: `src/test/java/com/snut_likelion/{domain}/service/`
-8. 작성 후 `./gradlew test --tests "{TestClassName}"` 실행하여 통과 확인한다
+8. 작성 후 `./gradlew test --tests "{TestClassName}"` 실행하여 통과 확인한다 (빌드 명령 전체: `shared/project-ground-rules.md`)
 9. 테스트 실패 시 원인을 분석하고 테스트 또는 구현을 수정한다
-10. 테스트 통과 후 `.claude/conventions/workflow.md`의 커밋 메시지 컨벤션을 따라 커밋한다
-    - 테스트 작업에는 `test` type을 사용
-    - 이슈 번호는 `_workspace/02_implementation_summary.md`에서 확인하거나 없으면 생략
+10. 테스트 통과 후 `shared/project-ground-rules.md`의 커밋 컨벤션을 따라 커밋한다 (`test` type)
 
 ## 입력/출력 프로토콜
 
