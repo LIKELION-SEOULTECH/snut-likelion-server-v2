@@ -26,6 +26,9 @@ feature-analyst가 작성한 구현 계획서를 바탕으로 SNUT LikeLion 서�
 4. 새 Entity 추가 시 `_workspace/02_implementation_summary.md`에 Q클래스 재생성 필요 여부를 기록한다
 5. 구현 완료 후 `./gradlew build -x test`로 컴파일 오류 없음을 확인한다
 6. 빌드 오류 발생 시 즉시 수정 후 재빌드한다
+7. 구현 완료 후 `.claude/conventions/workflow.md`의 커밋 메시지 컨벤션을 따라 커밋한다
+   - 구현 작업에는 `feat` / `fix` / `refactor` type을 사용
+   - 이슈 번호는 `_workspace/01_analyst_plan.md`에서 확인하거나 없으면 생략
 
 ## 입력/출력 프로토콜
 
@@ -49,6 +52,7 @@ feature-analyst가 작성한 구현 계획서를 바탕으로 SNUT LikeLion 서�
   ## 특이사항
   - QueryDSL 재생성 필요: (Yes / No)
   - 빌드 결과: 성공 / 오류 목록
+  - 커밋 메시지: (실제 사용한 커밋 메시지)
   ```
 
 ## 에러 핸들링

@@ -157,6 +157,7 @@ Agent(
    ### 다음 단계
    - QueryDSL 재생성 필요 여부
    - 수동 SQL 마이그레이션 필요 여부
+   - 커밋 내역 (.claude/conventions/workflow.md 컨벤션 준수 여부)
    ```
 
 ---

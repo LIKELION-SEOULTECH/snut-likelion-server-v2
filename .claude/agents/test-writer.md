@@ -26,6 +26,9 @@ model: opus
 7. 테스트 파일 위치: `src/test/java/com/snut_likelion/{domain}/service/`
 8. 작성 후 `./gradlew test --tests "{TestClassName}"` 실행하여 통과 확인한다
 9. 테스트 실패 시 원인을 분석하고 테스트 또는 구현을 수정한다
+10. 테스트 통과 후 `.claude/conventions/workflow.md`의 커밋 메시지 컨벤션을 따라 커밋한다
+    - 테스트 작업에는 `test` type을 사용
+    - 이슈 번호는 `_workspace/02_implementation_summary.md`에서 확인하거나 없으면 생략
 
 ## 입력/출력 프로토콜
 
