@@ -1,17 +1,23 @@
 package com.snut_likelion.admin.project.service;
 
+import com.snut_likelion.admin.project.dto.req.AdminCreateRetrospectionRequest;
 import com.snut_likelion.admin.project.dto.res.ProjectPageResponse;
 import com.snut_likelion.admin.project.infra.AdminProjectQueryRepository;
+import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.CreateRetrospectionRequest;
+import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectCommandService;
 import com.snut_likelion.domain.project.service.ProjectRetrospectionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 
@@ -19,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,23 +33,63 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class AdminProjectServiceTest {
 
-    @Mock
-    AdminProjectQueryRepository queryRepository;
-
-    @Mock
-    ProjectCommandService projectCommandService;
-
-    @Mock
-    ProjectRetrospectionService projectRetrospectionService;
+    @Mock AdminProjectQueryRepository queryRepository;
+    @Mock ProjectCommandService projectCommandService;
+    @Mock ProjectRetrospectionService projectRetrospectionService;
 
     @InjectMocks
     AdminProjectService adminProjectService;
 
+    // ── create ───────────────────────────────────────────────────────────────
+
     @Test
     void create_delegatesToProjectCommandService() {
-        adminProjectService.create(null);
-        verify(projectCommandService).createPresigned(null);
+        CreateProjectPresignedRequest req = mock(CreateProjectPresignedRequest.class);
+        adminProjectService.create(req);
+        verify(projectCommandService).createPresigned(req);
     }
+
+    @Test
+    void create_returnsProjectIdFromCommandService() {
+        // Given
+        CreateProjectPresignedRequest req = mock(CreateProjectPresignedRequest.class);
+        when(projectCommandService.createPresigned(req)).thenReturn(42L);
+
+        // When
+        Long projectId = adminProjectService.create(req);
+
+        // Then
+        assertThat(projectId).isEqualTo(42L);
+    }
+
+    // ── createRetrospection ──────────────────────────────────────────────────
+
+    @Test
+    void createRetrospection_delegatesWithCorrectMemberIdAndContent() {
+        // Given
+        Long projectId = 1L;
+        Long memberId = 10L;
+
+        AdminCreateRetrospectionRequest req = mock(AdminCreateRetrospectionRequest.class);
+        when(req.getMemberId()).thenReturn(memberId);
+        when(req.getContent()).thenReturn("관리자가 대신 등록한 회고");
+
+        RetrospectionResponse mockResponse = mock(RetrospectionResponse.class);
+        ArgumentCaptor<CreateRetrospectionRequest> innerCaptor =
+                ArgumentCaptor.forClass(CreateRetrospectionRequest.class);
+        when(projectRetrospectionService.create(eq(projectId), eq(memberId), innerCaptor.capture()))
+                .thenReturn(mockResponse);
+
+        // When
+        RetrospectionResponse result = adminProjectService.createRetrospection(projectId, req);
+
+        // Then
+        assertThat(result).isEqualTo(mockResponse);
+        assertThat(innerCaptor.getValue().getContent()).isEqualTo("관리자가 대신 등록한 회고");
+        verify(projectRetrospectionService).create(eq(projectId), eq(memberId), any(CreateRetrospectionRequest.class));
+    }
+
+    // ── 기존 테스트 ─────────────────────────────────────────────────────────
 
     @Test
     void modify_delegatesToProjectCommandService() {

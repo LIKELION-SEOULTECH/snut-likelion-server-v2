@@ -16,6 +16,7 @@ import com.snut_likelion.global.error.exception.NotFoundException;
 import com.snut_likelion.infra.file.FileErrorCode;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -65,6 +66,36 @@ class ProjectCommandServiceTest {
         // Then
         verify(fileUploadService).validateStoredFileNames(List.of("images/projects/uuid-img.png"), UploadCategory.PROJECT);
         verify(projectRepository).save(any(Project.class));
+    }
+
+    @Test
+    void createPresigned_withUrlAndStacks_setsFieldsOnSavedProject() {
+        // Given
+        CreateProjectPresignedRequest req = mock(CreateProjectPresignedRequest.class);
+        when(req.getName()).thenReturn("App");
+        when(req.getIntro()).thenReturn("소개");
+        when(req.getDescription()).thenReturn("설명");
+        when(req.getCategory()).thenReturn(ProjectCategory.HACKATHON);
+        when(req.getGeneration()).thenReturn(14);
+        when(req.getImageStoredFileNames()).thenReturn(List.of("images/projects/img.png"));
+        when(req.getWebsiteUrl()).thenReturn("https://example.com");
+        when(req.getPlaystoreUrl()).thenReturn("https://play.google.com/store/apps");
+        when(req.getAppstoreUrl()).thenReturn("https://apps.apple.com/app");
+        when(req.getStacks()).thenReturn(List.of("React", "Spring"));
+
+        doNothing().when(fileUploadService).validateStoredFileNames(any(), eq(UploadCategory.PROJECT));
+        ArgumentCaptor<Project> captor = ArgumentCaptor.forClass(Project.class);
+        when(projectRepository.save(captor.capture())).thenAnswer(inv -> inv.getArgument(0));
+
+        // When
+        projectCommandService.createPresigned(req);
+
+        // Then
+        Project saved = captor.getValue();
+        assertThat(saved.getWebsiteUrl()).isEqualTo("https://example.com");
+        assertThat(saved.getPlaystoreUrl()).isEqualTo("https://play.google.com/store/apps");
+        assertThat(saved.getAppstoreUrl()).isEqualTo("https://apps.apple.com/app");
+        assertThat(saved.getStackList()).containsExactly("REACT", "SPRING");
     }
 
     // ── modifyPresigned ──────────────────────────────────────────────────────
@@ -137,6 +168,37 @@ class ProjectCommandServiceTest {
         // Then
         verify(fileUploadService).validateStoredFileNames(newKeys, UploadCategory.PROJECT);
         assertThat(project.getImageUrlList()).contains("images/projects/new1.png", "images/projects/new2.png");
+    }
+
+    @Test
+    void modifyPresigned_withStacksAndUrls_updatesProject() {
+        // Given
+        Long projectId = 1L;
+        Project project = Project.builder()
+                .id(projectId).name("Old").intro("Old").description("Old")
+                .generation(12).category(ProjectCategory.HACKATHON).build();
+        project.setImages(List.of("images/projects/old.png"));
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+
+        UpdateProjectPresignedRequest req = mock(UpdateProjectPresignedRequest.class);
+        when(req.getName()).thenReturn(null);
+        when(req.getIntro()).thenReturn(null);
+        when(req.getDescription()).thenReturn(null);
+        when(req.getGeneration()).thenReturn(null);
+        when(req.getCategory()).thenReturn(null);
+        when(req.getWebsiteUrl()).thenReturn("https://website.com");
+        when(req.getPlaystoreUrl()).thenReturn(null);
+        when(req.getAppstoreUrl()).thenReturn(null);
+        when(req.getStacks()).thenReturn(List.of("Vue", "Django"));
+        when(req.getNewImageStoredFileNames()).thenReturn(null);
+
+        // When
+        projectCommandService.modifyPresigned(projectId, req);
+
+        // Then
+        assertThat(project.getWebsiteUrl()).isEqualTo("https://website.com");
+        assertThat(project.getStackList()).containsExactly("VUE", "DJANGO");
     }
 
     @Test
