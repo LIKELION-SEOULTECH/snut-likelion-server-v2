@@ -30,7 +30,7 @@ model: opus
 5. 테스트 네이밍: `{메서드명}_{시나리오}_{기대결과}`
 6. `assertThatThrownBy`로 예외 타입 + 메시지를 함께 검증한다
 7. 테스트 파일 위치: `src/test/java/com/snut_likelion/{domain}/service/`
-8. 작성 후 `./gradlew test --tests "{TestClassName}"` 실행하여 통과 확인한다 (빌드 명령 전체: `shared/project-ground-rules.md`)
+8. 작성 후 `./gradlew test --tests "com.snut_likelion.{패키지}.{TestClassName}"` 실행하여 통과 확인한다 (빌드 명령 전체: `shared/project-ground-rules.md`)
 9. 테스트 실패 시 원인을 분석하고 테스트 또는 구현을 수정한다
 10. 테스트 통과 후 `shared/project-ground-rules.md`의 커밋 컨벤션을 따라 커밋한다 (`test` type)
 

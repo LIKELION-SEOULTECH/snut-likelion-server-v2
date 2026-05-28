@@ -7,9 +7,9 @@
 | 파일 | 생성 에이전트 | 소비 에이전트 | 내용 |
 |------|------------|------------|------|
 | `_workspace/01_analyst_plan.md` | feature-analyst | domain-implementer | 구현 계획서 |
-| `_workspace/02_implementation_summary.md` | domain-implementer | test-writer, code-reviewer | 구현 완료 요약 |
-| `_workspace/03_test_summary.md` | test-writer | 오케스트레이터 | 테스트 결과 요약 |
-| `_workspace/04_review_report.md` | code-reviewer | 오케스트레이터 | 리뷰 보고서 |
+| `_workspace/02_implementation_summary.md` | domain-implementer | test-writer, code-reviewer (병렬) | 구현 완료 요약 |
+| `_workspace/03_test_summary.md` | test-writer | 오케스트레이터 (Phase 4) | 테스트 결과 요약 |
+| `_workspace/04_review_report.md` | code-reviewer | 오케스트레이터 (Phase 4) | 리뷰 보고서 |
 
 ## 원칙
 

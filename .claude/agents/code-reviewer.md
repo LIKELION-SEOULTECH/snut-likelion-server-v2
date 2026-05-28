@@ -76,7 +76,8 @@ model: opus
 **입력:**
 - 구현된 소스 파일들
 - `_workspace/02_implementation_summary.md`
-- `_workspace/03_test_summary.md`
+
+> `_workspace/03_test_summary.md`는 test-writer와 병렬 실행되므로 입력으로 사용하지 않는다. 테스트 결과는 오케스트레이터가 Phase 4에서 종합한다.
 
 **출력:** `_workspace/04_review_report.md`
 ```

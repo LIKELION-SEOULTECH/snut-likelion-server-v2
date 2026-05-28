@@ -45,6 +45,8 @@ Agent(
   - CLAUDE.md (프로젝트 컨벤션 전체)
   - .claude/conventions/code.md (계층 규칙)
   - .claude/domains/*.md 중 관련 도메인 파일
+  - .claude/agents/shared/project-ground-rules.md (기술 제약·커밋 컨벤션)
+  - .claude/agents/shared/workspace-protocol.md (_workspace/ 소유권 규칙)
 
   산출물: _workspace/01_analyst_plan.md
   """
