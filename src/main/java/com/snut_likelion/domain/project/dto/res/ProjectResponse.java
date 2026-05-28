@@ -20,17 +20,19 @@ public class ProjectResponse {
     private String description;
     private int generation;
     private List<String> tags;
+    private List<String> stacks;
     private String category;
     private String thumbnailUrl; // 응답은 항상 URL (key 아님)
 
     @Builder
     public ProjectResponse(Long id, String name, String description, int generation,
-                           List<String> tags, ProjectCategory category, String thumbnailUrl) {
+                           List<String> tags, List<String> stacks, ProjectCategory category, String thumbnailUrl) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.generation = generation;
         this.tags = tags;
+        this.stacks = stacks;
         this.category = (category == null ? null : category.getDescription());
         this.thumbnailUrl = thumbnailUrl;
     }
@@ -49,6 +51,7 @@ public class ProjectResponse {
                 .description(project.getDescription())
                 .generation(project.getGeneration())
                 .tags(project.getTagList())
+                .stacks(project.getStackList())
                 .category(project.getCategory())
                 .thumbnailUrl(resolveToUrl(thumb, keyToUrl))
                 .build();

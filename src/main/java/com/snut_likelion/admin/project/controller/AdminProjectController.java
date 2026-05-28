@@ -1,5 +1,6 @@
 package com.snut_likelion.admin.project.controller;
 
+import com.snut_likelion.admin.project.dto.req.AdminCreateRetrospectionRequest;
 import com.snut_likelion.admin.project.dto.res.ProjectPageResponse;
 import com.snut_likelion.admin.project.service.AdminProjectService;
 import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
@@ -50,9 +51,9 @@ public class AdminProjectController {
             description = "Presigned URL로 이미지 업로드 완료 후 storedFileName을 전달하여 프로젝트를 생성합니다.")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<Object> createProject(@Valid @RequestBody CreateProjectPresignedRequest req) {
-        adminProjectService.create(req);
-        return ApiResponse.success("프로젝트 생성 성공");
+    public ApiResponse<Long> createProject(@Valid @RequestBody CreateProjectPresignedRequest req) {
+        Long projectId = adminProjectService.create(req);
+        return ApiResponse.success(projectId, "프로젝트 생성 성공");
     }
 
     @Operation(summary = "관리자 프로젝트 수정 (Presigned URL 기반)")
@@ -84,6 +85,20 @@ public class AdminProjectController {
         return ApiResponse.success(
                 adminProjectService.getAllRetrospectionsByProjectId(projectId),
                 "프로젝트 회고 목록 조회 성공"
+        );
+    }
+
+    @Operation(summary = "관리자 프로젝트 회고 생성",
+            description = "memberId를 지정하여 특정 멤버의 회고를 관리자가 직접 등록합니다.")
+    @PostMapping("/{projectId}/retrospections")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApiResponse<RetrospectionResponse> createProjectRetrospection(
+            @PathVariable("projectId") Long projectId,
+            @Valid @RequestBody AdminCreateRetrospectionRequest req
+    ) {
+        return ApiResponse.success(
+                adminProjectService.createRetrospection(projectId, req),
+                "프로젝트 회고 등록 성공"
         );
     }
 

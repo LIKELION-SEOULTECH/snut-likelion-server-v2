@@ -24,6 +24,7 @@ public class ProjectDetailResponse {
     private String playstoreUrl;
     private String appstoreUrl;
     private List<String> tags;
+    private List<String> stacks;
     private List<Participant> members;
     private String category;
     private List<String> imageUrls; // 응답은 항상 URL (key 아님)
@@ -31,8 +32,8 @@ public class ProjectDetailResponse {
     @Builder
     public ProjectDetailResponse(Long id, String name, String intro, String description,
                                  int generation, String websiteUrl, String playstoreUrl,
-                                 String appstoreUrl, List<String> tags, List<Participant> members,
-                                 ProjectCategory category, List<String> imageUrls) {
+                                 String appstoreUrl, List<String> tags, List<String> stacks,
+                                 List<Participant> members, ProjectCategory category, List<String> imageUrls) {
         this.id = id;
         this.name = name;
         this.intro = intro;
@@ -42,6 +43,7 @@ public class ProjectDetailResponse {
         this.playstoreUrl = playstoreUrl;
         this.appstoreUrl = appstoreUrl;
         this.tags = tags;
+        this.stacks = stacks;
         this.members = members;
         this.category = (category == null ? null : category.getDescription());
         this.imageUrls = imageUrls;
@@ -68,6 +70,7 @@ public class ProjectDetailResponse {
                 .appstoreUrl(project.getAppstoreUrl())
                 .category(project.getCategory())
                 .tags(project.getTagList())
+                .stacks(project.getStackList())
                 .imageUrls(imageUrls)
                 .members(project.getParticipations().stream()
                         .map(p -> p.getLionInfo().getUser())

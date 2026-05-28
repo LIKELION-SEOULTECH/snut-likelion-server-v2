@@ -34,4 +34,10 @@ public class CreateProjectPresignedRequest {
 
     @NotEmpty(message = "프로젝트 이미지는 최소 1장 이상 필요합니다.")
     private List<@NotBlank(message = "storedFileName은 빈 값일 수 없습니다.") String> imageStoredFileNames;
+
+    private String websiteUrl;
+    private String playstoreUrl;
+    private String appstoreUrl;
+
+    private List<@NotBlank(message = "stack은 빈 값일 수 없습니다.") String> stacks;
 }

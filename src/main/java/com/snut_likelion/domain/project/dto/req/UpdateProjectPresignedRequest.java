@@ -28,6 +28,8 @@ public class UpdateProjectPresignedRequest {
 
     private List<@NotBlank(message = "storedFileName은 빈 값일 수 없습니다.") String> newImageStoredFileNames;
 
+    private List<@NotBlank(message = "stack은 빈 값일 수 없습니다.") String> stacks;
+
     @AssertTrue(message = "수정할 값이 없습니다.")
     private boolean isAnyFieldProvided() {
         return (name != null && !name.isBlank())
@@ -39,6 +41,7 @@ public class UpdateProjectPresignedRequest {
                 || (websiteUrl != null && !websiteUrl.isBlank())
                 || (playstoreUrl != null && !playstoreUrl.isBlank())
                 || (appstoreUrl != null && !appstoreUrl.isBlank())
-                || (newImageStoredFileNames != null && !newImageStoredFileNames.isEmpty());
+                || (newImageStoredFileNames != null && !newImageStoredFileNames.isEmpty())
+                || (stacks != null && !stacks.isEmpty());
     }
 }
