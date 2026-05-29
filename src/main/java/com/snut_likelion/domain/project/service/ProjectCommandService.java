@@ -47,11 +47,14 @@ public class ProjectCommandService {
                 .description(req.getDescription())
                 .category(req.getCategory())
                 .generation(req.getGeneration())
+                .websiteUrl(req.getWebsiteUrl())
+                .playstoreUrl(req.getPlaystoreUrl())
+                .appstoreUrl(req.getAppstoreUrl())
                 .build();
 
-        // FileUploadService가 검증 담당 (key 규칙 + UploadedFile 존재 확인)
         fileUploadService.validateStoredFileNames(req.getImageStoredFileNames(), UploadCategory.PROJECT);
         project.setImages(req.getImageStoredFileNames());
+        project.setStacks(req.getStacks());
 
         projectRepository.save(project);
         return project.getId();
@@ -67,7 +70,9 @@ public class ProjectCommandService {
                 .orElseThrow(() -> new NotFoundException(ProjectErrorCode.NOT_FOUND_PROJECT));
 
         project.update(req.getName(), req.getIntro(), req.getDescription(),
-                req.getGeneration(), req.getCategory());
+                req.getGeneration(), req.getCategory(),
+                req.getWebsiteUrl(), req.getPlaystoreUrl(), req.getAppstoreUrl(),
+                req.getStacks());
 
         if (req.getNewImageStoredFileNames() != null && !req.getNewImageStoredFileNames().isEmpty()) {
             fileUploadService.validateStoredFileNames(
