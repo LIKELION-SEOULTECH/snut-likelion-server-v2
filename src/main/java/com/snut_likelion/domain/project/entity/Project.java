@@ -45,6 +45,8 @@ public class Project extends BaseEntity {
 
     private String tags;
 
+    private String stacks;
+
     @Column(nullable = false, columnDefinition = "TEXT")
     private String images;
 
@@ -61,12 +63,32 @@ public class Project extends BaseEntity {
         this.category = category;
     }
 
-    public void update(String name, String intro, String description, Integer generation, ProjectCategory category) {
+    public void update(String name, String intro, String description, Integer generation, ProjectCategory category,
+                       String websiteUrl, String playstoreUrl, String appstoreUrl, List<String> stacks) {
         if (StringUtils.hasText(name)) this.name = name;
         if (StringUtils.hasText(intro)) this.intro = intro;
         if (StringUtils.hasText(description)) this.description = description;
         if (generation != null) this.generation = generation;
         if (category != null) this.category = category;
+        if (StringUtils.hasText(websiteUrl)) this.websiteUrl = websiteUrl;
+        if (StringUtils.hasText(playstoreUrl)) this.playstoreUrl = playstoreUrl;
+        if (StringUtils.hasText(appstoreUrl)) this.appstoreUrl = appstoreUrl;
+        if (stacks != null && !stacks.isEmpty()) this.setStacks(stacks);
+    }
+
+    public List<String> getStackList() {
+        if (stacks == null || stacks.isEmpty()) {
+            return List.of();
+        }
+        return List.of(stacks.split(", "));
+    }
+
+    public void setStacks(List<String> stacks) {
+        if (stacks == null || stacks.isEmpty()) {
+            this.stacks = null;
+            return;
+        }
+        this.stacks = String.join(", ", stacks).toUpperCase();
     }
 
     public String getThumbnailUrl() {

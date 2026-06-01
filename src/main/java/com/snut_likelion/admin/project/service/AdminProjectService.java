@@ -1,8 +1,10 @@
 package com.snut_likelion.admin.project.service;
 
+import com.snut_likelion.admin.project.dto.req.AdminCreateRetrospectionRequest;
 import com.snut_likelion.admin.project.dto.res.ProjectPageResponse;
 import com.snut_likelion.admin.project.infra.AdminProjectQueryRepository;
 import com.snut_likelion.domain.project.dto.req.CreateProjectPresignedRequest;
+import com.snut_likelion.domain.project.dto.req.CreateRetrospectionRequest;
 import com.snut_likelion.domain.project.dto.req.UpdateProjectPresignedRequest;
 import com.snut_likelion.domain.project.dto.res.RetrospectionResponse;
 import com.snut_likelion.domain.project.service.ProjectCommandService;
@@ -39,8 +41,8 @@ public class AdminProjectService {
     }
 
     @Transactional
-    public void create(CreateProjectPresignedRequest req) {
-        projectCommandService.createPresigned(req);
+    public Long create(CreateProjectPresignedRequest req) {
+        return projectCommandService.createPresigned(req);
     }
 
     @Transactional
@@ -56,6 +58,12 @@ public class AdminProjectService {
     @Transactional(readOnly = true)
     public List<RetrospectionResponse> getAllRetrospectionsByProjectId(Long projectId) {
         return projectRetrospectionService.getAllByProjectId(projectId);
+    }
+
+    @Transactional
+    public RetrospectionResponse createRetrospection(Long projectId, AdminCreateRetrospectionRequest req) {
+        CreateRetrospectionRequest inner = new CreateRetrospectionRequest(req.getContent());
+        return projectRetrospectionService.create(projectId, req.getMemberId(), inner);
     }
 
     @Transactional
