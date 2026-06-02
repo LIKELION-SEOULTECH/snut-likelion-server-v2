@@ -3,6 +3,7 @@ package com.snut_likelion.domain.project.dto.res;
 import com.snut_likelion.domain.project.entity.Project;
 import com.snut_likelion.domain.project.entity.ProjectCategory;
 import com.snut_likelion.domain.user.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,20 +14,46 @@ import java.util.function.Function;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "프로젝트 상세 응답")
 public class ProjectDetailResponse {
 
+    @Schema(description = "프로젝트 ID", example = "1")
     private Long id;
+
+    @Schema(description = "프로젝트 이름", example = "멋사 웹 서비스")
     private String name;
+
+    @Schema(description = "프로젝트 한 줄 소개", example = "멋쟁이사자처럼 공식 웹 서비스")
     private String intro;
+
+    @Schema(description = "프로젝트 상세 설명", example = "Spring Boot와 React로 구현한 멋사 통합 관리 시스템입니다.")
     private String description;
+
+    @Schema(description = "프로젝트 기수", example = "14")
     private int generation;
+
+    @Schema(description = "웹사이트 URL", example = "https://example.com", nullable = true)
     private String websiteUrl;
+
+    @Schema(description = "Play 스토어 URL", example = "https://play.google.com/store/apps/details?id=com.example", nullable = true)
     private String playstoreUrl;
+
+    @Schema(description = "App 스토어 URL", example = "https://apps.apple.com/app/id000000000", nullable = true)
     private String appstoreUrl;
+
+    @Schema(description = "태그 목록", example = "[\"AWARD\"]")
     private List<String> tags;
+
+    @Schema(description = "기술 스택 목록", example = "[\"REACT\", \"SPRING\"]")
     private List<String> stacks;
+
+    @Schema(description = "참여 멤버 목록")
     private List<Participant> members;
+
+    @Schema(description = "프로젝트 카테고리 (한글 설명)", example = "장기 프로젝트")
     private String category;
+
+    @Schema(description = "프로젝트 이미지 URL 목록", example = "[\"https://bucket.s3.ap-northeast-2.amazonaws.com/project/uuid-image.jpg\"]")
     private List<String> imageUrls; // 응답은 항상 URL (key 아님)
 
     @Builder
@@ -87,8 +114,13 @@ public class ProjectDetailResponse {
     }
 
     @Getter
+    @Schema(description = "프로젝트 참여 멤버")
     public static class Participant {
+
+        @Schema(description = "회원 ID", example = "42")
         private Long id;
+
+        @Schema(description = "회원 이름", example = "홍길동")
         private String username;
 
         @Builder

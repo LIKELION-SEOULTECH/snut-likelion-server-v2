@@ -6,6 +6,7 @@ import com.snut_likelion.domain.user.entity.Part;
 import com.snut_likelion.domain.user.entity.User;
 import com.snut_likelion.domain.user.exception.UserErrorCode;
 import com.snut_likelion.global.error.exception.NotFoundException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,10 +14,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Schema(description = "프로젝트 회고 응답")
 public class RetrospectionResponse {
 
+    @Schema(description = "회고 ID", example = "10")
     private Long id;
+
+    @Schema(description = "회고 내용", example = "이번 프로젝트에서 협업과 배포 자동화를 많이 배웠습니다.")
     private String content;
+
+    @Schema(description = "작성자 정보")
     private Writer writer;
 
     @Builder
@@ -35,9 +42,16 @@ public class RetrospectionResponse {
     }
 
     @Getter
+    @Schema(description = "회고 작성자")
     public static class Writer {
+
+        @Schema(description = "작성자 회원 ID", example = "42")
         private Long id;
+
+        @Schema(description = "작성자 이름", example = "홍길동")
         private String name;
+
+        @Schema(description = "작성자 파트", example = "FRONTEND")
         private String part;
 
         @Builder
