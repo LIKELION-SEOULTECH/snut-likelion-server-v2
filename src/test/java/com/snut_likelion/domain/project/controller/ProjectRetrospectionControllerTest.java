@@ -89,6 +89,12 @@ class ProjectRetrospectionControllerTest {
         return objectMapper.writeValueAsString(map);
     }
 
+    private String bodyContentOnly(String content) throws Exception {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("content", content);
+        return objectMapper.writeValueAsString(map);
+    }
+
     // ── 위임(delegation) ────────────────────────────────────────────────
 
     @Test
@@ -137,5 +143,35 @@ class ProjectRetrospectionControllerTest {
                 .andExpect(status().isCreated());
 
         verify(projectRetrospectionService).create(eq(PROJECT_ID), eq(5L), any());
+    }
+
+    // ── 입력 검증(validation) ─────────────────────────────────────────────
+
+    @Test
+    void createRetrospection_missingMemberId_badRequest() throws Exception {
+        // Given — memberId 없이 요청 (가드와 분리해 검증만 보기 위해 매니저 주체 사용)
+
+        // When & Then — @NotNull 위반으로 400, 서비스는 호출되지 않아야 한다
+        mockMvc.perform(post("/api/v1/projects/{projectId}/retrospections", PROJECT_ID)
+                        .with(login(99L, "ROLE_MANAGER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(bodyContentOnly("memberId 누락 회고")))
+                .andExpect(status().isBadRequest());
+
+        verify(projectRetrospectionService, never()).create(anyLong(), anyLong(), any());
+    }
+
+    @Test
+    void createRetrospection_blankContent_badRequest() throws Exception {
+        // Given — content 공백 (@NotEmpty 위반)
+
+        // When & Then — 400, 서비스 미호출
+        mockMvc.perform(post("/api/v1/projects/{projectId}/retrospections", PROJECT_ID)
+                        .with(login(5L, "ROLE_USER"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body(5L, "")))
+                .andExpect(status().isBadRequest());
+
+        verify(projectRetrospectionService, never()).create(anyLong(), anyLong(), any());
     }
 }
