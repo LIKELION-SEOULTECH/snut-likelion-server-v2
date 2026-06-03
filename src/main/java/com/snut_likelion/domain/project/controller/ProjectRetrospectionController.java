@@ -25,9 +25,11 @@ public class ProjectRetrospectionController {
 
     private final ProjectRetrospectionService projectRetrospectionService;
 
-    @Operation(summary = "프로젝트 회고 작성", description = "특정 프로젝트에 회고를 작성합니다. 회고 작성 시 프로젝트 참여자로 자동 등록됩니다.")
+    @Operation(summary = "프로젝트 회고 작성",
+            description = "특정 프로젝트에 회고를 작성합니다. 회고 작성 시 프로젝트 참여자로 자동 등록됩니다. " +
+                    "일반 사용자는 본인(memberId=본인) 회고만 작성할 수 있으며, 매니저는 타 멤버의 회고도 등록할 수 있습니다.")
     @PostMapping
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasRole('ROLE_USER') and @authChecker.isMe(#loginUser.userInfo, #request.memberId)")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<RetrospectionResponse> createRetrospection(
             @Parameter(hidden = true) @AuthenticationPrincipal SnutLikeLionUser loginUser,
