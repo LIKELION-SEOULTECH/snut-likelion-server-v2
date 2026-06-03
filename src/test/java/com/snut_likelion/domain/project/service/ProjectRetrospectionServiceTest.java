@@ -94,6 +94,49 @@ class ProjectRetrospectionServiceTest {
     }
 
     @Test
+    void create_usesGivenMemberIdAsWriter_notCaller() {
+        // Given — 호출자와 무관하게 전달받은 memberId(42)가 작성자/참여자/조회 기준이 되어야 한다
+        Long projectId = 1L;
+        Long memberId = 42L;
+        int generation = 14;
+
+        Project project = Project.builder()
+                .id(projectId).name("App").intro("소개").description("설명")
+                .generation(generation).category(ProjectCategory.HACKATHON).build();
+        project.setImages(List.of("images/projects/thumbnail.png"));
+
+        LionInfo lionInfo = mock(LionInfo.class);
+        when(lionInfo.getGeneration()).thenReturn(generation);
+        when(lionInfo.getPart()).thenReturn(Part.FRONTEND);
+
+        User writer = mock(User.class);
+        when(writer.getId()).thenReturn(memberId);
+        when(writer.getUsername()).thenReturn("대상멤버");
+        when(writer.getLionInfos()).thenReturn(List.of(lionInfo));
+
+        CreateRetrospectionRequest req = new CreateRetrospectionRequest("대상 멤버 회고");
+
+        when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
+        when(projectRetrospectionRepository.findByWriter_IdAndProject_Id(memberId, projectId))
+                .thenReturn(Optional.empty());
+        when(lionInfoRepository.findByUser_IdAndGeneration(memberId, generation))
+                .thenReturn(Optional.of(lionInfo));
+        when(userRepository.findById(memberId)).thenReturn(Optional.of(writer));
+
+        // When
+        RetrospectionResponse response = projectRetrospectionService.create(projectId, memberId, req);
+
+        // Then — 응답·생성된 회고·모든 조회가 caller가 아닌 memberId(42) 기준
+        assertThat(response.getWriter().getId()).isEqualTo(memberId);
+        assertThat(response.getWriter().getName()).isEqualTo("대상멤버");
+        assertThat(project.getRetrospections()).hasSize(1);
+        assertThat(project.getRetrospections().get(0).getWriter().getId()).isEqualTo(memberId);
+        verify(projectRetrospectionRepository).findByWriter_IdAndProject_Id(memberId, projectId);
+        verify(lionInfoRepository).findByUser_IdAndGeneration(memberId, generation);
+        verify(userRepository).findById(memberId);
+    }
+
+    @Test
     void create_projectNotFound_throwsNotFoundException() {
         // Given
         Long projectId = 99L;
