@@ -35,7 +35,7 @@ public class ProjectRetrospectionController {
             @Valid @RequestBody CreateRetrospectionRequest request
     ) {
         return ApiResponse.success(
-                projectRetrospectionService.create(projectId, loginUser.getId(), request),
+                projectRetrospectionService.create(projectId, request.getMemberId(), request),
                 "프로젝트 회고 작성 성공"
         );
     }
